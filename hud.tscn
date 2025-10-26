@@ -1,12 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dvewtmm6d837k"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n2snw"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color(0.05197095, 0.051970974, 0.051970884, 1)
+[gd_scene load_steps=4 format=3 uid="uid://dvewtmm6d837k"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37p78"]
 bg_color = Color(0.33002013, 0.5941898, 1, 1)
@@ -19,48 +11,31 @@ bg_color = Color(0.7967922, 0.37047136, 1, 1)
 
 [node name="HUD" type="CanvasLayer"]
 
-[node name="Panel" type="Panel" parent="."]
-offset_left = 425.0
-offset_top = 150.0
-offset_right = 625.0
-offset_bottom = 300.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_n2snw")
-
-[node name="Label" type="Label" parent="."]
-offset_left = 430.0
-offset_top = 100.0
-offset_right = 610.0
-offset_bottom = 145.0
-theme_override_font_sizes/font_size = 30
-text = "NEXT PIECE:"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="ScoreLabel" type="Label" parent="."]
-offset_left = 430.0
-offset_top = 350.0
-offset_right = 610.0
-offset_bottom = 395.0
+offset_left = 591.0
+offset_top = 625.0
+offset_right = 771.0
+offset_bottom = 670.0
 theme_override_font_sizes/font_size = 30
 text = "SCORE: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="GameOverLabel" type="Label" parent="."]
-offset_left = 72.0
-offset_top = 293.0
-offset_right = 311.0
-offset_bottom = 351.0
+offset_left = 259.0
+offset_top = 303.0
+offset_right = 500.0
+offset_bottom = 361.0
 theme_override_font_sizes/font_size = 40
 text = "GAME OVER!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StartButton" type="Button" parent="."]
-offset_left = 430.0
-offset_top = 500.0
-offset_right = 610.0
-offset_bottom = 540.0
+offset_left = 574.0
+offset_top = 706.0
+offset_right = 766.0
+offset_bottom = 746.0
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_37p78")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_64ctp")

@@ -103,7 +103,7 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 2)
+const start_pos := Vector2i(5, 1)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.25
@@ -242,7 +242,7 @@ func create_piece():
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 	draw_ghost_piece()
 	# show next piece
-	draw_piece(next_piece_type[0], Vector2i(16, 7), next_piece_atlas, active_layer)
+	draw_piece(next_piece_type[0], Vector2i(14, 1), next_piece_atlas, active_layer)
 
 func clear_piece():
 	for i in active_piece:
@@ -346,7 +346,6 @@ func lock_piece():
 	piece_atlas = next_piece_atlas
 	next_piece_type = pick_piece()
 	next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
-	clear_panel()
 	clear_ghost_piece()
 	create_piece()
 	check_game_over()
@@ -376,8 +375,8 @@ func land_piece():
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
 
 func clear_panel():
-	for i in range(14, 19):
-		for j in range(5, 9):
+	for i in range(15, 20):
+		for j in range(6, 11):
 			active_layer.erase_cell(Vector2i(i, j))
 
 func check_rows():
