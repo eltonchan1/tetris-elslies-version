@@ -1,8 +1,7 @@
 extends Node2D
 
-# next panel not erasing properly
-# add 5 next pieces preview
-# hold panel i piece move one to left
+#less output
+#7 bag may be broken when pressing new game
 
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $board
@@ -100,7 +99,7 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 0)
+const start_pos := Vector2i(5, 2)  # Changed from (5, 1) to (5, 2)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.25
@@ -288,6 +287,7 @@ func create_piece():
 	print("DEBUG: Drawing ghost")
 	draw_ghost_piece()
 	print("DEBUG: Drawing next piece")
+	clear_next_panel()
 	draw_piece(next_piece_type[0], Vector2i(14, 1), next_piece_atlas, active_layer)
 	print("DEBUG: create_piece() COMPLETE")
 
@@ -412,13 +412,26 @@ func hold_piece():
 		held_piece_atlas = temp_atlas
 	
 	clear_hold_panel()
-	draw_piece(held_piece[0], Vector2i(-3, 2), held_piece_atlas, active_layer)
+	# I piece needs to be shifted left by 1, O piece needs to be shifted right by 1
+	var hold_pos = Vector2i(-3, 1)  # Moved up from 2 to 1
+	if held_piece == i:
+		hold_pos = Vector2i(-4, 1)
+	elif held_piece == o:
+		hold_pos = Vector2i(-2, 1)
+	draw_piece(held_piece[0], hold_pos, held_piece_atlas, active_layer)
 	can_hold = false
+	clear_next_panel()
 	create_piece()
 
 func clear_hold_panel():
 	for i in range(-5, 2):
 		for j in range(-1, 5):
+			active_layer.erase_cell(Vector2i(i, j))
+
+func clear_next_panel():
+	# Clear the next piece preview area
+	for i in range(12, 18):
+		for j in range(-2, 6):
 			active_layer.erase_cell(Vector2i(i, j))
 
 func reset_lock_delay():
