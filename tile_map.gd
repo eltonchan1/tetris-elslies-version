@@ -1,5 +1,9 @@
 extends Node2D
 
+# next panel not erasing properly
+# add 5 next pieces preview
+# hold panel i piece move one to left
+
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $board
 @onready var active_layer : TileMapLayer = $active
@@ -19,11 +23,11 @@ var t_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1)]
 var t_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 var t := [t_0, t_90, t_180, t_270]
 
-# O piece
-var o_0 := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
-var o_90 := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
-var o_180 := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
-var o_270 := [Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]
+# O piece (spawns one block higher than others)
+var o_0 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
+var o_90 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
+var o_180 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
+var o_270 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
 var o := [o_0, o_90, o_180, o_270]
 
 # Z piece
@@ -58,19 +62,15 @@ var shapes := [s, l, o, z, i, j, t]
 var shapes_full := shapes.duplicate()
 
 # SRS wall kick data (offset tests for rotation)
-# Format: [rotation_from][rotation_to] = [test1, test2, test3, test4, test5]
 var srs_offset_jlstz := {
-	# Clockwise rotations
 	"0->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
 	"1->2": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
 	"2->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, 2), Vector2i(1, 2)],
 	"3->0": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, -2), Vector2i(-1, -2)],
-	# Counter-clockwise rotations
 	"1->0": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
 	"2->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
 	"3->2": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, -2), Vector2i(-1, -2)],
 	"0->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, 2), Vector2i(1, 2)],
-	# 180 rotations
 	"0->2": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, 0), Vector2i(-1, 0)],
 	"2->0": [Vector2i(0, 0), Vector2i(0, -1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 0), Vector2i(1, 0)],
 	"1->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 2), Vector2i(1, 1), Vector2i(0, 2), Vector2i(0, 1)],
@@ -78,17 +78,14 @@ var srs_offset_jlstz := {
 }
 
 var srs_offset_i := {
-	# Clockwise rotations
 	"0->1": [Vector2i(0, 0), Vector2i(-2, 0), Vector2i(1, 0), Vector2i(-2, 1), Vector2i(1, -2)],
 	"1->2": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(2, 0), Vector2i(-1, -2), Vector2i(2, 1)],
 	"2->3": [Vector2i(0, 0), Vector2i(2, 0), Vector2i(-1, 0), Vector2i(2, -1), Vector2i(-1, 2)],
 	"3->0": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-2, 0), Vector2i(1, 2), Vector2i(-2, -1)],
-	# Counter-clockwise rotations
 	"1->0": [Vector2i(0, 0), Vector2i(2, 0), Vector2i(-1, 0), Vector2i(2, -1), Vector2i(-1, 2)],
 	"2->1": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-2, 0), Vector2i(1, 2), Vector2i(-2, -1)],
 	"3->2": [Vector2i(0, 0), Vector2i(-2, 0), Vector2i(1, 0), Vector2i(-2, 1), Vector2i(1, -2)],
 	"0->3": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(2, 0), Vector2i(-1, -2), Vector2i(2, 1)],
-	# 180 rotations
 	"0->2": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, 0), Vector2i(-1, 0)],
 	"2->0": [Vector2i(0, 0), Vector2i(0, -1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 0), Vector2i(1, 0)],
 	"1->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 2), Vector2i(1, 1), Vector2i(0, 2), Vector2i(0, 1)],
@@ -103,23 +100,28 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 1)
+const start_pos := Vector2i(5, 0)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.25
 
 # lock delay vars
 var lock_delay_timer : float = 0.0
-const LOCK_DELAY_MAX : float = 0.5  # 500ms lock delay
+const LOCK_DELAY_MAX : float = 0.5
 var lock_delay_active : bool = false
 var move_reset_count : int = 0
-const MAX_MOVE_RESETS : int = 15  # Maximum times you can reset lock delay
+const MAX_MOVE_RESETS : int = 15
 
 # input vars
-var das_left : float = 0.0  # Delayed Auto Shift
+var das_left : float = 0.0
 var das_right : float = 0.0
-const DAS_DELAY : float = 0.133  # ~133ms before auto-repeat
-const ARR : float = 0.033  # Auto Repeat Rate - ~33ms between moves
+const DAS_DELAY : float = 0.133
+const ARR : float = 0.033
+
+# hold
+var held_piece = null
+var held_piece_atlas : Vector2i
+var can_hold : bool = true
 
 # game piece vars
 var piece_type
@@ -136,71 +138,105 @@ var game_running : bool
 var tile_id : int = 0
 var piece_atlas : Vector2i
 var next_piece_atlas : Vector2i
-var ghost_atlas : Vector2i = Vector2i(7, 0)  # Assuming you have a ghost tile at index 7
+var ghost_atlas : Vector2i = Vector2i(7, 0)
 
 func _ready():
+	print("DEBUG: _ready() called")
 	new_game()
+	print("DEBUG: Connecting StartButton")
 	$HUD.get_node("StartButton").pressed.connect(new_game)
+	print("DEBUG: _ready() completed")
 
 func new_game():
-	# reset vars
+	print("DEBUG: new_game() START")
+	game_running = false
+	active_piece = []
+	
+	print("DEBUG: Resetting variables")
 	score = 0
 	speed = 1.0
-	game_running = true
-	steps = [0, 0, 0] # left, right, down
+	steps = [0, 0, 0]
 	lock_delay_timer = 0.0
 	lock_delay_active = false
 	move_reset_count = 0
 	das_left = 0.0
 	das_right = 0.0
+	held_piece = null
+	can_hold = true
+	
+	print("DEBUG: Hiding GameOverLabel")
 	$HUD.get_node("GameOverLabel").hide()
-	# clear everything
-	clear_piece()
-	clear_board()
-	clear_panel()
+	$HUD.get_node("ScoreLabel").text = "SCORE: 0"
+	
+	print("DEBUG: About to clear board - board_layer is: ", board_layer)
+	# DON'T clear board_layer at all - it contains your walls and floor!
+	# Only clear the playfield area where pieces land
+	if board_layer != null:
+		print("DEBUG: Clearing only playfield area (not walls/floor)")
+		for i in range(2, ROWS + 1):  # Start at row 2 to avoid top area
+			for j in range(1, COLS + 1):
+				board_layer.erase_cell(Vector2i(j, i))
+		print("DEBUG: Playfield cleared successfully")
+	
+	print("DEBUG: About to clear active layer - active_layer is: ", active_layer)
+	if active_layer != null:
+		print("DEBUG: Clearing active_layer (current piece and previews)")
+		# Clear a large area for current piece, ghost, and next piece preview
+		for i in range(-5, ROWS + 10):
+			for j in range(-5, COLS + 20):
+				active_layer.erase_cell(Vector2i(j, i))
+		print("DEBUG: active_layer cleared successfully")
+	
+	print("DEBUG: Picking pieces")
 	piece_type = pick_piece()
+	print("DEBUG: piece_type = ", piece_type)
 	piece_atlas = Vector2i(shapes_full.find(piece_type), 0)
+	print("DEBUG: piece_atlas = ", piece_atlas)
+	
 	next_piece_type = pick_piece()
+	print("DEBUG: next_piece_type = ", next_piece_type)
 	next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
+	print("DEBUG: next_piece_atlas = ", next_piece_atlas)
+	
+	game_running = true
+	print("DEBUG: About to create_piece()")
 	create_piece()
+	print("DEBUG: new_game() COMPLETE")
 
 func _process(delta):
 	if game_running:
 		handle_input(delta)
-		
-		# apply downward movement every frame
 		steps[2] += speed
 		
-		# automatic drop
 		if steps[2] > steps_req:
 			move_piece(Vector2i.DOWN)
 			steps[2] = 0
 		
-		# handle lock delay
 		if lock_delay_active:
 			lock_delay_timer += delta
 			if lock_delay_timer >= LOCK_DELAY_MAX:
 				lock_piece()
 
 func handle_input(delta):
-	# Hard drop (space bar or ui_accept)
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 		return
 	
-	# Rotation
+	# Hold piece
+	if Input.is_action_just_pressed("hold"):
+		hold_piece()
+		return
+	
 	if Input.is_action_just_pressed("cw_rotation"):
-		rotate_piece_srs(1)  # Clockwise (CW)
+		rotate_piece_srs(1)
 	if Input.is_action_just_pressed("ccw_rotation"):
-		rotate_piece_srs(-1)  # Counter-Clockwise (CCW)
+		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
-		rotate_piece_srs(2)  # 180 degree rotation
+		rotate_piece_srs(2)
 	
-	# Soft drop (hold down)
 	if Input.is_action_pressed("soft_drop"):
-		steps[2] += 20  # Faster drop
+		steps[2] += 20
 	
-	# DAS (Delayed Auto Shift) for left/right
 	if Input.is_action_pressed("left_move"):
 		das_left += delta
 		das_right = 0.0
@@ -220,6 +256,7 @@ func handle_input(delta):
 		das_right = 0.0
 
 func pick_piece():
+	print("DEBUG: pick_piece() called")
 	var piece
 	if not shapes.is_empty():
 		shapes.shuffle()
@@ -228,47 +265,74 @@ func pick_piece():
 		shapes = shapes_full.duplicate()
 		shapes.shuffle()
 		piece = shapes.pop_front()
+	print("DEBUG: pick_piece() returning piece")
 	return piece
 
 func create_piece():
-	# reset vars
+	print("DEBUG: create_piece() START")
 	steps = [0, 0, 0]
 	cur_pos = start_pos
+	
+	# O piece spawns one row higher
+	if piece_type == o:
+		cur_pos = Vector2i(start_pos.x, start_pos.y - 1)
+	
 	rotation_index = 0
 	active_piece = piece_type[rotation_index]
 	lock_delay_timer = 0.0
 	lock_delay_active = false
 	move_reset_count = 0
+	
+	print("DEBUG: Drawing piece at ", cur_pos)
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
+	print("DEBUG: Drawing ghost")
 	draw_ghost_piece()
-	# show next piece
+	print("DEBUG: Drawing next piece")
 	draw_piece(next_piece_type[0], Vector2i(14, 1), next_piece_atlas, active_layer)
+	print("DEBUG: create_piece() COMPLETE")
 
 func clear_piece():
+	if active_piece == null or active_piece.is_empty():
+		return
 	for i in active_piece:
 		active_layer.erase_cell(cur_pos + i)
 
 func clear_ghost_piece():
-	# Clear all ghost pieces (inefficient but simple)
+	print("DEBUG: clear_ghost_piece() START")
 	for i in range(ROWS + 10):
 		for j in range(COLS + 10):
-			if active_layer.get_cell_atlas_coords(Vector2i(j, i)) == ghost_atlas:
+			var coords = active_layer.get_cell_atlas_coords(Vector2i(j, i))
+			if coords == ghost_atlas:
 				active_layer.erase_cell(Vector2i(j, i))
+	print("DEBUG: clear_ghost_piece() COMPLETE")
 
 func draw_ghost_piece():
+	print("DEBUG: draw_ghost_piece() START")
 	clear_ghost_piece()
+	print("DEBUG: Getting ghost position")
 	var ghost_pos = get_ghost_position()
-	if ghost_pos != cur_pos:  # Only draw if not at same position
+	print("DEBUG: Ghost position is: ", ghost_pos)
+	if ghost_pos != cur_pos:
+		print("DEBUG: Drawing ghost at ", ghost_pos)
 		for i in active_piece:
 			active_layer.set_cell(ghost_pos + i, tile_id, ghost_atlas)
+	print("DEBUG: draw_ghost_piece() COMPLETE")
 
 func get_ghost_position() -> Vector2i:
+	print("DEBUG: get_ghost_position() START - cur_pos = ", cur_pos)
 	var ghost_pos = cur_pos
+	var iterations = 0
 	while can_move_to(ghost_pos + Vector2i.DOWN):
 		ghost_pos += Vector2i.DOWN
+		iterations += 1
+		if iterations > 30:
+			print("ERROR: Infinite loop in get_ghost_position!")
+			break
+	print("DEBUG: get_ghost_position() COMPLETE - ghost_pos = ", ghost_pos)
 	return ghost_pos
 
 func draw_piece(piece, pos, atlas, layer):
+	print("DEBUG: draw_piece() - drawing at pos ", pos, " with atlas ", atlas)
 	for i in piece:
 		layer.set_cell(pos + i, tile_id, atlas)
 
@@ -280,20 +344,16 @@ func rotate_piece_srs(direction: int):
 	
 	var new_piece = piece_type[new_rotation]
 	
-	# O piece doesn't rotate
 	if piece_type == o:
 		return
 	
-	# Determine which offset data to use
 	var offset_data = srs_offset_jlstz
 	if piece_type == i:
 		offset_data = srs_offset_i
 	
-	# Get the offset tests for this rotation
 	var key = str(old_rotation) + "->" + str(new_rotation)
 	var offsets = offset_data.get(key, [Vector2i.ZERO])
 	
-	# Try each offset
 	for offset in offsets:
 		if can_fit(new_piece, cur_pos + offset):
 			clear_piece()
@@ -309,7 +369,7 @@ func hard_drop():
 	clear_piece()
 	cur_pos = get_ghost_position()
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
-	lock_piece()  # Immediately lock
+	lock_piece()
 
 func move_piece(dir):
 	if can_move(dir):
@@ -318,28 +378,61 @@ func move_piece(dir):
 		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 		draw_ghost_piece()
 		
-		# Reset lock delay if moved successfully
 		if dir != Vector2i.DOWN:
 			reset_lock_delay()
 	else:
 		if dir == Vector2i.DOWN:
-			# Hit the floor, start lock delay
 			if not lock_delay_active:
 				lock_delay_active = true
 				lock_delay_timer = 0.0
+
+func hold_piece():
+	if not can_hold:
+		return
+	
+	print("DEBUG: hold_piece() called")
+	clear_piece()
+	clear_ghost_piece()
+	
+	if held_piece == null:
+		# First hold
+		held_piece = piece_type
+		held_piece_atlas = piece_atlas
+		piece_type = next_piece_type
+		piece_atlas = next_piece_atlas
+		next_piece_type = pick_piece()
+		next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
+	else:
+		# Swap current with held piece
+		var temp_piece = piece_type
+		var temp_atlas = piece_atlas
+		piece_type = held_piece
+		piece_atlas = held_piece_atlas
+		held_piece = temp_piece
+		held_piece_atlas = temp_atlas
+	
+	clear_hold_panel()
+	draw_piece(held_piece[0], Vector2i(-3, 2), held_piece_atlas, active_layer)
+	can_hold = false
+	create_piece()
+
+func clear_hold_panel():
+	for i in range(-5, 2):
+		for j in range(-1, 5):
+			active_layer.erase_cell(Vector2i(i, j))
 
 func reset_lock_delay():
 	if lock_delay_active and move_reset_count < MAX_MOVE_RESETS:
 		lock_delay_timer = 0.0
 		move_reset_count += 1
 		
-		# Check if still on ground
 		if not can_move(Vector2i.DOWN):
 			lock_delay_active = true
 		else:
 			lock_delay_active = false
 
 func lock_piece():
+	print("DEBUG: lock_piece() called")
 	land_piece()
 	check_rows()
 	piece_type = next_piece_type
@@ -347,6 +440,7 @@ func lock_piece():
 	next_piece_type = pick_piece()
 	next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
 	clear_ghost_piece()
+	can_hold = true  # Reset hold when piece locks
 	create_piece()
 	check_game_over()
 
@@ -366,36 +460,51 @@ func can_fit(piece, pos):
 	return true
 
 func is_free(pos):
-	return board_layer.get_cell_source_id(pos) == -1
+	# First check if there's a tile on board_layer (walls, floor, or locked pieces)
+	var cell_id = board_layer.get_cell_source_id(pos)
+	if cell_id != -1:
+		print("DEBUG: is_free(", pos, ") = false (occupied by tile)")
+		return false
+	
+	# If we're checking below the playfield, treat as occupied (floor)
+	if pos.y > ROWS:
+		print("DEBUG: is_free(", pos, ") = false (below playfield)")
+		return false
+	
+	# If we're checking outside horizontal bounds, treat as occupied (walls)
+	if pos.x < 1 or pos.x > COLS:
+		print("DEBUG: is_free(", pos, ") = false (outside walls)")
+		return false
+	
+	print("DEBUG: is_free(", pos, ") = true")
+	return true
 
 func land_piece():
-	# remove each segment from the active layer and move to board layer
+	print("DEBUG: land_piece() called")
 	for i in active_piece:
 		active_layer.erase_cell(cur_pos + i)
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
 
-func clear_panel():
-	for i in range(15, 20):
-		for j in range(6, 11):
-			active_layer.erase_cell(Vector2i(i, j))
-
 func check_rows():
+	print("DEBUG: check_rows() START")
 	var row : int = ROWS
 	while row > 0:
 		var count = 0
 		for i in range(COLS):
 			if not is_free(Vector2i(i + 1, row)):
 				count += 1
-		# if row is full then erase it
 		if count == COLS:
+			print("DEBUG: Row ", row, " is full - clearing")
 			shift_rows(row)
 			score += REWARD
 			$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 			speed += ACCEL
 		else:
 			row -= 1
+	print("DEBUG: check_rows() COMPLETE")
 
 func shift_rows(row):
+	print("DEBUG: shift_rows() for row ", row)
 	var atlas
 	for i in range(row, 1, -1):
 		for j in range(COLS):
@@ -405,14 +514,11 @@ func shift_rows(row):
 			else:
 				board_layer.set_cell(Vector2i(j + 1, i), tile_id, atlas)
 
-func clear_board():
-	for i in range(ROWS):
-		for j in range(COLS):
-			board_layer.erase_cell(Vector2i(j + 1, i + 1))
-
 func check_game_over():
+	print("DEBUG: check_game_over() called")
 	for i in active_piece:
 		if not is_free(i + cur_pos):
-			land_piece()
+			print("DEBUG: GAME OVER - collision detected")
 			$HUD.get_node("GameOverLabel").show()
 			game_running = false
+			return
