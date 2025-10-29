@@ -1,8 +1,5 @@
 extends Node2D
 
-#less output
-#7 bag may be broken when pressing new game
-
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $board
 @onready var active_layer : TileMapLayer = $active
@@ -22,7 +19,7 @@ var t_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1)]
 var t_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 var t := [t_0, t_90, t_180, t_270]
 
-# O piece (spawns one block higher than others)
+# O piece
 var o_0 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
 var o_90 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
 var o_180 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
@@ -99,7 +96,7 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 0)  # Changed from (5, 1) to (5, 2)
+const start_pos := Vector2i(5, 0)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.25
@@ -163,17 +160,26 @@ func new_game():
 	held_piece = null
 	can_hold = true
 	
+	# Reset the 7-bag randomizer
+	shapes = shapes_full.duplicate()
+	shapes.shuffle()
+	
 	print("DEBUG: Hiding GameOverLabel")
 	$HUD.get_node("GameOverLabel").hide()
 	$HUD.get_node("ScoreLabel").text = "SCORE: 0"
 	
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
-	# DON'T clear board_layer at all - it contains your walls and floor!
-	# Only clear the playfield area where pieces land
+	# Clear the playfield area based on your board coordinates (0,0) to (12,22)
+	# Playfield is columns 1-10, rows 1-20 (with walls at 0, 11 and floor at 21)
 	if board_layer != null:
 		print("DEBUG: Clearing only playfield area (not walls/floor)")
-		for i in range(2, ROWS + 1):  # Start at row 2 to avoid top area
+		# Clear above the board (negative rows) to catch stuck pieces
+		for i in range(-5, 0):
 			for j in range(1, COLS + 1):
+				board_layer.erase_cell(Vector2i(j, i))
+		# Clear the main playfield
+		for i in range(0, ROWS + 1):  # Clear rows 0-20 (not row 21 which is the floor)
+			for j in range(1, COLS + 1):  # Clear columns 1-10 (inside walls)
 				board_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: Playfield cleared successfully")
 	
@@ -272,10 +278,6 @@ func create_piece():
 	steps = [0, 0, 0]
 	cur_pos = start_pos
 	
-	# O piece spawns one row higher
-	if piece_type == o:
-		cur_pos = Vector2i(start_pos.x, start_pos.y - 1)
-	
 	rotation_index = 0
 	active_piece = piece_type[rotation_index]
 	lock_delay_timer = 0.0
@@ -288,7 +290,9 @@ func create_piece():
 	draw_ghost_piece()
 	print("DEBUG: Drawing next piece")
 	clear_next_panel()
-	draw_piece(next_piece_type[0], Vector2i(14, 1), next_piece_atlas, active_layer)
+	# O piece in next panel needs to be shifted right by 1
+	var next_pos = Vector2i(14, 1)
+	draw_piece(next_piece_type[0], next_pos, next_piece_atlas, active_layer)
 	print("DEBUG: create_piece() COMPLETE")
 
 func clear_piece():
@@ -417,7 +421,7 @@ func hold_piece():
 	if held_piece == i:
 		hold_pos = Vector2i(-4, 1)
 	elif held_piece == o:
-		hold_pos = Vector2i(-3, 1)
+		hold_pos = Vector2i(-4, 1)
 	draw_piece(held_piece[0], hold_pos, held_piece_atlas, active_layer)
 	can_hold = false
 	clear_next_panel()
