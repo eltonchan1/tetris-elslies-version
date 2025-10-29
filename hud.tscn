@@ -12,30 +12,30 @@ bg_color = Color(0.7967922, 0.37047136, 1, 1)
 [node name="HUD" type="CanvasLayer"]
 
 [node name="ScoreLabel" type="Label" parent="."]
-offset_left = 591.0
-offset_top = 625.0
-offset_right = 771.0
-offset_bottom = 670.0
+offset_left = 481.0
+offset_top = 543.0
+offset_right = 661.0
+offset_bottom = 588.0
 theme_override_font_sizes/font_size = 30
 text = "SCORE: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="GameOverLabel" type="Label" parent="."]
-offset_left = 259.0
-offset_top = 303.0
-offset_right = 500.0
-offset_bottom = 361.0
+offset_left = 134.0
+offset_top = 295.0
+offset_right = 375.0
+offset_bottom = 353.0
 theme_override_font_sizes/font_size = 40
 text = "GAME OVER!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StartButton" type="Button" parent="."]
-offset_left = 574.0
-offset_top = 706.0
-offset_right = 766.0
-offset_bottom = 746.0
+offset_left = 502.0
+offset_top = 620.0
+offset_right = 694.0
+offset_bottom = 660.0
 theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxFlat_37p78")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_64ctp")

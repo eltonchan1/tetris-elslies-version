@@ -99,7 +99,7 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 2)  # Changed from (5, 1) to (5, 2)
+const start_pos := Vector2i(5, 0)  # Changed from (5, 1) to (5, 2)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.25
@@ -417,7 +417,7 @@ func hold_piece():
 	if held_piece == i:
 		hold_pos = Vector2i(-4, 1)
 	elif held_piece == o:
-		hold_pos = Vector2i(-2, 1)
+		hold_pos = Vector2i(-3, 1)
 	draw_piece(held_piece[0], hold_pos, held_piece_atlas, active_layer)
 	can_hold = false
 	clear_next_panel()
