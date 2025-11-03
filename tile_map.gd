@@ -20,10 +20,10 @@ var t_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 var t := [t_0, t_90, t_180, t_270]
 
 # O piece
-var o_0 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
-var o_90 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
-var o_180 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
-var o_270 := [Vector2i(0, -1), Vector2i(1, -1), Vector2i(0, 0), Vector2i(1, 0)]
+var o_0 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
+var o_90 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
+var o_180 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
+var o_270 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o := [o_0, o_90, o_180, o_270]
 
 # Z piece
@@ -96,10 +96,10 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 0)
+const start_pos := Vector2i(5, 0)  # Changed from (5, 1) to (5, 2)
 var cur_pos : Vector2i
 var speed : float
-const ACCEL : float = 0.25
+const ACCEL : float = 0.1
 
 # lock delay vars
 var lock_delay_timer : float = 0.0
@@ -278,6 +278,10 @@ func create_piece():
 	steps = [0, 0, 0]
 	cur_pos = start_pos
 	
+	# O piece spawns one row higher
+	if piece_type == o:
+		cur_pos = Vector2i(start_pos.x, start_pos.y - 1)
+	
 	rotation_index = 0
 	active_piece = piece_type[rotation_index]
 	lock_delay_timer = 0.0
@@ -285,13 +289,15 @@ func create_piece():
 	move_reset_count = 0
 	
 	print("DEBUG: Drawing piece at ", cur_pos)
-	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 	print("DEBUG: Drawing ghost")
-	draw_ghost_piece()
+	draw_ghost_piece()  # Draw ghost FIRST
+	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)  # Draw active piece SECOND
 	print("DEBUG: Drawing next piece")
 	clear_next_panel()
 	# O piece in next panel needs to be shifted right by 1
 	var next_pos = Vector2i(14, 1)
+	if next_piece_type == o:
+		next_pos = Vector2i(15, 1)
 	draw_piece(next_piece_type[0], next_pos, next_piece_atlas, active_layer)
 	print("DEBUG: create_piece() COMPLETE")
 
@@ -364,8 +370,8 @@ func rotate_piece_srs(direction: int):
 			cur_pos += offset
 			rotation_index = new_rotation
 			active_piece = new_piece
-			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
-			draw_ghost_piece()
+			draw_ghost_piece()  # Draw ghost FIRST
+			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)  # Draw active piece SECOND
 			reset_lock_delay()
 			return
 
@@ -379,8 +385,8 @@ func move_piece(dir):
 	if can_move(dir):
 		clear_piece()
 		cur_pos += dir
-		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
-		draw_ghost_piece()
+		draw_ghost_piece()  # Draw ghost FIRST
+		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)  # Draw active piece SECOND
 		
 		if dir != Vector2i.DOWN:
 			reset_lock_delay()
@@ -421,7 +427,7 @@ func hold_piece():
 	if held_piece == i:
 		hold_pos = Vector2i(-4, 1)
 	elif held_piece == o:
-		hold_pos = Vector2i(-4, 1)
+		hold_pos = Vector2i(-2, 1)
 	draw_piece(held_piece[0], hold_pos, held_piece_atlas, active_layer)
 	can_hold = false
 	clear_next_panel()
