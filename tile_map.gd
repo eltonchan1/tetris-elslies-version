@@ -96,7 +96,7 @@ const ROWS : int = 20
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 0)  # Changed from (5, 1) to (5, 2)
+const start_pos := Vector2i(5, 0)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.1
@@ -119,9 +119,10 @@ var held_piece = null
 var held_piece_atlas : Vector2i
 var can_hold : bool = true
 
-# game piece vars
+# game piece vars - NOW USING ARRAYS FOR 5 NEXT PIECES
 var piece_type
-var next_piece_type
+var next_pieces : Array = []  # Array of 5 next pieces
+var next_pieces_atlas : Array = []  # Array of 5 atlas coords
 var rotation_index : int = 0
 var active_piece : Array
 
@@ -133,7 +134,6 @@ var game_running : bool
 # tilemap vars
 var tile_id : int = 0
 var piece_atlas : Vector2i
-var next_piece_atlas : Vector2i
 var ghost_atlas : Vector2i = Vector2i(7, 0)
 
 func _ready():
@@ -169,39 +169,39 @@ func new_game():
 	$HUD.get_node("ScoreLabel").text = "SCORE: 0"
 	
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
-	# Clear the playfield area based on your board coordinates (0,0) to (12,22)
-	# Playfield is columns 1-10, rows 1-20 (with walls at 0, 11 and floor at 21)
 	if board_layer != null:
 		print("DEBUG: Clearing only playfield area (not walls/floor)")
-		# Clear above the board (negative rows) to catch stuck pieces
 		for i in range(-5, 0):
 			for j in range(1, COLS + 1):
 				board_layer.erase_cell(Vector2i(j, i))
-		# Clear the main playfield
-		for i in range(0, ROWS + 1):  # Clear rows 0-20 (not row 21 which is the floor)
-			for j in range(1, COLS + 1):  # Clear columns 1-10 (inside walls)
+		for i in range(0, ROWS + 1):
+			for j in range(1, COLS + 1):
 				board_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: Playfield cleared successfully")
 	
 	print("DEBUG: About to clear active layer - active_layer is: ", active_layer)
 	if active_layer != null:
 		print("DEBUG: Clearing active_layer (current piece and previews)")
-		# Clear a large area for current piece, ghost, and next piece preview
 		for i in range(-5, ROWS + 10):
 			for j in range(-5, COLS + 20):
 				active_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: active_layer cleared successfully")
 	
 	print("DEBUG: Picking pieces")
+	# Pick current piece
 	piece_type = pick_piece()
 	print("DEBUG: piece_type = ", piece_type)
 	piece_atlas = Vector2i(shapes_full.find(piece_type), 0)
 	print("DEBUG: piece_atlas = ", piece_atlas)
 	
-	next_piece_type = pick_piece()
-	print("DEBUG: next_piece_type = ", next_piece_type)
-	next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
-	print("DEBUG: next_piece_atlas = ", next_piece_atlas)
+	# Pick 5 next pieces
+	next_pieces.clear()
+	next_pieces_atlas.clear()
+	for i in range(5):
+		var next = pick_piece()
+		next_pieces.append(next)
+		next_pieces_atlas.append(Vector2i(shapes_full.find(next), 0))
+		print("DEBUG: next_pieces[", i, "] = ", next)
 	
 	game_running = true
 	print("DEBUG: About to create_piece()")
@@ -227,7 +227,6 @@ func handle_input(delta):
 		hard_drop()
 		return
 	
-	# Hold piece
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
 		return
@@ -278,9 +277,9 @@ func create_piece():
 	steps = [0, 0, 0]
 	cur_pos = start_pos
 	
-	# O piece spawns one row higher
+	# O piece spawns one row higher and one column to the right
 	if piece_type == o:
-		cur_pos = Vector2i(start_pos.x, start_pos.y - 1)
+		cur_pos = Vector2i(start_pos.x + 1, start_pos.y - 1)
 	
 	rotation_index = 0
 	active_piece = piece_type[rotation_index]
@@ -290,16 +289,30 @@ func create_piece():
 	
 	print("DEBUG: Drawing piece at ", cur_pos)
 	print("DEBUG: Drawing ghost")
-	draw_ghost_piece()  # Draw ghost FIRST
-	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)  # Draw active piece SECOND
-	print("DEBUG: Drawing next piece")
-	clear_next_panel()
-	# O piece in next panel needs to be shifted right by 1
-	var next_pos = Vector2i(14, 1)
-	if next_piece_type == o:
-		next_pos = Vector2i(15, 1)
-	draw_piece(next_piece_type[0], next_pos, next_piece_atlas, active_layer)
+	draw_ghost_piece()
+	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
+	print("DEBUG: Drawing next pieces")
+	draw_all_next_pieces()
 	print("DEBUG: create_piece() COMPLETE")
+
+func draw_all_next_pieces():
+	clear_next_panel()
+	
+	# Draw all 5 next pieces vertically stacked
+	const SPACING = 3  # Vertical spacing between pieces
+	
+	for idx in range(5):
+		var base_y = 1 + (idx * SPACING)
+		var next_pos = Vector2i(14, base_y)
+		var current_piece = next_pieces[idx]
+		
+		# Adjust position for specific pieces
+		if current_piece == o:
+			next_pos = Vector2i(14, base_y)  # O piece moved left by 1 from original 15
+		elif current_piece == i:
+			next_pos = Vector2i(14, base_y)  # I piece moved right by 2 from original 13
+		
+		draw_piece(current_piece[0], next_pos, next_pieces_atlas[idx], active_layer)
 
 func clear_piece():
 	if active_piece == null or active_piece.is_empty():
@@ -370,8 +383,8 @@ func rotate_piece_srs(direction: int):
 			cur_pos += offset
 			rotation_index = new_rotation
 			active_piece = new_piece
-			draw_ghost_piece()  # Draw ghost FIRST
-			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)  # Draw active piece SECOND
+			draw_ghost_piece()
+			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 			reset_lock_delay()
 			return
 
@@ -385,8 +398,8 @@ func move_piece(dir):
 	if can_move(dir):
 		clear_piece()
 		cur_pos += dir
-		draw_ghost_piece()  # Draw ghost FIRST
-		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)  # Draw active piece SECOND
+		draw_ghost_piece()
+		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 		
 		if dir != Vector2i.DOWN:
 			reset_lock_delay()
@@ -405,13 +418,18 @@ func hold_piece():
 	clear_ghost_piece()
 	
 	if held_piece == null:
-		# First hold
+		# First hold - take from next pieces queue
 		held_piece = piece_type
 		held_piece_atlas = piece_atlas
-		piece_type = next_piece_type
-		piece_atlas = next_piece_atlas
-		next_piece_type = pick_piece()
-		next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
+		piece_type = next_pieces[0]
+		piece_atlas = next_pieces_atlas[0]
+		
+		# Shift next pieces queue and add new piece at end
+		next_pieces.pop_front()
+		next_pieces_atlas.pop_front()
+		var new_next = pick_piece()
+		next_pieces.append(new_next)
+		next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
 	else:
 		# Swap current with held piece
 		var temp_piece = piece_type
@@ -422,15 +440,13 @@ func hold_piece():
 		held_piece_atlas = temp_atlas
 	
 	clear_hold_panel()
-	# I piece needs to be shifted left by 1, O piece needs to be shifted right by 1
-	var hold_pos = Vector2i(-3, 1)  # Moved up from 2 to 1
+	var hold_pos = Vector2i(-3, 1)
 	if held_piece == i:
 		hold_pos = Vector2i(-4, 1)
 	elif held_piece == o:
 		hold_pos = Vector2i(-2, 1)
 	draw_piece(held_piece[0], hold_pos, held_piece_atlas, active_layer)
 	can_hold = false
-	clear_next_panel()
 	create_piece()
 
 func clear_hold_panel():
@@ -439,9 +455,9 @@ func clear_hold_panel():
 			active_layer.erase_cell(Vector2i(i, j))
 
 func clear_next_panel():
-	# Clear the next piece preview area
+	# Clear larger area for 5 pieces
 	for i in range(12, 18):
-		for j in range(-2, 6):
+		for j in range(-2, 18):  # Extended to accommodate 5 pieces
 			active_layer.erase_cell(Vector2i(i, j))
 
 func reset_lock_delay():
@@ -458,12 +474,20 @@ func lock_piece():
 	print("DEBUG: lock_piece() called")
 	land_piece()
 	check_rows()
-	piece_type = next_piece_type
-	piece_atlas = next_piece_atlas
-	next_piece_type = pick_piece()
-	next_piece_atlas = Vector2i(shapes_full.find(next_piece_type), 0)
+	
+	# Move to next piece in queue
+	piece_type = next_pieces[0]
+	piece_atlas = next_pieces_atlas[0]
+	
+	# Shift queue and add new piece at end
+	next_pieces.pop_front()
+	next_pieces_atlas.pop_front()
+	var new_next = pick_piece()
+	next_pieces.append(new_next)
+	next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
+	
 	clear_ghost_piece()
-	can_hold = true  # Reset hold when piece locks
+	can_hold = true
 	create_piece()
 	check_game_over()
 
@@ -483,18 +507,15 @@ func can_fit(piece, pos):
 	return true
 
 func is_free(pos):
-	# First check if there's a tile on board_layer (walls, floor, or locked pieces)
 	var cell_id = board_layer.get_cell_source_id(pos)
 	if cell_id != -1:
 		print("DEBUG: is_free(", pos, ") = false (occupied by tile)")
 		return false
 	
-	# If we're checking below the playfield, treat as occupied (floor)
 	if pos.y > ROWS:
 		print("DEBUG: is_free(", pos, ") = false (below playfield)")
 		return false
 	
-	# If we're checking outside horizontal bounds, treat as occupied (walls)
 	if pos.x < 1 or pos.x > COLS:
 		print("DEBUG: is_free(", pos, ") = false (outside walls)")
 		return false
