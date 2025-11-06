@@ -566,3 +566,5 @@ func check_game_over():
 			$HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
+
+ 
