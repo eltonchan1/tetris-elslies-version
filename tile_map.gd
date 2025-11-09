@@ -125,7 +125,8 @@ var next_pieces : Array = []  # Array of 5 next pieces
 var next_pieces_atlas : Array = []  # Array of 5 atlas coords
 var rotation_index : int = 0
 var active_piece : Array
-var last_action_was_rotation: bool = false
+var last_action_was_rotation : bool = false
+var pending_spin_lines : int = 0
 
 # game vars
 var score : int
@@ -265,7 +266,6 @@ func handle_input(delta):
 		das_right = 0.0
 
 func pick_piece():
-	print("DEBUG: pick_piece() called")
 	var piece
 	if not shapes.is_empty():
 		shapes.shuffle()
@@ -274,7 +274,6 @@ func pick_piece():
 		shapes = shapes_full.duplicate()
 		shapes.shuffle()
 		piece = shapes.pop_front()
-	print("DEBUG: pick_piece() returning piece")
 	return piece
 
 func create_piece():
@@ -292,11 +291,8 @@ func create_piece():
 	lock_delay_active = false
 	move_reset_count = 0
 	
-	print("DEBUG: Drawing piece at ", cur_pos)
-	print("DEBUG: Drawing ghost")
 	draw_ghost_piece()
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
-	print("DEBUG: Drawing next pieces")
 	draw_all_next_pieces()
 	print("DEBUG: create_piece() COMPLETE")
 
@@ -326,28 +322,20 @@ func clear_piece():
 		active_layer.erase_cell(cur_pos + i)
 
 func clear_ghost_piece():
-	print("DEBUG: clear_ghost_piece() START")
 	for i in range(ROWS + 10):
 		for j in range(COLS + 10):
 			var coords = active_layer.get_cell_atlas_coords(Vector2i(j, i))
 			if coords == ghost_atlas:
 				active_layer.erase_cell(Vector2i(j, i))
-	print("DEBUG: clear_ghost_piece() COMPLETE")
 
 func draw_ghost_piece():
-	print("DEBUG: draw_ghost_piece() START")
 	clear_ghost_piece()
-	print("DEBUG: Getting ghost position")
 	var ghost_pos = get_ghost_position()
-	print("DEBUG: Ghost position is: ", ghost_pos)
 	if ghost_pos != cur_pos:
-		print("DEBUG: Drawing ghost at ", ghost_pos)
 		for i in active_piece:
 			active_layer.set_cell(ghost_pos + i, tile_id, ghost_atlas)
-	print("DEBUG: draw_ghost_piece() COMPLETE")
 
 func get_ghost_position() -> Vector2i:
-	print("DEBUG: get_ghost_position() START - cur_pos = ", cur_pos)
 	var ghost_pos = cur_pos
 	var iterations = 0
 	while can_move_to(ghost_pos + Vector2i.DOWN):
@@ -356,11 +344,9 @@ func get_ghost_position() -> Vector2i:
 		if iterations > 30:
 			print("ERROR: Infinite loop in get_ghost_position!")
 			break
-	print("DEBUG: get_ghost_position() COMPLETE - ghost_pos = ", ghost_pos)
 	return ghost_pos
 
 func draw_piece(piece, pos, atlas, layer):
-	print("DEBUG: draw_piece() - drawing at pos ", pos, " with atlas ", atlas)
 	for i in piece:
 		layer.set_cell(pos + i, tile_id, atlas)
 
@@ -392,6 +378,7 @@ func rotate_piece_srs(direction: int):
 			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 			reset_lock_delay()
 			last_action_was_rotation = true
+			print("DEBUG: Rotation successful! Flag set to TRUE")
 			return
 
 func hard_drop():
@@ -409,6 +396,7 @@ func move_piece(dir):
 		
 		if dir != Vector2i.DOWN:
 			last_action_was_rotation = false
+			print("DEBUG: Moved left/right - rotation flag reset to FALSE")
 			reset_lock_delay()
 	else:
 		if dir == Vector2i.DOWN:
@@ -478,6 +466,10 @@ func reset_lock_delay():
 			lock_delay_active = false
 
 func check_spin(lines_cleared: int) -> void:
+	print("DEBUG: check_spin() called with lines_cleared = ", lines_cleared)
+	print("DEBUG: cur_pos = ", cur_pos)
+	print("DEBUG: Checking corners around rotation center...")
+	
 	var corners = [
 		Vector2i(-1, -1),
 		Vector2i(1, -1),
@@ -487,11 +479,19 @@ func check_spin(lines_cleared: int) -> void:
 	
 	var blocked_corners = 0
 	for corner in corners:
-		if not is_free(cur_pos + corner):
+		var check_pos = cur_pos + corner
+		var is_blocked = not is_free(check_pos)
+		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
+		if is_blocked:
 			blocked_corners += 1
 	
+	print("DEBUG: Total blocked_corners = ", blocked_corners)
+	
 	if blocked_corners >= 3:
+		print("DEBUG: SPIN CONDITION MET! Awarding bonus...")
 		award_spin_bonus(lines_cleared)
+	else:
+		print("DEBUG: Not enough blocked corners for spin (need 3+)")
 
 func award_spin_bonus(lines: int) -> void:
 	var bonus = 0
@@ -508,6 +508,8 @@ func award_spin_bonus(lines: int) -> void:
 func lock_piece():
 	print("DEBUG: lock_piece() called")
 	land_piece()
+	if last_action_was_rotation:
+		check_spin_before_clear()
 	check_rows()
 	
 	# Move to next piece in queue
@@ -525,6 +527,33 @@ func lock_piece():
 	can_hold = true
 	create_piece()
 	check_game_over()
+
+func check_spin_before_clear() -> void :
+	print("DEBUG: check_spin_before_clear() - checking corners NOW")
+	print("DEBUG: cur_pos = ", cur_pos)
+	
+	var corners = [
+		Vector2i(-1, -1),
+		Vector2i(1, -1),
+		Vector2i(-1, 1),
+		Vector2i(1, 1),
+	]
+	
+	var blocked_corners = 0
+	for corner in corners:
+		var check_pos = cur_pos + corner
+		var is_blocked = not is_free(check_pos)
+		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
+		if is_blocked:
+			blocked_corners += 1
+		
+	print("DEBUG: Total blocked_corners = ", blocked_corners)
+	if blocked_corners >= 3:
+		print("DEBUG: SPIN DETECTED! Will award bonus after line count")
+		pending_spin_lines = -1  # -1 means "yes it's a spin, count lines later"
+	else:
+		print("DEBUG: Not a spin")
+		pending_spin_lines = 0
 
 func can_move(dir):
 	return can_move_to(cur_pos + dir)
@@ -544,18 +573,14 @@ func can_fit(piece, pos):
 func is_free(pos):
 	var cell_id = board_layer.get_cell_source_id(pos)
 	if cell_id != -1:
-		print("DEBUG: is_free(", pos, ") = false (occupied by tile)")
 		return false
 	
 	if pos.y > ROWS:
-		print("DEBUG: is_free(", pos, ") = false (below playfield)")
 		return false
 	
 	if pos.x < 1 or pos.x > COLS:
-		print("DEBUG: is_free(", pos, ") = false (outside walls)")
 		return false
 	
-	print("DEBUG: is_free(", pos, ") = true")
 	return true
 
 func land_piece():
@@ -565,7 +590,7 @@ func land_piece():
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
 
 func check_rows():
-	var lines_cleared = 0  # Track how many lines we clear
+	var lines_cleared = 0
 	var row : int = ROWS
 	while row > 0:
 		var count = 0
@@ -573,17 +598,20 @@ func check_rows():
 			if not is_free(Vector2i(i + 1, row)):
 				count += 1
 		if count == COLS:
-			lines_cleared += 1  # Increment counter
+			lines_cleared += 1
 			shift_rows(row)
 			speed += ACCEL
 		else:
 			row -= 1
+	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
+	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
 	if lines_cleared > 0:
-		if last_action_was_rotation:
-			check_spin(lines_cleared)
+		if pending_spin_lines == -1:
+			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
+			award_spin_bonus(lines_cleared)
 		score += REWARD * lines_cleared
 		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
-	last_action_was_rotation = false
+	pending_spin_lines = 0
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
