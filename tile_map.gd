@@ -521,7 +521,6 @@ func award_spin_bonus(lines: int) -> void:
 		4: bonus = SPIN_QUAD
 	
 	score += bonus
-	$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	print("SPIN DETECTED! +" + str(bonus) + " points")
 
 func get_line_clear_score(lines: int) -> int:
@@ -649,7 +648,6 @@ func check_rows():
 			var line_clear_points = get_line_clear_score(lines_cleared)
 			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
 			score += line_clear_points
-		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 		pending_spin_lines = 0
 		if last_clear_had_lines:
 			combo_count += 1
@@ -673,6 +671,7 @@ func check_rows():
 				b2b_count = 1
 				print("Back-to-Back started!")
 			last_clear_was_difficult = true
+			$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	else:
 		if combo_count > 0:
 			print("Combo broken!")
