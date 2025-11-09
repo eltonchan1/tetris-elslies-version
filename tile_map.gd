@@ -1,5 +1,17 @@
 extends Node2D
 
+# to do
+# take stuff from https://tetrio.wiki.gg/wiki/BLITZ
+# all clear detection
+# combo detection
+# b2b detection
+# art redesign & uis
+# vfx
+# settings???
+# menuing???
+# diff gamemodes???
+# sound design & music
+
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $board
 @onready var active_layer : TileMapLayer = $active
@@ -130,15 +142,14 @@ var pending_spin_lines : int = 0
 
 # game vars
 var score : int
-const REWARD : int = 100
 const SINGLE : int = 100
 const DOUBLE : int = 300
 const TRIPLE : int = 500
 const QUAD : int = 800
-const SPIN_SINGLE: int = 401
-const SPIN_DOUBLE: int = 802
-const SPIN_TRIPLE: int = 1203
-const SPIN_QUAD: int = 1604
+const SPIN_SINGLE: int = 800
+const SPIN_DOUBLE: int = 1200
+const SPIN_TRIPLE: int = 1600
+const SPIN_QUAD: int = 2600
 var game_running : bool
 
 # tilemap vars
@@ -509,6 +520,14 @@ func award_spin_bonus(lines: int) -> void:
 	$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	print("SPIN DETECTED! +" + str(bonus) + " points")
 
+func get_line_clear_score(lines: int) -> int:
+	match lines:
+		1: return SINGLE
+		2: return DOUBLE
+		3: return TRIPLE
+		4: return QUAD
+		_: return 0
+
 func lock_piece():
 	print("DEBUG: lock_piece() called")
 	land_piece()
@@ -614,8 +633,9 @@ func check_rows():
 			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
 			award_spin_bonus(lines_cleared)
 		else:
-			#add single, double, triple, quad scoring here?
-		score += REWARD * lines_cleared
+			var line_clear_points = get_line_clear_score(lines_cleared)
+			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
+			score += line_clear_points
 		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	pending_spin_lines = 0
 
