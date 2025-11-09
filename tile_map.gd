@@ -125,10 +125,15 @@ var next_pieces : Array = []  # Array of 5 next pieces
 var next_pieces_atlas : Array = []  # Array of 5 atlas coords
 var rotation_index : int = 0
 var active_piece : Array
+var last_action_was_rotation: bool = false
 
 # game vars
 var score : int
 const REWARD : int = 100
+const SPIN_SINGLE: int = 401
+const SPIN_DOUBLE: int = 802
+const SPIN_TRIPLE: int = 1203
+const SPIN_QUAD: int = 1604
 var game_running : bool
 
 # tilemap vars
@@ -386,6 +391,7 @@ func rotate_piece_srs(direction: int):
 			draw_ghost_piece()
 			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 			reset_lock_delay()
+			last_action_was_rotation = true
 			return
 
 func hard_drop():
@@ -402,6 +408,7 @@ func move_piece(dir):
 		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 		
 		if dir != Vector2i.DOWN:
+			last_action_was_rotation = false
 			reset_lock_delay()
 	else:
 		if dir == Vector2i.DOWN:
@@ -470,6 +477,34 @@ func reset_lock_delay():
 		else:
 			lock_delay_active = false
 
+func check_spin(lines_cleared: int) -> void:
+	var corners = [
+		Vector2i(-1, -1),
+		Vector2i(1, -1),
+		Vector2i(-1, 1),
+		Vector2i(1, 1),
+	]
+	
+	var blocked_corners = 0
+	for corner in corners:
+		if not is_free(cur_pos + corner):
+			blocked_corners += 1
+	
+	if blocked_corners >= 3:
+		award_spin_bonus(lines_cleared)
+
+func award_spin_bonus(lines: int) -> void:
+	var bonus = 0
+	match lines:
+		1: bonus = SPIN_SINGLE
+		2: bonus = SPIN_DOUBLE
+		3: bonus = SPIN_TRIPLE
+		4: bonus = SPIN_QUAD
+	
+	score += bonus
+	$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+	print("SPIN DETECTED! +" + str(bonus) + " points")
+
 func lock_piece():
 	print("DEBUG: lock_piece() called")
 	land_piece()
@@ -530,7 +565,7 @@ func land_piece():
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
 
 func check_rows():
-	print("DEBUG: check_rows() START")
+	var lines_cleared = 0  # Track how many lines we clear
 	var row : int = ROWS
 	while row > 0:
 		var count = 0
@@ -538,14 +573,17 @@ func check_rows():
 			if not is_free(Vector2i(i + 1, row)):
 				count += 1
 		if count == COLS:
-			print("DEBUG: Row ", row, " is full - clearing")
+			lines_cleared += 1  # Increment counter
 			shift_rows(row)
-			score += REWARD
-			$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 			speed += ACCEL
 		else:
 			row -= 1
-	print("DEBUG: check_rows() COMPLETE")
+	if lines_cleared > 0:
+		if last_action_was_rotation:
+			check_spin(lines_cleared)
+		score += REWARD * lines_cleared
+		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+	last_action_was_rotation = false
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
@@ -566,5 +604,3 @@ func check_game_over():
 			$HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
-
- 
