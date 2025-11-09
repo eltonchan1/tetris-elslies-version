@@ -131,6 +131,10 @@ var pending_spin_lines : int = 0
 # game vars
 var score : int
 const REWARD : int = 100
+const SINGLE : int = 100
+const DOUBLE : int = 300
+const TRIPLE : int = 500
+const QUAD : int = 800
 const SPIN_SINGLE: int = 401
 const SPIN_DOUBLE: int = 802
 const SPIN_TRIPLE: int = 1203
@@ -609,6 +613,8 @@ func check_rows():
 		if pending_spin_lines == -1:
 			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
 			award_spin_bonus(lines_cleared)
+		else:
+			#add single, double, triple, quad scoring here?
 		score += REWARD * lines_cleared
 		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	pending_spin_lines = 0
