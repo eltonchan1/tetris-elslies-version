@@ -142,6 +142,10 @@ var pending_spin_lines : int = 0
 
 # game vars
 var score : int
+var combo_count : int = 0
+var last_clear_had_lines : bool = false
+var b2b_count : int = 0
+var last_clear_was_difficult : bool = false
 const SINGLE : int = 100
 const DOUBLE : int = 300
 const TRIPLE : int = 500
@@ -578,6 +582,13 @@ func check_spin_before_clear() -> void :
 		print("DEBUG: Not a spin")
 		pending_spin_lines = 0
 
+func is_difficult_clear(lines: int, was_spin: bool) -> bool:
+	if was_spin and lines > 0:
+		return true
+	if lines == 4:
+		return true
+	return false
+
 func can_move(dir):
 	return can_move_to(cur_pos + dir)
 
@@ -629,6 +640,8 @@ func check_rows():
 	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
 	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
 	if lines_cleared > 0:
+		var was_spin = (pending_spin_lines == -1)
+		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
 		if pending_spin_lines == -1:
 			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
 			award_spin_bonus(lines_cleared)
@@ -637,7 +650,38 @@ func check_rows():
 			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
 			score += line_clear_points
 		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
-	pending_spin_lines = 0
+		pending_spin_lines = 0
+		if last_clear_had_lines:
+			combo_count += 1
+		else:
+			combo_count = 1
+		last_clear_had_lines = true
+		var combo_bonus = combo_count * 50
+		score += combo_bonus
+		print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
+		if is_board_empty():
+			var all_clear_bonus = 3500
+			score += all_clear_bonus
+			print("ALL CLEAR! +", all_clear_bonus, " points")
+		if is_difficult:
+			if last_clear_was_difficult:
+				b2b_count += 1
+				var b2b_bonus = b2b_count * 100
+				score += b2b_bonus
+				print("BACK-TO-BACK x", b2b_count, "! +", b2b_bonus, " bonus")
+			else:
+				b2b_count = 1
+				print("Back-to-Back started!")
+			last_clear_was_difficult = true
+	else:
+		if combo_count > 0:
+			print("Combo broken!")
+		combo_count = 0
+		last_clear_had_lines = false
+		if b2b_count > 0:
+			print("Back-to-Back broken!")
+		b2b_count = 0
+		last_clear_was_difficult = false
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
@@ -649,6 +693,13 @@ func shift_rows(row):
 				board_layer.erase_cell(Vector2i(j + 1, i))
 			else:
 				board_layer.set_cell(Vector2i(j + 1, i), tile_id, atlas)
+
+func is_board_empty() -> bool:
+	for row in range(1, ROWS + 1):
+		for col in range(1, COLS + 1):
+			if not is_free(Vector2i(col, row)):
+				return false
+	return true
 
 func check_game_over():
 	print("DEBUG: check_game_over() called")
