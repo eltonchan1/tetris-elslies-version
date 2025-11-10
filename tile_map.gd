@@ -283,6 +283,9 @@ func handle_input(delta):
 	else:
 		das_left = 0.0
 		das_right = 0.0
+		
+	if Input.is_action_just_pressed("restart"):
+		new_game()
 
 func pick_piece():
 	var piece
@@ -654,9 +657,13 @@ func check_rows():
 		else:
 			combo_count = 1
 		last_clear_had_lines = true
-		var combo_bonus = combo_count * 50
-		score += combo_bonus
-		print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
+		var combo_level = combo_count -1
+		if combo_level > 0:
+			var combo_bonus = combo_count * 50
+			score += combo_bonus
+			print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
+		else: 
+			print("First line clear - no combo yet")
 		if is_board_empty():
 			var all_clear_bonus = 3500
 			score += all_clear_bonus
