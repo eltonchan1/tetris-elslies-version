@@ -3,8 +3,6 @@ extends Node2D
 # to do
 # take stuff from https://tetrio.wiki.gg/wiki/BLITZ
 # all clear detection
-# combo detection
-# b2b detection
 # art redesign & uis
 # vfx
 # settings???
@@ -163,7 +161,7 @@ var ghost_atlas : Vector2i = Vector2i(7, 0)
 
 func _ready():
 	print("DEBUG: _ready() called")
-	new_game()
+	new_game_keep_map()
 	print("DEBUG: Connecting StartButton")
 	$HUD.get_node("StartButton").pressed.connect(new_game)
 	print("DEBUG: _ready() completed")
@@ -238,6 +236,58 @@ func new_game():
 	print("DEBUG: About to create_piece()")
 	create_piece()
 	print("DEBUG: new_game() COMPLETE")
+
+func new_game_keep_map():
+	print("DEBUG: new_game() START")
+	game_running = false
+	active_piece = []
+	
+	print("DEBUG: Resetting variables")
+	score = 0
+	speed = 1.0
+	steps = [0, 0, 0]
+	lock_delay_timer = 0.0
+	lock_delay_active = false
+	move_reset_count = 0
+	das_left = 0.0
+	das_right = 0.0
+	held_piece = null
+	can_hold = true
+	combo_count = 0
+	last_clear_had_lines = false
+	b2b_count = 0
+	last_clear_was_difficult = false
+	$HUD.get_node("ComboLabel").text = ""
+	$HUD.get_node("B2BLabel").text = ""
+	
+	# Reset the 7-bag randomizer
+	shapes = shapes_full.duplicate()
+	shapes.shuffle()
+	
+	print("DEBUG: Hiding GameOverLabel")
+	$HUD.get_node("GameOverLabel").hide()
+	$HUD.get_node("ScoreLabel").text = "SCORE: 0"
+	
+	print("DEBUG: Picking pieces")
+	# Pick current piece
+	piece_type = pick_piece()
+	print("DEBUG: piece_type = ", piece_type)
+	piece_atlas = Vector2i(shapes_full.find(piece_type), 0)
+	print("DEBUG: piece_atlas = ", piece_atlas)
+	
+	# Pick 5 next pieces
+	next_pieces.clear()
+	next_pieces_atlas.clear()
+	for i in range(5):
+		var next = pick_piece()
+		next_pieces.append(next)
+		next_pieces_atlas.append(Vector2i(shapes_full.find(next), 0))
+		print("DEBUG: next_pieces[", i, "] = ", next)
+	
+	game_running = true
+	print("DEBUG: About to create_piece()")
+	create_piece()
+	print("DEBUG: new_game_keep_map() COMPLETE")
 
 func _process(delta):
 	if game_running:
@@ -645,11 +695,14 @@ func check_rows():
 			speed += ACCEL
 		else:
 			row -= 1
+			
 	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
 	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
+	
 	if lines_cleared > 0:
 		var was_spin = (pending_spin_lines == -1)
 		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
+		
 		if pending_spin_lines == -1:
 			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
 			award_spin_bonus(lines_cleared)
@@ -658,6 +711,7 @@ func check_rows():
 			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
 			score += line_clear_points
 		pending_spin_lines = 0
+		
 		if last_clear_had_lines:
 			combo_count += 1
 			var combo_bonus = combo_count * 50
@@ -665,8 +719,8 @@ func check_rows():
 			$HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
 			score += combo_bonus
 		else:
-			combo_count = 0
 			print("First line clear - no combo yet")
+			$HUD.get_node("ComboLabel").text = ""
 		last_clear_had_lines = true
 		
 		if is_board_empty():
@@ -682,21 +736,23 @@ func check_rows():
 				print("BACK-TO-BACK x", b2b_count, "! +", b2b_bonus, " bonus")
 				$HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 			else:
-				b2b_count = 0
+				b2b_count = 1
 				print("Back-to-Back started!")
-				$HUD.get_node("B2BLabel").text = "B2B: 0"
+				$HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 			last_clear_was_difficult = true
 			$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+		else:
+			if b2b_count > 0:
+				print("Back-to-Back broken!")
+				b2b_count = 0
+				$HUD.get_node("B2BLabel").text = ""
+				last_clear_was_difficult = false
 	else:
 		if combo_count > 0:
 			print("Combo broken!")
+		$HUD.get_node("ComboLabel").text = ""
 		combo_count = 0
 		last_clear_had_lines = false
-		if b2b_count > 0:
-			print("Back-to-Back broken!")
-		b2b_count = 0
-		$HUD.get_node("B2BLabel").text = ""
-		last_clear_was_difficult = false
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
