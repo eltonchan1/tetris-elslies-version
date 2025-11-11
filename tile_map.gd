@@ -184,6 +184,12 @@ func new_game():
 	das_right = 0.0
 	held_piece = null
 	can_hold = true
+	combo_count = 0
+	last_clear_had_lines = false
+	b2b_count = 0
+	last_clear_was_difficult = false
+	$HUD.get_node("ComboLabel").text = ""
+	$HUD.get_node("B2BLabel").text = ""
 	
 	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
@@ -305,7 +311,7 @@ func create_piece():
 	
 	# O piece spawns one row higher and one column to the right
 	if piece_type == o:
-		cur_pos = Vector2i(start_pos.x + 1, start_pos.y - 1)
+		cur_pos = Vector2i(start_pos.x + 1, start_pos.y)
 	
 	rotation_index = 0
 	active_piece = piece_type[rotation_index]
@@ -331,9 +337,9 @@ func draw_all_next_pieces():
 		
 		# Adjust position for specific pieces
 		if current_piece == o:
-			next_pos = Vector2i(14, base_y)  # O piece moved left by 1 from original 15
+			next_pos = Vector2i(14, base_y)
 		elif current_piece == i:
-			next_pos = Vector2i(14, base_y)  # I piece moved right by 2 from original 13
+			next_pos = Vector2i(14, base_y)
 		
 		draw_piece(current_piece[0], next_pos, next_pieces_atlas[idx], active_layer)
 
@@ -654,30 +660,31 @@ func check_rows():
 		pending_spin_lines = 0
 		if last_clear_had_lines:
 			combo_count += 1
-		else:
-			combo_count = 1
-		last_clear_had_lines = true
-		var combo_level = combo_count -1
-		if combo_level > 0:
 			var combo_bonus = combo_count * 50
 			print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
-			$HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_level)
+			$HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
 			score += combo_bonus
-		else: 
+		else:
+			combo_count = 0
 			print("First line clear - no combo yet")
+		last_clear_had_lines = true
+		
 		if is_board_empty():
 			var all_clear_bonus = 3500
 			score += all_clear_bonus
 			print("ALL CLEAR! +", all_clear_bonus, " points")
+		
 		if is_difficult:
 			if last_clear_was_difficult:
 				b2b_count += 1
 				var b2b_bonus = b2b_count * 100
 				score += b2b_bonus
 				print("BACK-TO-BACK x", b2b_count, "! +", b2b_bonus, " bonus")
+				$HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 			else:
-				b2b_count = 1
+				b2b_count = 0
 				print("Back-to-Back started!")
+				$HUD.get_node("B2BLabel").text = "B2B: 0"
 			last_clear_was_difficult = true
 			$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	else:
@@ -688,6 +695,7 @@ func check_rows():
 		if b2b_count > 0:
 			print("Back-to-Back broken!")
 		b2b_count = 0
+		$HUD.get_node("B2BLabel").text = ""
 		last_clear_was_difficult = false
 
 func shift_rows(row):
