@@ -660,8 +660,9 @@ func check_rows():
 		var combo_level = combo_count -1
 		if combo_level > 0:
 			var combo_bonus = combo_count * 50
-			score += combo_bonus
 			print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
+			$HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_level)
+			score += combo_bonus
 		else: 
 			print("First line clear - no combo yet")
 		if is_board_empty():
