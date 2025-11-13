@@ -1,14 +1,19 @@
 extends Node2D
 
 # to do
-# take stuff from https://tetrio.wiki.gg/wiki/BLITZ
-# all clear detection
-# art redesign & uis
-# vfx
-# settings???
-# menuing???
-# diff gamemodes???
-# sound design & music
+	# (take stats n stuff from https://tetrio.wiki.gg/wiki/BLITZ)
+	# combo multi
+	# 
+	# art redesign & uis
+		# ultrakill style
+	# vfx
+		# balatro inspired (naneinf)
+	# settings???
+	# menuing???
+	# diff gamemodes???
+		# 40l, blitz, etc
+	# sound design & music
+		# satisfying
 
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $board
@@ -160,11 +165,14 @@ var piece_atlas : Vector2i
 var ghost_atlas : Vector2i = Vector2i(7, 0)
 
 func _ready():
-	print("DEBUG: _ready() called")
-	new_game_keep_map()
 	print("DEBUG: Connecting StartButton")
 	$HUD.get_node("StartButton").pressed.connect(new_game)
-	print("DEBUG: _ready() completed")
+	print("DEBUG: Connecting StartButton completed")
+
+func on_game_start():
+	print("DEBUG: _on_game_start() called")
+	new_game_keep_map()
+	print("DEBUG: _on_start_game() completed")
 
 func new_game():
 	print("DEBUG: new_game() START")
@@ -188,6 +196,7 @@ func new_game():
 	last_clear_was_difficult = false
 	$HUD.get_node("ComboLabel").text = ""
 	$HUD.get_node("B2BLabel").text = ""
+	$HUD.get_node("AllClearLabel").text = ""
 	
 	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
@@ -259,6 +268,7 @@ func new_game_keep_map():
 	last_clear_was_difficult = false
 	$HUD.get_node("ComboLabel").text = ""
 	$HUD.get_node("B2BLabel").text = ""
+	$HUD.get_node("AllClearLabel").text = ""
 	
 	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
@@ -726,6 +736,7 @@ func check_rows():
 		if is_board_empty():
 			var all_clear_bonus = 3500
 			score += all_clear_bonus
+			$HUD.get_node("AllClearLabel").text = "ALL CLEAR"
 			print("ALL CLEAR! +", all_clear_bonus, " points")
 		
 		if is_difficult:
@@ -740,24 +751,25 @@ func check_rows():
 				print("Back-to-Back started!")
 				$HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 			last_clear_was_difficult = true
-			$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 		else:
 			if b2b_count > 0:
 				print("Back-to-Back broken!")
 				b2b_count = 0
 				$HUD.get_node("B2BLabel").text = ""
 				last_clear_was_difficult = false
+		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	else:
 		if combo_count > 0:
 			print("Combo broken!")
 		$HUD.get_node("ComboLabel").text = ""
+		$HUD.get_node("AllClearLabel").text = ""
 		combo_count = 0
 		last_clear_had_lines = false
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
 	var atlas
-	for i in range(row, 1, -1):
+	for i in range(row, 0, -1):
 		for j in range(COLS):
 			atlas = board_layer.get_cell_atlas_coords(Vector2i(j + 1, i - 1))
 			if atlas == Vector2i(-1, -1):

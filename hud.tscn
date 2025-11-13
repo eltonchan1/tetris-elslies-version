@@ -12,39 +12,49 @@ bg_color = Color(0.7967922, 0.37047136, 1, 1)
 [node name="HUD" type="CanvasLayer"]
 
 [node name="ScoreLabel" type="Label" parent="."]
-offset_left = 560.0
-offset_top = 608.0
-offset_right = 740.0
-offset_bottom = 653.0
+offset_left = 568.0
+offset_top = 576.0
+offset_right = 748.0
+offset_bottom = 621.0
 theme_override_font_sizes/font_size = 30
 text = "SCORE: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ComboLabel" type="Label" parent="."]
-offset_left = 564.0
-offset_top = 648.0
-offset_right = 744.0
-offset_bottom = 693.0
+offset_left = 572.0
+offset_top = 616.0
+offset_right = 752.0
+offset_bottom = 661.0
 theme_override_font_sizes/font_size = 30
 text = "COMBO: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="B2BLabel" type="Label" parent="."]
-offset_left = 564.0
-offset_top = 693.0
-offset_right = 744.0
-offset_bottom = 738.0
+offset_left = 572.0
+offset_top = 661.0
+offset_right = 752.0
+offset_bottom = 706.0
 theme_override_font_sizes/font_size = 30
 text = "B2B: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="AllClearLabel" type="Label" parent="."]
+offset_left = 568.0
+offset_top = 704.0
+offset_right = 748.0
+offset_bottom = 749.0
+theme_override_font_sizes/font_size = 30
+text = "ALL CLEAR"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="GameOverLabel" type="Label" parent="."]
-offset_left = 113.0
+offset_left = 264.0
 offset_top = 352.0
-offset_right = 354.0
+offset_right = 505.0
 offset_bottom = 410.0
 theme_override_font_sizes/font_size = 40
 text = "GAME OVER!"

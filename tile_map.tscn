@@ -34,7 +34,6 @@ rendering_quadrant_size = 32
 
 [node name="active" type="TileMapLayer" parent="."]
 use_parent_material = true
-position = Vector2(-1, 0)
 tile_set = SubResource("TileSet_xftlc")
 
 [node name="HUD" parent="." instance=ExtResource("3_35kre")]
