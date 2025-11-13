@@ -2,14 +2,14 @@ extends Node2D
 
 # to do
 	# (take stats n stuff from https://tetrio.wiki.gg/wiki/BLITZ)
-	# combo multi
-	# 
+	# add like more satisfying scoring n stuff (numbers)
 	# art redesign & uis
 		# ultrakill style
 	# vfx
 		# balatro inspired (naneinf)
 	# settings???
-	# menuing???
+	# main menu
+		# play button (do this first, func is on the bottom)
 	# diff gamemodes???
 		# 40l, blitz, etc
 	# sound design & music
@@ -165,14 +165,11 @@ var piece_atlas : Vector2i
 var ghost_atlas : Vector2i = Vector2i(7, 0)
 
 func _ready():
+	print("DEBUG: _ready() called")
+	new_game_keep_map()
 	print("DEBUG: Connecting StartButton")
 	$HUD.get_node("StartButton").pressed.connect(new_game)
 	print("DEBUG: Connecting StartButton completed")
-
-func on_game_start():
-	print("DEBUG: _on_game_start() called")
-	new_game_keep_map()
-	print("DEBUG: _on_start_game() completed")
 
 func new_game():
 	print("DEBUG: new_game() START")
@@ -792,3 +789,6 @@ func check_game_over():
 			$HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
+
+func _on_play_button_pressed() -> void:
+	pass
