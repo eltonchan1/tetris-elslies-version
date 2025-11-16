@@ -16,8 +16,8 @@ extends Node2D
 		# satisfying
 
 # tilemap layer references
-@onready var board_layer : TileMapLayer = $board
-@onready var active_layer : TileMapLayer = $active
+@onready var board_layer : TileMapLayer = $Game/board
+@onready var active_layer : TileMapLayer = $Game/active
 
 # tetrominoes (using proper SRS coordinates - relative to rotation center)
 # I piece
@@ -166,10 +166,22 @@ var ghost_atlas : Vector2i = Vector2i(7, 0)
 
 func _ready():
 	print("DEBUG: _ready() called")
+	main_menu(true)
+	print("DEBUG: _ready() complete")
+
+func main_menu(on: bool):
+	if on == true:
+		$Game.visible = false
+		$Game/HUD.visible = false
+		$MainMenu.visible = true
+	if on == false:
+		$Game.visible = true
+		$Game/HUD.visible = true
+		$MainMenu.visible = false
+
+func _on_play_button_pressed() -> void:
+	main_menu(false)
 	new_game_keep_map()
-	print("DEBUG: Connecting StartButton")
-	$HUD.get_node("StartButton").pressed.connect(new_game)
-	print("DEBUG: Connecting StartButton completed")
 
 func new_game():
 	print("DEBUG: new_game() START")
@@ -191,17 +203,17 @@ func new_game():
 	last_clear_had_lines = false
 	b2b_count = 0
 	last_clear_was_difficult = false
-	$HUD.get_node("ComboLabel").text = ""
-	$HUD.get_node("B2BLabel").text = ""
-	$HUD.get_node("AllClearLabel").text = ""
+	$Game/HUD.get_node("ComboLabel").text = ""
+	$Game/HUD.get_node("B2BLabel").text = ""
+	$Game/HUD.get_node("AllClearLabel").text = ""
 	
 	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
 	shapes.shuffle()
 	
 	print("DEBUG: Hiding GameOverLabel")
-	$HUD.get_node("GameOverLabel").hide()
-	$HUD.get_node("ScoreLabel").text = "SCORE: 0"
+	$Game/HUD.get_node("GameOverLabel").hide()
+	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
 	
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
 	if board_layer != null:
@@ -263,17 +275,17 @@ func new_game_keep_map():
 	last_clear_had_lines = false
 	b2b_count = 0
 	last_clear_was_difficult = false
-	$HUD.get_node("ComboLabel").text = ""
-	$HUD.get_node("B2BLabel").text = ""
-	$HUD.get_node("AllClearLabel").text = ""
+	$Game/HUD.get_node("ComboLabel").text = ""
+	$Game/HUD.get_node("B2BLabel").text = ""
+	$Game/HUD.get_node("AllClearLabel").text = ""
 	
 	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
 	shapes.shuffle()
 	
 	print("DEBUG: Hiding GameOverLabel")
-	$HUD.get_node("GameOverLabel").hide()
-	$HUD.get_node("ScoreLabel").text = "SCORE: 0"
+	$Game/HUD.get_node("GameOverLabel").hide()
+	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
 	
 	print("DEBUG: Picking pieces")
 	# Pick current piece
@@ -723,17 +735,17 @@ func check_rows():
 			combo_count += 1
 			var combo_bonus = combo_count * 50
 			print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
-			$HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
+			$Game/HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
 			score += combo_bonus
 		else:
 			print("First line clear - no combo yet")
-			$HUD.get_node("ComboLabel").text = ""
+			$Game/HUD.get_node("ComboLabel").text = ""
 		last_clear_had_lines = true
 		
 		if is_board_empty():
 			var all_clear_bonus = 3500
 			score += all_clear_bonus
-			$HUD.get_node("AllClearLabel").text = "ALL CLEAR"
+			$Game/HUD.get_node("AllClearLabel").text = "ALL CLEAR"
 			print("ALL CLEAR! +", all_clear_bonus, " points")
 		
 		if is_difficult:
@@ -742,31 +754,31 @@ func check_rows():
 				var b2b_bonus = b2b_count * 100
 				score += b2b_bonus
 				print("BACK-TO-BACK x", b2b_count, "! +", b2b_bonus, " bonus")
-				$HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
+				$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 			else:
 				b2b_count = 1
 				print("Back-to-Back started!")
-				$HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
+				$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 			last_clear_was_difficult = true
 		else:
 			if b2b_count > 0:
 				print("Back-to-Back broken!")
 				b2b_count = 0
-				$HUD.get_node("B2BLabel").text = ""
+				$Game/HUD.get_node("B2BLabel").text = ""
 				last_clear_was_difficult = false
-		$HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	else:
 		if combo_count > 0:
 			print("Combo broken!")
-		$HUD.get_node("ComboLabel").text = ""
-		$HUD.get_node("AllClearLabel").text = ""
+		$Game/HUD.get_node("ComboLabel").text = ""
+		$Game/HUD.get_node("AllClearLabel").text = ""
 		combo_count = 0
 		last_clear_had_lines = false
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
 	var atlas
-	for i in range(row, 0, -1):
+	for i in range(row, -5, -1):
 		for j in range(COLS):
 			atlas = board_layer.get_cell_atlas_coords(Vector2i(j + 1, i - 1))
 			if atlas == Vector2i(-1, -1):
@@ -786,9 +798,6 @@ func check_game_over():
 	for i in active_piece:
 		if not is_free(i + cur_pos):
 			print("DEBUG: GAME OVER - collision detected")
-			$HUD.get_node("GameOverLabel").show()
+			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
-
-func _on_play_button_pressed() -> void:
-	pass

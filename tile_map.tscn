@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=8 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://c0yov6r67jrr3" path="res://assets/tetris.png" id="1_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
-[ext_resource type="PackedScene" uid="uid://dvewtmm6d837k" path="res://hud.tscn" id="3_35kre"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
 texture = ExtResource("1_1n30v")
@@ -20,52 +19,172 @@ texture_region_size = Vector2i(32, 32)
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_35kre")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1n30v"]
+bg_color = Color(0.33002013, 0.5941898, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35kre"]
+bg_color = Color(0.3406349, 0.0014206272, 0.7087354, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03na7"]
+bg_color = Color(0.7967922, 0.37047136, 1, 1)
+
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Game" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="Game"]
 position = Vector2(192, 352)
 
-[node name="board" type="TileMapLayer" parent="."]
+[node name="board" type="TileMapLayer" parent="Game"]
 use_parent_material = true
 tile_map_data = PackedByteArray("AAAAAAAAAAAHAAAAAAALAAAAAAAHAAAAAAAAAAEAAAAHAAAAAAAAAAIAAAAHAAAAAAAAAAMAAAAHAAAAAAAAAAQAAAAHAAAAAAAAAAUAAAAHAAAAAAAAAAYAAAAHAAAAAAAAAAcAAAAHAAAAAAAAAAgAAAAHAAAAAAAAAAkAAAAHAAAAAAAAAAoAAAAHAAAAAAAAAAsAAAAHAAAAAAAAAAwAAAAHAAAAAAAAAA0AAAAHAAAAAAAAAA4AAAAHAAAAAAAAAA8AAAAHAAAAAAAAABAAAAAHAAAAAAAAABEAAAAHAAAAAAAAABIAAAAHAAAAAAAAABMAAAAHAAAAAAAAABQAAAAHAAAAAAAAABUAAAAHAAAAAAABABUAAAAHAAAAAAACABUAAAAHAAAAAAADABUAAAAHAAAAAAAEABUAAAAHAAAAAAAFABUAAAAHAAAAAAAGABUAAAAHAAAAAAAHABUAAAAHAAAAAAAIABUAAAAHAAAAAAAJABUAAAAHAAAAAAAKABUAAAAHAAAAAAALAAEAAAAHAAAAAAALAAIAAAAHAAAAAAALAAMAAAAHAAAAAAALAAQAAAAHAAAAAAALAAYAAAAHAAAAAAALAAcAAAAHAAAAAAALAAgAAAAHAAAAAAALAAkAAAAHAAAAAAALAAoAAAAHAAAAAAALAAsAAAAHAAAAAAALAAwAAAAHAAAAAAALAA0AAAAHAAAAAAALAA4AAAAHAAAAAAALAA8AAAAHAAAAAAALABAAAAAHAAAAAAALABEAAAAHAAAAAAALABIAAAAHAAAAAAALABMAAAAHAAAAAAALABQAAAAHAAAAAAALABUAAAAHAAAAAAALAAUAAAAHAAAAAAA=")
 tile_set = SubResource("TileSet_xftlc")
 rendering_quadrant_size = 32
 
-[node name="active" type="TileMapLayer" parent="."]
+[node name="active" type="TileMapLayer" parent="Game"]
 use_parent_material = true
 tile_set = SubResource("TileSet_xftlc")
 
-[node name="HUD" parent="." instance=ExtResource("3_35kre")]
+[node name="HUD" type="Control" parent="Game"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -192.0
+offset_top = -64.0
+offset_right = 576.0
+offset_bottom = 768.0
 
-[node name="Label" type="Label" parent="."]
-offset_left = -125.0
-offset_top = -25.0
-offset_right = 512.0
-offset_bottom = 112.0
+[node name="ScoreLabel" type="Label" parent="Game/HUD"]
+layout_mode = 0
+offset_left = 590.0
+offset_top = 536.0
+offset_right = 770.0
+offset_bottom = 581.0
+theme_override_font_sizes/font_size = 30
+text = "SCORE: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="ComboLabel" type="Label" parent="Game/HUD"]
+layout_mode = 0
+offset_left = 594.0
+offset_top = 576.0
+offset_right = 774.0
+offset_bottom = 621.0
+theme_override_font_sizes/font_size = 30
+text = "COMBO: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="B2BLabel" type="Label" parent="Game/HUD"]
+layout_mode = 0
+offset_left = 594.0
+offset_top = 621.0
+offset_right = 774.0
+offset_bottom = 666.0
+theme_override_font_sizes/font_size = 30
+text = "B2B: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="AllClearLabel" type="Label" parent="Game/HUD"]
+layout_mode = 0
+offset_left = 590.0
+offset_top = 664.0
+offset_right = 770.0
+offset_bottom = 709.0
+theme_override_font_sizes/font_size = 30
+text = "ALL CLEAR"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="GameOverLabel" type="Label" parent="Game/HUD"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.5
+offset_top = -29.0
+offset_right = 120.5
+offset_bottom = 29.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+text = "GAME OVER!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartButton" type="Button" parent="Game/HUD"]
+layout_mode = 0
+offset_left = 584.0
+offset_top = 715.0
+offset_right = 776.0
+offset_bottom = 755.0
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_1n30v")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_35kre")
+theme_override_styles/hover = SubResource("StyleBoxFlat_03na7")
+text = "NEW GAME"
+metadata/_edit_use_anchors_ = true
+
+[node name="MainMenu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -192.0
+offset_top = -64.0
+offset_right = 576.0
+offset_bottom = 768.0
+
+[node name="Title" type="Label" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -318.5
+offset_top = -368.0
+offset_right = 318.5
+offset_bottom = -231.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_font_sizes/font_size = 100
 text = "TETRAEFFECT"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-offset_left = -8.0
-offset_top = 475.0
-offset_right = 392.0
-offset_bottom = 736.0
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = 101.5
+offset_right = 200.0
+offset_bottom = 362.5
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/separation = 15
 
-[node name="PlayButton" type="Button" parent="VBoxContainer"]
+[node name="PlayButton" type="Button" parent="MainMenu/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "PLAY"
 
-[node name="SettingsButton" type="Button" parent="VBoxContainer"]
+[node name="SettingsButton" type="Button" parent="MainMenu/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "SETTINGS"
 
-[node name="AboutButton" type="Button" parent="VBoxContainer"]
+[node name="AboutButton" type="Button" parent="MainMenu/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "ABOUT"
 
-[connection signal="pressed" from="VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
