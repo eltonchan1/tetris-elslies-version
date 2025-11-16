@@ -187,4 +187,5 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "ABOUT"
 
+[connection signal="pressed" from="Game/HUD/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]

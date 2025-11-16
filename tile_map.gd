@@ -183,11 +183,13 @@ func _on_play_button_pressed() -> void:
 	main_menu(false)
 	new_game()
 
+func _on_start_button_pressed() -> void:
+	new_game()
+
 func new_game():
 	print("DEBUG: new_game() START")
 	game_running = false
 	active_piece = []
-	debug_print_board()
 	
 	print("DEBUG: Resetting variables")
 	score = 0
@@ -219,8 +221,8 @@ func new_game():
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
 	if board_layer != null:
 		print("DEBUG: Clearing only playfield area (not walls/floor)")
-		for i in range(-5, 20):
-			for j in range(1, 10):
+		for i in range(-5, 21):
+			for j in range(1, 11):
 				board_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: Playfield cleared successfully")
 	
@@ -231,57 +233,6 @@ func new_game():
 			for j in range(-5, COLS + 20):
 				active_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: active_layer cleared successfully")
-	
-	print("DEBUG: Picking pieces")
-	# Pick current piece
-	piece_type = pick_piece()
-	print("DEBUG: piece_type = ", piece_type)
-	piece_atlas = Vector2i(shapes_full.find(piece_type), 0)
-	print("DEBUG: piece_atlas = ", piece_atlas)
-	
-	# Pick 5 next pieces
-	next_pieces.clear()
-	next_pieces_atlas.clear()
-	for i in range(5):
-		var next = pick_piece()
-		next_pieces.append(next)
-		next_pieces_atlas.append(Vector2i(shapes_full.find(next), 0))
-		print("DEBUG: next_pieces[", i, "] = ", next)
-	
-	game_running = true
-	print("DEBUG: About to create_piece()")
-	create_piece()
-	print("DEBUG: new_game() COMPLETE")
-	print("DEBUG: new_game() START")
-	game_running = false
-	active_piece = []
-	
-	print("DEBUG: Resetting variables")
-	score = 0
-	speed = 1.0
-	steps = [0, 0, 0]
-	lock_delay_timer = 0.0
-	lock_delay_active = false
-	move_reset_count = 0
-	das_left = 0.0
-	das_right = 0.0
-	held_piece = null
-	can_hold = true
-	combo_count = 0
-	last_clear_had_lines = false
-	b2b_count = 0
-	last_clear_was_difficult = false
-	$Game/HUD.get_node("ComboLabel").text = ""
-	$Game/HUD.get_node("B2BLabel").text = ""
-	$Game/HUD.get_node("AllClearLabel").text = ""
-	
-	# Reset the 7-bag randomizer
-	shapes = shapes_full.duplicate()
-	shapes.shuffle()
-	
-	print("DEBUG: Hiding GameOverLabel")
-	$Game/HUD.get_node("GameOverLabel").hide()
-	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
 	
 	print("DEBUG: Picking pieces")
 	# Pick current piece
@@ -797,11 +748,3 @@ func check_game_over():
 			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
-
-func debug_print_board():
-	print("=== BOARD STATE ===")
-	for row in range(-5, ROWS + 5):
-		for col in range(-5, COLS + 5):
-			var cell = board_layer.get_cell_source_id(Vector2i(col, row))
-			if cell != -1:
-				print("Cell at (", col, ",", row, ") has tile")
