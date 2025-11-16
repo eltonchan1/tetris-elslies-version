@@ -181,12 +181,13 @@ func main_menu(on: bool):
 
 func _on_play_button_pressed() -> void:
 	main_menu(false)
-	new_game_keep_map()
+	new_game()
 
 func new_game():
 	print("DEBUG: new_game() START")
 	game_running = false
 	active_piece = []
+	debug_print_board()
 	
 	print("DEBUG: Resetting variables")
 	score = 0
@@ -218,11 +219,8 @@ func new_game():
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
 	if board_layer != null:
 		print("DEBUG: Clearing only playfield area (not walls/floor)")
-		for i in range(-5, 0):
-			for j in range(1, COLS + 1):
-				board_layer.erase_cell(Vector2i(j, i))
-		for i in range(0, ROWS + 1):
-			for j in range(1, COLS + 1):
+		for i in range(-5, 20):
+			for j in range(1, 10):
 				board_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: Playfield cleared successfully")
 	
@@ -254,8 +252,6 @@ func new_game():
 	print("DEBUG: About to create_piece()")
 	create_piece()
 	print("DEBUG: new_game() COMPLETE")
-
-func new_game_keep_map():
 	print("DEBUG: new_game() START")
 	game_running = false
 	active_piece = []
@@ -306,7 +302,7 @@ func new_game_keep_map():
 	game_running = true
 	print("DEBUG: About to create_piece()")
 	create_piece()
-	print("DEBUG: new_game_keep_map() COMPLETE")
+	print("DEBUG: new_game() COMPLETE")
 
 func _process(delta):
 	if game_running:
@@ -801,3 +797,11 @@ func check_game_over():
 			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
+
+func debug_print_board():
+	print("=== BOARD STATE ===")
+	for row in range(-5, ROWS + 5):
+		for col in range(-5, COLS + 5):
+			var cell = board_layer.get_cell_source_id(Vector2i(col, row))
+			if cell != -1:
+				print("Cell at (", col, ",", row, ") has tile")
