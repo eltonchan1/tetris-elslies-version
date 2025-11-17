@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=9 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://c0yov6r67jrr3" path="res://assets/tetris.png" id="1_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
+[ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="3_35kre"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
 texture = ExtResource("1_1n30v")
@@ -32,6 +33,7 @@ bg_color = Color(0.7967922, 0.37047136, 1, 1)
 script = ExtResource("2_35kre")
 
 [node name="Game" type="Node2D" parent="."]
+visible = false
 
 [node name="Camera2D" type="Camera2D" parent="Game"]
 position = Vector2(192, 352)
@@ -142,6 +144,7 @@ offset_right = 576.0
 offset_bottom = 768.0
 
 [node name="Title" type="Label" parent="MainMenu"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -158,6 +161,7 @@ theme_override_font_sizes/font_size = 100
 text = "TETRAEFFECT"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainMenu"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -165,9 +169,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = 101.5
+offset_top = 23.5
 offset_right = 200.0
-offset_bottom = 362.5
+offset_bottom = 376.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 15
@@ -187,5 +191,102 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "ABOUT"
 
+[node name="ExitButton" type="Button" parent="MainMenu/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "EXIT"
+
+[node name="AboutPanel" type="ScrollContainer" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -384.0
+offset_top = -416.0
+offset_right = 384.0
+offset_bottom = 416.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu/AboutPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainMenu/AboutPanel/VBoxContainer"]
+layout_mode = 2
+text = "how to play the game
+how the game was made
+inspo & credits
+thanks for playing
+"
+
+[node name="Icon" type="Sprite2D" parent="MainMenu/AboutPanel/VBoxContainer"]
+position = Vector2(134, 731)
+texture = ExtResource("3_35kre")
+
+[node name="SettingsPanel" type="ScrollContainer" parent="MainMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -384.0
+offset_top = -416.0
+offset_right = 384.0
+offset_bottom = 416.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu/SettingsPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+this is the settings panel
+"
+
+[node name="Icon" type="Sprite2D" parent="MainMenu/SettingsPanel/VBoxContainer"]
+position = Vector2(264, 680)
+texture = ExtResource("3_35kre")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainMenu/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "setting name"
+
+[node name="HSlider" type="HSlider" parent="MainMenu/SettingsPanel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "settings value"
+
 [connection signal="pressed" from="Game/HUD/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="MainMenu/VBoxContainer/AboutButton" to="." method="_on_about_button_pressed"]
+[connection signal="pressed" from="MainMenu/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]

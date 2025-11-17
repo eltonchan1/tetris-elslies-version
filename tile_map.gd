@@ -174,6 +174,8 @@ func main_menu(on: bool):
 		$Game.visible = false
 		$Game/HUD.visible = false
 		$MainMenu.visible = true
+		$MainMenu/AboutPanel.visible = false
+		$MainMenu/SettingsPanel.visible = false
 	if on == false:
 		$Game.visible = true
 		$Game/HUD.visible = true
@@ -185,6 +187,15 @@ func _on_play_button_pressed() -> void:
 
 func _on_start_button_pressed() -> void:
 	new_game()
+
+func _on_about_button_pressed() -> void:
+	$MainMenu/AboutPanel.visible = true
+
+func _on_settings_button_pressed() -> void:
+	$MainMenu/SettingsPanel.visible = true
+
+func _on_exit_button_pressed() -> void:
+	get_tree().quit()
 
 func new_game():
 	print("DEBUG: new_game() START")
