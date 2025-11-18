@@ -161,7 +161,6 @@ theme_override_font_sizes/font_size = 100
 text = "TETRAEFFECT"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainMenu"]
-visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -197,6 +196,7 @@ theme_override_font_sizes/font_size = 50
 text = "EXIT"
 
 [node name="AboutPanel" type="ScrollContainer" parent="MainMenu"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -244,44 +244,77 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer"]
 layout_mode = 2
-text = "this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-this is the settings panel
-"
+text = "arr - 5 -> 0, 0.1
+das - 20 -> 1, 0.1
+dcd - 20 -> 0, 0.1
+sdf - 5 -> 40 + inf, 1"
 
 [node name="Icon" type="Sprite2D" parent="MainMenu/SettingsPanel/VBoxContainer"]
 position = Vector2(264, 680)
 texture = ExtResource("3_35kre")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MainMenu/SettingsPanel/VBoxContainer"]
+[node name="ARRContainer" type="HBoxContainer" parent="MainMenu/SettingsPanel/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/HBoxContainer"]
+[node name="ARR" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/ARRContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "setting name"
+text = "ARR"
 
-[node name="HSlider" type="HSlider" parent="MainMenu/SettingsPanel/VBoxContainer/HBoxContainer"]
+[node name="ARRSlider" type="HSlider" parent="MainMenu/SettingsPanel/VBoxContainer/ARRContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+value = 5.0
+
+[node name="Label2" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/ARRContainer"]
+layout_mode = 2
+text = "settings value"
+
+[node name="DASContainer" type="HBoxContainer" parent="MainMenu/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="DAS" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/DASContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "DAS"
+
+[node name="DASSlider" type="HSlider" parent="MainMenu/SettingsPanel/VBoxContainer/DASContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/HBoxContainer"]
+[node name="Label2" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/DASContainer"]
+layout_mode = 2
+text = "settings value"
+
+[node name="DCDContainer" type="HBoxContainer" parent="MainMenu/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="DCD" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/DCDContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "DCD"
+
+[node name="DCDSlider" type="HSlider" parent="MainMenu/SettingsPanel/VBoxContainer/DCDContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/DCDContainer"]
+layout_mode = 2
+text = "settings value"
+
+[node name="SDFContainer" type="HBoxContainer" parent="MainMenu/SettingsPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="SDF" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/SDFContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "SDF"
+
+[node name="SDFSlider" type="HSlider" parent="MainMenu/SettingsPanel/VBoxContainer/SDFContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MainMenu/SettingsPanel/VBoxContainer/SDFContainer"]
 layout_mode = 2
 text = "settings value"
 
@@ -290,3 +323,4 @@ text = "settings value"
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/AboutButton" to="." method="_on_about_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="value_changed" from="MainMenu/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider" to="." method="_on_arr_slider_value_changed"]

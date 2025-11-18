@@ -759,3 +759,6 @@ func check_game_over():
 			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
+
+func _on_arr_slider_value_changed(value: float) -> void:
+	$MainMenu/SettingsPanel/VBoxContainer/ARRContainer/Label2.text = str(value)
