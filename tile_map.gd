@@ -172,13 +172,12 @@ func _ready():
 func main_menu(on: bool):
 	if on == true:
 		$Game.visible = false
-		$Game/HUD.visible = false
 		$MainMenu.visible = true
-		$MainMenu/AboutPanel.visible = false
-		$MainMenu/SettingsPanel.visible = false
+		$MainMenu/PopUp/About.visible = false
+		$MainMenu/PopUp/Settings.visible = false
+		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_PASS
 	if on == false:
 		$Game.visible = true
-		$Game/HUD.visible = true
 		$MainMenu.visible = false
 
 func _on_play_button_pressed() -> void:
@@ -189,11 +188,13 @@ func _on_start_button_pressed() -> void:
 	new_game()
 
 func _on_about_button_pressed() -> void:
-	$MainMenu/AboutPanel.visible = true
+	$MainMenu/PopUp/About.visible = true
+	$MainMenu/PopUp/About.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func _on_settings_button_pressed() -> void:
-	$MainMenu/SettingsPanel.visible = true
-
+	$MainMenu/PopUp/Settings.visible = true
+	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
+	
 func _on_exit_button_pressed() -> void:
 	get_tree().quit()
 
@@ -761,4 +762,25 @@ func check_game_over():
 			return
 
 func _on_arr_slider_value_changed(value: float) -> void:
-	$MainMenu/SettingsPanel/VBoxContainer/ARRContainer/Label2.text = str(value)
+	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
+	if reverse_value == int(reverse_value):
+		reverse_value = int(reverse_value)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(reverse_value)
+
+func _on_das_slider_value_changed(value: float) -> void:
+	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
+	if reverse_value == int(reverse_value):
+		reverse_value = int(reverse_value)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(reverse_value)
+
+func _on_dcd_slider_value_changed(value: float) -> void:
+	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
+	if reverse_value == int(reverse_value):
+		reverse_value = int(reverse_value)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value)
+
+func _on_sdf_slider_value_changed(value: int) -> void:
+	if $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value == 41:
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
+	else:
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(value)
