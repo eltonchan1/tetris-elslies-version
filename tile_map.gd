@@ -175,7 +175,7 @@ func main_menu(on: bool):
 		$MainMenu.visible = true
 		$MainMenu/PopUp/About.visible = false
 		$MainMenu/PopUp/Settings.visible = false
-		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_PASS
+		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if on == false:
 		$Game.visible = true
 		$MainMenu.visible = false
@@ -194,9 +194,17 @@ func _on_about_button_pressed() -> void:
 func _on_settings_button_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = true
 	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
-	
-func _on_exit_button_pressed() -> void:
+
+func _on_exit_game_button_pressed() -> void:
 	get_tree().quit()
+
+func _on_about_exit_button_pressed() -> void:
+	$MainMenu/PopUp/About.visible = false
+	$MainMenu/PopUp/About.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _on_settings_exit_button_pressed() -> void:
+	$MainMenu/PopUp/Settings.visible = false
+	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func new_game():
 	print("DEBUG: new_game() START")
@@ -768,7 +776,7 @@ func _on_arr_slider_value_changed(value: float) -> void:
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(reverse_value)
 
 func _on_das_slider_value_changed(value: float) -> void:
-	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
+	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
 	if reverse_value == int(reverse_value):
 		reverse_value = int(reverse_value)
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(reverse_value)
