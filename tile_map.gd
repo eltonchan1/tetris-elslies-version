@@ -115,6 +115,7 @@ const start_pos := Vector2i(5, 0)
 var cur_pos : Vector2i
 var speed : float
 const ACCEL : float = 0.1
+const FRAME_TIME : float = 1.0/60.0
 
 # lock delay vars
 var lock_delay_timer : float = 0.0
@@ -126,8 +127,12 @@ const MAX_MOVE_RESETS : int = 15
 # input vars
 var das_left : float = 0.0
 var das_right : float = 0.0
-const DAS_DELAY : float = 0.133
-const ARR : float = 0.033
+var das_delay : float = 10.0
+var arr : float = 0.0
+var dcd : float = 0.0
+var left_release_timer : float = 0.0
+var right_release_timer : float = 0.0
+var sdf : float = 5.0
 
 # hold
 var held_piece = null
@@ -311,16 +316,16 @@ func handle_input(delta):
 	if Input.is_action_pressed("left_move"):
 		das_left += delta
 		das_right = 0.0
-		if Input.is_action_just_pressed("left_move") or das_left >= DAS_DELAY:
-			if das_left >= DAS_DELAY:
-				das_left -= ARR
+		if Input.is_action_just_pressed("left_move") or das_left >= das_delay:
+			if das_left >= (das_delay * FRAME_TIME):
+				das_left -= (arr * FRAME_TIME)
 			move_piece(Vector2i.LEFT)
 	elif Input.is_action_pressed("right_move"):
 		das_right += delta
 		das_left = 0.0
-		if Input.is_action_just_pressed("right_move") or das_right >= DAS_DELAY:
-			if das_right >= DAS_DELAY:
-				das_right -= ARR
+		if Input.is_action_just_pressed("right_move") or das_right >= das_delay:
+			if das_right >= (das_delay * FRAME_TIME):
+				das_right -= (arr * FRAME_TIME)
 			move_piece(Vector2i.RIGHT)
 	else:
 		das_left = 0.0
@@ -773,22 +778,24 @@ func _on_arr_slider_value_changed(value: float) -> void:
 	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
 	if reverse_value == int(reverse_value):
 		reverse_value = int(reverse_value)
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(reverse_value)
+	arr = reverse_value
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(reverse_value) + "F"
 
 func _on_das_slider_value_changed(value: float) -> void:
 	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
 	if reverse_value == int(reverse_value):
 		reverse_value = int(reverse_value)
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(reverse_value)
+	das_delay = reverse_value
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(reverse_value) + "F"
 
 func _on_dcd_slider_value_changed(value: float) -> void:
 	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
 	if reverse_value == int(reverse_value):
 		reverse_value = int(reverse_value)
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value) + "F"
 
 func _on_sdf_slider_value_changed(value: int) -> void:
 	if $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value == 41:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
 	else:
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(value)
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(value) + "X"
