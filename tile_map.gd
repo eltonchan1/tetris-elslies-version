@@ -845,8 +845,10 @@ func _on_dcd_slider_value_changed(value: float) -> void:
 	dcd = reverse_value
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value) + "F"
 
-func _on_sdf_slider_value_changed(value: int) -> void:
-	if $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value == 41:
+func _on_sdf_slider_value_changed(value: float) -> void:  # Changed to float to match slider
+	if value == 41:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
+		sdf = 9999
 	else:
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(value) + "X"
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(value)) + "X"
+		sdf = value
