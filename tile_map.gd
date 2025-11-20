@@ -113,9 +113,11 @@ var steps : Array
 const steps_req : int = 50
 const start_pos := Vector2i(5, 0)
 var cur_pos : Vector2i
-var speed : float
-const ACCEL : float = 0.1
 const FRAME_TIME : float = 1.0/60.0
+var gravity : float = 0.02  # G value (cells per frame) - starts slow like Tetrio
+const GRAVITY_INCREASE : float = 0.001  # How much gravity increases per line clear
+const MAX_GRAVITY : float = 20.0  # Max gravity (20G = instant)
+var gravity_counter : float = 0.0 
 
 # lock delay vars
 var lock_delay_timer : float = 0.0
@@ -177,8 +179,10 @@ func _ready():
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.value = 20.0 - dcd
 	if sdf >= 9999:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = 41
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = sdf
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(sdf)) + "X"
 	print("DEBUG: _ready() complete")
 
 func main_menu(on: bool):
@@ -225,8 +229,8 @@ func new_game():
 	
 	print("DEBUG: Resetting variables")
 	score = 0
-	speed = 1.0
-	steps = [0, 0, 0]
+	gravity = 0.02  # Reset to starting gravity
+	gravity_counter = 0.0  # Reset gravity counter
 	lock_delay_timer = 0.0
 	lock_delay_active = false
 	move_reset_count = 0
@@ -292,12 +296,21 @@ func new_game():
 func _process(delta):
 	if game_running:
 		handle_input(delta)
-		steps[2] += speed
-		
-		if steps[2] > steps_req:
-			move_piece(Vector2i.DOWN)
-			steps[2] = 0
-		
+		# Apply gravity (natural fall speed)
+		gravity_counter += gravity
+		# Move down when gravity counter exceeds 1.0
+		while gravity_counter >= 1.0:
+			if can_move(Vector2i.DOWN):
+				move_piece(Vector2i.DOWN)
+				gravity_counter -= 1.0
+			else:
+				# Hit the ground, start lock delay
+				gravity_counter = 0.0
+				if not lock_delay_active:
+					lock_delay_active = true
+					lock_delay_timer = 0.0
+				break
+		# Lock delay timer
 		if lock_delay_active:
 			lock_delay_timer += delta
 			if lock_delay_timer >= LOCK_DELAY_MAX:
@@ -307,17 +320,14 @@ func handle_input(delta):
 	# Update DCD timers (count down to zero)
 	left_release_timer = max(0, left_release_timer - delta)
 	right_release_timer = max(0, right_release_timer - delta)
-	
 	# Hard drop takes priority
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 		return
-	
 	# Hold piece
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
 		return
-	
 	# Rotations
 	if Input.is_action_just_pressed("cw_rotation"):
 		rotate_piece_srs(1)
@@ -325,61 +335,46 @@ func handle_input(delta):
 		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
 		rotate_piece_srs(2)
-	
-	# Soft drop - use SDF multiplier
+	# Soft drop - multiply gravity by SDF
 	if Input.is_action_pressed("soft_drop"):
-		if sdf >= 9999:  # If set to "infinite"
-			steps[2] += 9999  # Instant drop
+		if sdf >= 9999:
+			# Infinite SDF = instant drop to bottom
+			while can_move(Vector2i.DOWN):
+				move_piece(Vector2i.DOWN)
+			gravity_counter = 0.0
 		else:
-			steps[2] += (20 * sdf)  # Multiply base speed by SDF
-	
+			# Apply SDF multiplier to gravity
+			gravity_counter += (gravity * sdf * delta * 60.0)  # *60 to convert to per-frame
 	# LEFT MOVEMENT with DCD check
 	if Input.is_action_pressed("left_move"):
-		# Only allow left if right's DCD timer has expired
 		if right_release_timer <= 0:
 			das_left += delta
-			das_right = 0.0  # Cancel right DAS
-			
-			# Convert DAS delay and ARR from frames to seconds
+			das_right = 0.0
 			var das_delay_seconds = das_delay * FRAME_TIME
 			var arr_seconds = arr * FRAME_TIME
-			
-			# Move on initial press OR when DAS timer exceeds delay
 			if Input.is_action_just_pressed("left_move") or das_left >= das_delay_seconds:
 				if das_left >= das_delay_seconds:
-					das_left -= arr_seconds  # Subtract ARR for next repeat
+					das_left -= arr_seconds
 				move_piece(Vector2i.LEFT)
-	
 	# RIGHT MOVEMENT with DCD check
 	elif Input.is_action_pressed("right_move"):
-		# Only allow right if left's DCD timer has expired
 		if left_release_timer <= 0:
 			das_right += delta
-			das_left = 0.0  # Cancel left DAS
-			
-			# Convert DAS delay and ARR from frames to seconds
+			das_left = 0.0
 			var das_delay_seconds = das_delay * FRAME_TIME
 			var arr_seconds = arr * FRAME_TIME
-			
-			# Move on initial press OR when DAS timer exceeds delay
 			if Input.is_action_just_pressed("right_move") or das_right >= das_delay_seconds:
 				if das_right >= das_delay_seconds:
-					das_right -= arr_seconds  # Subtract ARR for next repeat
+					das_right -= arr_seconds
 				move_piece(Vector2i.RIGHT)
-	
 	# NEITHER direction pressed - start DCD timers
 	else:
-		# If we were moving left, block right for DCD duration
 		if das_left > 0:
 			right_release_timer = dcd * FRAME_TIME
-		# If we were moving right, block left for DCD duration
 		if das_right > 0:
 			left_release_timer = dcd * FRAME_TIME
-		
-		# Reset DAS counters
 		das_left = 0.0
 		das_right = 0.0
-	
 	# Restart game
 	if Input.is_action_just_pressed("restart"):
 		new_game()
@@ -397,7 +392,7 @@ func pick_piece():
 
 func create_piece():
 	print("DEBUG: create_piece() START")
-	steps = [0, 0, 0]
+	gravity_counter = 0.0  # Reset gravity counter for new piece
 	cur_pos = start_pos
 	
 	# O piece spawns one row higher and one column to the right
@@ -733,7 +728,7 @@ func check_rows():
 		if count == COLS:
 			lines_cleared += 1
 			shift_rows(row)
-			speed += ACCEL
+			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)  # Increase gravity
 		else:
 			row -= 1
 			
@@ -845,10 +840,14 @@ func _on_dcd_slider_value_changed(value: float) -> void:
 	dcd = reverse_value
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value) + "F"
 
-func _on_sdf_slider_value_changed(value: float) -> void:  # Changed to float to match slider
+func _on_sdf_slider_value_changed(value: float) -> void:
+	print("DEBUG SDF: Slider changed to: ", value)
 	if value == 41:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
 		sdf = 9999
+		print("DEBUG SDF: Set sdf to 9999")
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(value)) + "X"
 		sdf = value
+		print("DEBUG SDF: Set sdf to ", value)
+	print("DEBUG SDF: Current sdf value is now: ", sdf)
