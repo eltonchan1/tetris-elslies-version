@@ -127,12 +127,12 @@ const MAX_MOVE_RESETS : int = 15
 # input vars
 var das_left : float = 0.0
 var das_right : float = 0.0
-var das_delay : float = 10.0
+var das_delay : float = 8.0
 var arr : float = 0.0
 var dcd : float = 0.0
 var left_release_timer : float = 0.0
 var right_release_timer : float = 0.0
-var sdf : float = 5.0
+var sdf : float = 21.0
 
 # hold
 var held_piece = null
@@ -172,6 +172,13 @@ var ghost_atlas : Vector2i = Vector2i(7, 0)
 func _ready():
 	print("DEBUG: _ready() called")
 	main_menu(true)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - arr
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.value = 20.0 - das_delay + 1.0
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.value = 20.0 - dcd
+	if sdf >= 9999:
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = 41
+	else:
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = sdf
 	print("DEBUG: _ready() complete")
 
 func main_menu(on: bool):
@@ -225,6 +232,8 @@ func new_game():
 	move_reset_count = 0
 	das_left = 0.0
 	das_right = 0.0
+	left_release_timer = 0.0
+	right_release_timer = 0.0
 	held_piece = null
 	can_hold = true
 	combo_count = 0
@@ -295,14 +304,21 @@ func _process(delta):
 				lock_piece()
 
 func handle_input(delta):
+	# Update DCD timers (count down to zero)
+	left_release_timer = max(0, left_release_timer - delta)
+	right_release_timer = max(0, right_release_timer - delta)
+	
+	# Hard drop takes priority
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 		return
 	
+	# Hold piece
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
 		return
 	
+	# Rotations
 	if Input.is_action_just_pressed("cw_rotation"):
 		rotate_piece_srs(1)
 	if Input.is_action_just_pressed("ccw_rotation"):
@@ -310,27 +326,61 @@ func handle_input(delta):
 	if Input.is_action_just_pressed("180_rotation"):
 		rotate_piece_srs(2)
 	
+	# Soft drop - use SDF multiplier
 	if Input.is_action_pressed("soft_drop"):
-		steps[2] += 20
+		if sdf >= 9999:  # If set to "infinite"
+			steps[2] += 9999  # Instant drop
+		else:
+			steps[2] += (20 * sdf)  # Multiply base speed by SDF
 	
+	# LEFT MOVEMENT with DCD check
 	if Input.is_action_pressed("left_move"):
-		das_left += delta
-		das_right = 0.0
-		if Input.is_action_just_pressed("left_move") or das_left >= das_delay:
-			if das_left >= (das_delay * FRAME_TIME):
-				das_left -= (arr * FRAME_TIME)
-			move_piece(Vector2i.LEFT)
+		# Only allow left if right's DCD timer has expired
+		if right_release_timer <= 0:
+			das_left += delta
+			das_right = 0.0  # Cancel right DAS
+			
+			# Convert DAS delay and ARR from frames to seconds
+			var das_delay_seconds = das_delay * FRAME_TIME
+			var arr_seconds = arr * FRAME_TIME
+			
+			# Move on initial press OR when DAS timer exceeds delay
+			if Input.is_action_just_pressed("left_move") or das_left >= das_delay_seconds:
+				if das_left >= das_delay_seconds:
+					das_left -= arr_seconds  # Subtract ARR for next repeat
+				move_piece(Vector2i.LEFT)
+	
+	# RIGHT MOVEMENT with DCD check
 	elif Input.is_action_pressed("right_move"):
-		das_right += delta
-		das_left = 0.0
-		if Input.is_action_just_pressed("right_move") or das_right >= das_delay:
-			if das_right >= (das_delay * FRAME_TIME):
-				das_right -= (arr * FRAME_TIME)
-			move_piece(Vector2i.RIGHT)
+		# Only allow right if left's DCD timer has expired
+		if left_release_timer <= 0:
+			das_right += delta
+			das_left = 0.0  # Cancel left DAS
+			
+			# Convert DAS delay and ARR from frames to seconds
+			var das_delay_seconds = das_delay * FRAME_TIME
+			var arr_seconds = arr * FRAME_TIME
+			
+			# Move on initial press OR when DAS timer exceeds delay
+			if Input.is_action_just_pressed("right_move") or das_right >= das_delay_seconds:
+				if das_right >= das_delay_seconds:
+					das_right -= arr_seconds  # Subtract ARR for next repeat
+				move_piece(Vector2i.RIGHT)
+	
+	# NEITHER direction pressed - start DCD timers
 	else:
+		# If we were moving left, block right for DCD duration
+		if das_left > 0:
+			right_release_timer = dcd * FRAME_TIME
+		# If we were moving right, block left for DCD duration
+		if das_right > 0:
+			left_release_timer = dcd * FRAME_TIME
+		
+		# Reset DAS counters
 		das_left = 0.0
 		das_right = 0.0
-		
+	
+	# Restart game
 	if Input.is_action_just_pressed("restart"):
 		new_game()
 
@@ -792,6 +842,7 @@ func _on_dcd_slider_value_changed(value: float) -> void:
 	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
 	if reverse_value == int(reverse_value):
 		reverse_value = int(reverse_value)
+	dcd = reverse_value
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value) + "F"
 
 func _on_sdf_slider_value_changed(value: int) -> void:
