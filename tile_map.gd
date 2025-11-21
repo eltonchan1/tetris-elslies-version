@@ -7,9 +7,8 @@ extends Node2D
 		# ultrakill style
 	# vfx
 		# balatro inspired (naneinf)
-	# settings???
 	# main menu
-		# play button (do this first, func is on the bottom)
+		# fancy it up, make it look good
 	# diff gamemodes???
 		# 40l, blitz, etc
 	# sound design & music
@@ -202,6 +201,9 @@ func _on_play_button_pressed() -> void:
 
 func _on_start_button_pressed() -> void:
 	new_game()
+
+func _on_main_menu_button_pressed() -> void:
+	main_menu(true)
 
 func _on_about_button_pressed() -> void:
 	$MainMenu/PopUp/About.visible = true
