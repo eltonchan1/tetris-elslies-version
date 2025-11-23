@@ -13,6 +13,7 @@ extends Node2D
 		# 40l, blitz, etc
 	# sound design & music
 		# satisfying
+	# background that is like echo idk how to describe
 
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $Game/board
@@ -170,6 +171,10 @@ var tile_id : int = 0
 var piece_atlas : Vector2i
 var ghost_atlas : Vector2i = Vector2i(7, 0)
 
+# timer vars
+var game_time : float = 0.0
+var timer_running : bool = false
+
 func _ready():
 	print("DEBUG: _ready() called")
 	main_menu(true)
@@ -231,8 +236,8 @@ func new_game():
 	
 	print("DEBUG: Resetting variables")
 	score = 0
-	gravity = 0.02  # Reset to starting gravity
-	gravity_counter = 0.0  # Reset gravity counter
+	gravity = 0.02
+	gravity_counter = 0.0
 	lock_delay_timer = 0.0
 	lock_delay_active = false
 	move_reset_count = 0
@@ -249,6 +254,9 @@ func new_game():
 	$Game/HUD.get_node("ComboLabel").text = ""
 	$Game/HUD.get_node("B2BLabel").text = ""
 	$Game/HUD.get_node("AllClearLabel").text = ""
+	game_time = 0.0
+	timer_running = false
+	$Game/HUD.get_node("TimerLabel").text = "TIME: 0:00.000"
 	
 	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
@@ -291,6 +299,7 @@ func new_game():
 		print("DEBUG: next_pieces[", i, "] = ", next)
 	
 	game_running = true
+	timer_running = true
 	print("DEBUG: About to create_piece()")
 	create_piece()
 	print("DEBUG: new_game() COMPLETE")
@@ -298,9 +307,10 @@ func new_game():
 func _process(delta):
 	if game_running:
 		handle_input(delta)
-		# Apply gravity (natural fall speed)
 		gravity_counter += gravity
-		# Move down when gravity counter exceeds 1.0
+		if timer_running:
+			game_time += delta  # Add frame time to total
+			update_timer_display()  # Update the label
 		while gravity_counter >= 1.0:
 			if can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
@@ -443,6 +453,18 @@ func clear_ghost_piece():
 			var coords = active_layer.get_cell_atlas_coords(Vector2i(j, i))
 			if coords == ghost_atlas:
 				active_layer.erase_cell(Vector2i(j, i))
+
+func update_timer_display():
+	# Convert game_time (seconds) into minutes:seconds.milliseconds
+	var minutes = int(game_time / 60)  # How many full minutes
+	var seconds = int(game_time) % 60  # Remaining seconds (0-59)
+	var milliseconds = int((game_time - int(game_time)) * 1000)  # Decimal part × 1000
+	
+	# Format as M:SS.mmm (e.g., "2:05.328")
+	var time_string = "%d:%02d.%03d" % [minutes, seconds, milliseconds]
+	
+	# Update the label
+	$Game/HUD.get_node("TimerLabel").text = time_string
 
 func draw_ghost_piece():
 	clear_ghost_piece()
@@ -817,6 +839,7 @@ func check_game_over():
 	for i in active_piece:
 		if not is_free(i + cur_pos):
 			print("DEBUG: GAME OVER - collision detected")
+			timer_running = false
 			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return

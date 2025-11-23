@@ -1,24 +1,33 @@
-[gd_scene load_steps=9 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=8 format=4 uid="uid://b4xyptdtg7pl"]
 
-[ext_resource type="Texture2D" uid="uid://c0yov6r67jrr3" path="res://assets/tetris.png" id="1_1n30v"]
+[ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
-[ext_resource type="Texture2D" uid="uid://4q335xxs2p" path="res://icon.svg" id="3_35kre"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
-texture = ExtResource("1_1n30v")
+resource_name = "tetrisblock"
+texture = ExtResource("2_1n30v")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 2:0/0 = 0
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 3:0/0 = 0
+3:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 4:0/0 = 0
+4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 5:0/0 = 0
+5:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 6:0/0 = 0
+6:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 7:0/0 = 0
+7:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 
 [sub_resource type="TileSet" id="TileSet_xftlc"]
 tile_size = Vector2i(32, 32)
-sources/0 = SubResource("TileSetAtlasSource_35kre")
+physics_layer_0/collision_layer = 1
+sources/1 = SubResource("TileSetAtlasSource_35kre")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1n30v"]
 bg_color = Color(0.33002013, 0.5941898, 1, 1)
@@ -150,10 +159,6 @@ inspo & credits
 thanks for playing
 "
 
-[node name="Icon" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer"]
-position = Vector2(376, 160)
-texture = ExtResource("3_35kre")
-
 [node name="AboutExitButton" type="Button" parent="MainMenu/PopUp/About"]
 layout_mode = 1
 anchors_preset = 8
@@ -238,10 +243,6 @@ text = "arr - 5 -> 0, 0.1
 das - 20 -> 1, 0.1
 dcd - 20 -> 0, 0.1
 sdf - 5 -> 40 + inf, 1"
-
-[node name="Icon" type="Sprite2D" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
-position = Vector2(504, 160)
-texture = ExtResource("3_35kre")
 
 [node name="ARRContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
 layout_mode = 2
@@ -352,12 +353,13 @@ position = Vector2(192, 352)
 
 [node name="board" type="TileMapLayer" parent="Game"]
 use_parent_material = true
-tile_map_data = PackedByteArray("AAAAAAAAAAAHAAAAAAALAAAAAAAHAAAAAAAAAAEAAAAHAAAAAAAAAAIAAAAHAAAAAAAAAAMAAAAHAAAAAAAAAAQAAAAHAAAAAAAAAAUAAAAHAAAAAAAAAAYAAAAHAAAAAAAAAAcAAAAHAAAAAAAAAAgAAAAHAAAAAAAAAAkAAAAHAAAAAAAAAAoAAAAHAAAAAAAAAAsAAAAHAAAAAAAAAAwAAAAHAAAAAAAAAA0AAAAHAAAAAAAAAA4AAAAHAAAAAAAAAA8AAAAHAAAAAAAAABAAAAAHAAAAAAAAABEAAAAHAAAAAAAAABIAAAAHAAAAAAAAABMAAAAHAAAAAAAAABQAAAAHAAAAAAAAABUAAAAHAAAAAAABABUAAAAHAAAAAAACABUAAAAHAAAAAAADABUAAAAHAAAAAAAEABUAAAAHAAAAAAAFABUAAAAHAAAAAAAGABUAAAAHAAAAAAAHABUAAAAHAAAAAAAIABUAAAAHAAAAAAAJABUAAAAHAAAAAAAKABUAAAAHAAAAAAALAAEAAAAHAAAAAAALAAIAAAAHAAAAAAALAAMAAAAHAAAAAAALAAQAAAAHAAAAAAALAAYAAAAHAAAAAAALAAcAAAAHAAAAAAALAAgAAAAHAAAAAAALAAkAAAAHAAAAAAALAAoAAAAHAAAAAAALAAsAAAAHAAAAAAALAAwAAAAHAAAAAAALAA0AAAAHAAAAAAALAA4AAAAHAAAAAAALAA8AAAAHAAAAAAALABAAAAAHAAAAAAALABEAAAAHAAAAAAALABIAAAAHAAAAAAALABMAAAAHAAAAAAALABQAAAAHAAAAAAALABUAAAAHAAAAAAALAAUAAAAHAAAAAAA=")
+tile_map_data = PackedByteArray("AAAAAAAAAQAHAAAAAAALAAAAAQAHAAAAAAAAAAEAAQAHAAAAAAAAAAIAAQAHAAAAAAAAAAMAAQAHAAAAAAAAAAQAAQAHAAAAAAAAAAUAAQAHAAAAAAAAAAYAAQAHAAAAAAAAAAcAAQAHAAAAAAAAAAgAAQAHAAAAAAAAAAkAAQAHAAAAAAAAAAoAAQAHAAAAAAAAAAsAAQAHAAAAAAAAAAwAAQAHAAAAAAAAAA0AAQAHAAAAAAAAAA4AAQAHAAAAAAAAAA8AAQAHAAAAAAAAABAAAQAHAAAAAAAAABEAAQAHAAAAAAAAABIAAQAHAAAAAAAAABMAAQAHAAAAAAAAABQAAQAHAAAAAAAAABUAAQAHAAAAAAABABUAAQAHAAAAAAACABUAAQAHAAAAAAADABUAAQAHAAAAAAAEABUAAQAHAAAAAAAFABUAAQAHAAAAAAAGABUAAQAHAAAAAAAHABUAAQAHAAAAAAAIABUAAQAHAAAAAAAJABUAAQAHAAAAAAAKABUAAQAHAAAAAAALAAEAAQAHAAAAAAALAAIAAQAHAAAAAAALAAMAAQAHAAAAAAALAAQAAQAHAAAAAAALAAYAAQAHAAAAAAALAAcAAQAHAAAAAAALAAgAAQAHAAAAAAALAAkAAQAHAAAAAAALAAoAAQAHAAAAAAALAAsAAQAHAAAAAAALAAwAAQAHAAAAAAALAA0AAQAHAAAAAAALAA4AAQAHAAAAAAALAA8AAQAHAAAAAAALABAAAQAHAAAAAAALABEAAQAHAAAAAAALABIAAQAHAAAAAAALABMAAQAHAAAAAAALABQAAQAHAAAAAAALABUAAQAHAAAAAAALAAUAAQAHAAAAAAA=")
 tile_set = SubResource("TileSet_xftlc")
 rendering_quadrant_size = 32
 
 [node name="active" type="TileMapLayer" parent="Game"]
 use_parent_material = true
+tile_map_data = PackedByteArray("AAAAAAAAAQAHAAAAAAAAAAEAAQAHAAAAAAAAAAIAAQAHAAAAAAAAAAMAAQAHAAAAAAAAAAQAAQAHAAAAAAAAAAUAAQAHAAAAAAAAAAYAAQAHAAAAAAAAAAcAAQAHAAAAAAAAAAgAAQAHAAAAAAAAAAkAAQAHAAAAAAAAAAoAAQAHAAAAAAAAAAsAAQAHAAAAAAAAAAwAAQAHAAAAAAAAAA0AAQAHAAAAAAAAAA4AAQAHAAAAAAAAAA8AAQAHAAAAAAAAABAAAQAHAAAAAAAAABEAAQAHAAAAAAAAABIAAQAHAAAAAAAAABMAAQAHAAAAAAAAABQAAQAHAAAAAAAAABUAAQAHAAAAAAABABUAAQAHAAAAAAACABUAAQAHAAAAAAADABUAAQAHAAAAAAAEABUAAQAHAAAAAAAFABUAAQAHAAAAAAAGABUAAQAHAAAAAAAHABUAAQAHAAAAAAAIABUAAQAHAAAAAAAJABUAAQAHAAAAAAAKABUAAQAHAAAAAAALABUAAQAHAAAAAAALAAAAAQAHAAAAAAALAAEAAQAHAAAAAAALAAIAAQAHAAAAAAALAAMAAQAHAAAAAAALAAQAAQAHAAAAAAALAAUAAQAHAAAAAAALAAYAAQAHAAAAAAALAAcAAQAHAAAAAAALAAgAAQAHAAAAAAALAAkAAQAHAAAAAAALAAoAAQAHAAAAAAALAAsAAQAHAAAAAAALAAwAAQAHAAAAAAALAA0AAQAHAAAAAAALAA4AAQAHAAAAAAALAA8AAQAHAAAAAAALABAAAQAHAAAAAAALABEAAQAHAAAAAAALABIAAQAHAAAAAAALABMAAQAHAAAAAAALABQAAQAHAAAAAAA=")
 tile_set = SubResource("TileSet_xftlc")
 
 [node name="HUD" type="Control" parent="Game"]
@@ -485,6 +487,24 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 28
 text = "MAIN MENU"
+
+[node name="TimerLabel" type="Label" parent="Game/HUD"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = 288.0
+offset_right = -208.0
+offset_bottom = 330.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "TIMER"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
