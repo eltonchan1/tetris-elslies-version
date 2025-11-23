@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=9 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
@@ -37,6 +37,9 @@ bg_color = Color(0.3406349, 0.0014206272, 0.7087354, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03na7"]
 bg_color = Color(0.7967922, 0.37047136, 1, 1)
+
+[sub_resource type="Gradient" id="Gradient_1n30v"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")
@@ -257,6 +260,7 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_value = 5.0
 step = 0.1
+value = 2.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer"]
 layout_mode = 2
@@ -275,7 +279,7 @@ layout_mode = 2
 min_value = 1.0
 max_value = 20.0
 step = 0.1
-value = 1.0
+value = 10.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer"]
 layout_mode = 2
@@ -293,6 +297,7 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_value = 20.0
 step = 0.1
+value = 1.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer"]
 layout_mode = 2
@@ -310,7 +315,7 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 min_value = 5.0
 max_value = 41.0
-value = 5.0
+value = 6.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer"]
 layout_mode = 2
@@ -505,6 +510,22 @@ theme_override_font_sizes/font_size = 30
 text = "TIMER"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="Game"]
+position = Vector2(-88, 520)
+lifetime = 0.5
+explosiveness = 0.86
+emission_shape = 3
+emission_rect_extents = Vector2(16, 4)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_max = 30.0
+angle_min = -720.0
+angle_max = 720.0
+scale_amount_min = 3.0
+scale_amount_max = 5.0
+color_ramp = SubResource("Gradient_1n30v")
+anim_speed_max = 128.0
 
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]

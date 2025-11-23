@@ -2,6 +2,7 @@ extends Node2D
 
 # to do
 	# (take stats n stuff from https://tetrio.wiki.gg/wiki/BLITZ)
+	# (https://www.youtube.com/watch?v=twqjQdSwAiY tetrio effects reference)
 	# add like more satisfying scoring n stuff (numbers)
 	# art redesign & uis
 		# ultrakill style
@@ -20,59 +21,59 @@ extends Node2D
 @onready var active_layer : TileMapLayer = $Game/active
 
 # tetrominoes (using proper SRS coordinates - relative to rotation center)
-# I piece
+# t piece
 var i_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)]
 var i_90 := [Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)]
 var i_180 := [Vector2i(-1, 1), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)]
 var i_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2)]
 var i := [i_0, i_90, i_180, i_270]
 
-# T piece
+# t piece
 var t_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, -1)]
 var t_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 0)]
 var t_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1)]
 var t_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 var t := [t_0, t_90, t_180, t_270]
 
-# O piece
+# o piece
 var o_0 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o_90 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o_180 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o_270 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o := [o_0, o_90, o_180, o_270]
 
-# Z piece
+# z piece
 var z_0 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(0, 0), Vector2i(1, 0)]
 var z_90 := [Vector2i(1, -1), Vector2i(1, 0), Vector2i(0, 0), Vector2i(0, 1)]
 var z_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)]
 var z_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1)]
 var z := [z_0, z_90, z_180, z_270]
 
-# S piece
+# s piece
 var s_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, -1), Vector2i(1, -1)]
 var s_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]
 var s_180 := [Vector2i(-1, 1), Vector2i(0, 1), Vector2i(0, 0), Vector2i(1, 0)]
 var s_270 := [Vector2i(-1, -1), Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, 1)]
 var s := [s_0, s_90, s_180, s_270]
 
-# L piece
+# l piece
 var l_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1)]
 var l_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)]
 var l_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 1)]
 var l_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, -1)]
 var l := [l_0, l_90, l_180, l_270]
 
-# J piece
+# j piece
 var j_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, -1)]
 var j_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, -1)]
 var j_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]
 var j_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, 1)]
 var j := [j_0, j_90, j_180, j_270]
 
-var shapes := [s, l, o, z, i, j, t]
+var shapes := [z, l, o, s, i, j, t]
 var shapes_full := shapes.duplicate()
 
-# SRS wall kick data (offset tests for rotation)
+# srs wall kick
 var srs_offset_jlstz := {
 	"0->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
 	"1->2": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
@@ -103,20 +104,18 @@ var srs_offset_i := {
 	"3->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 2), Vector2i(-1, 1), Vector2i(0, 2), Vector2i(0, 1)]
 }
 
-# grid vars
 const COLS : int = 10
 const ROWS : int = 20
 
-# movement vars
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
 const start_pos := Vector2i(5, 0)
 var cur_pos : Vector2i
 const FRAME_TIME : float = 1.0/60.0
-var gravity : float = 0.02  # G value (cells per frame) - starts slow like Tetrio
-const GRAVITY_INCREASE : float = 0.001  # How much gravity increases per line clear
-const MAX_GRAVITY : float = 20.0  # Max gravity (20G = instant)
+var gravity : float = 0.02
+const GRAVITY_INCREASE : float = 0.001
+const MAX_GRAVITY : float = 20.0
 var gravity_counter : float = 0.0 
 
 # lock delay vars
@@ -129,22 +128,22 @@ const MAX_MOVE_RESETS : int = 15
 # input vars
 var das_left : float = 0.0
 var das_right : float = 0.0
-var das_delay : float = 8.0
-var arr : float = 0.0
-var dcd : float = 0.0
+var das_delay : float = 10.0
+var arr : float = 2.0
+var dcd : float = 1.0
 var left_release_timer : float = 0.0
 var right_release_timer : float = 0.0
-var sdf : float = 21.0
+var sdf : float = 6.0
 
 # hold
 var held_piece = null
 var held_piece_atlas : Vector2i
 var can_hold : bool = true
 
-# game piece vars - NOW USING ARRAYS FOR 5 NEXT PIECES
+# game piece vars
 var piece_type
-var next_pieces : Array = []  # Array of 5 next pieces
-var next_pieces_atlas : Array = []  # Array of 5 atlas coords
+var next_pieces : Array = []
+var next_pieces_atlas : Array = []
 var rotation_index : int = 0
 var active_piece : Array
 var last_action_was_rotation : bool = false
@@ -167,7 +166,7 @@ const SPIN_QUAD: int = 2600
 var game_running : bool
 
 # tilemap vars
-var tile_id : int = 0
+var tile_id : int = 1
 var piece_atlas : Vector2i
 var ghost_atlas : Vector2i = Vector2i(7, 0)
 
@@ -258,7 +257,6 @@ func new_game():
 	timer_running = false
 	$Game/HUD.get_node("TimerLabel").text = "TIME: 0:00.000"
 	
-	# Reset the 7-bag randomizer
 	shapes = shapes_full.duplicate()
 	shapes.shuffle()
 	
@@ -283,13 +281,10 @@ func new_game():
 		print("DEBUG: active_layer cleared successfully")
 	
 	print("DEBUG: Picking pieces")
-	# Pick current piece
 	piece_type = pick_piece()
 	print("DEBUG: piece_type = ", piece_type)
 	piece_atlas = Vector2i(shapes_full.find(piece_type), 0)
 	print("DEBUG: piece_atlas = ", piece_atlas)
-	
-	# Pick 5 next pieces
 	next_pieces.clear()
 	next_pieces_atlas.clear()
 	for i in range(5):
@@ -309,55 +304,46 @@ func _process(delta):
 		handle_input(delta)
 		gravity_counter += gravity
 		if timer_running:
-			game_time += delta  # Add frame time to total
-			update_timer_display()  # Update the label
+			game_time += delta
+			update_timer_display()
 		while gravity_counter >= 1.0:
 			if can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
 				gravity_counter -= 1.0
 			else:
-				# Hit the ground, start lock delay
 				gravity_counter = 0.0
 				if not lock_delay_active:
 					lock_delay_active = true
 					lock_delay_timer = 0.0
 				break
-		# Lock delay timer
 		if lock_delay_active:
 			lock_delay_timer += delta
 			if lock_delay_timer >= LOCK_DELAY_MAX:
 				lock_piece()
 
 func handle_input(delta):
-	# Update DCD timers (count down to zero)
 	left_release_timer = max(0, left_release_timer - delta)
 	right_release_timer = max(0, right_release_timer - delta)
-	# Hard drop takes priority
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 		return
-	# Hold piece
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
 		return
-	# Rotations
 	if Input.is_action_just_pressed("cw_rotation"):
 		rotate_piece_srs(1)
 	if Input.is_action_just_pressed("ccw_rotation"):
 		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
 		rotate_piece_srs(2)
-	# Soft drop - multiply gravity by SDF
 	if Input.is_action_pressed("soft_drop"):
 		if sdf >= 9999:
-			# Infinite SDF = instant drop to bottom
 			while can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
 			gravity_counter = 0.0
 		else:
-			# Apply SDF multiplier to gravity
-			gravity_counter += (gravity * sdf * delta * 60.0)  # *60 to convert to per-frame
-	# LEFT MOVEMENT with DCD check
+			gravity_counter += (gravity * sdf * delta * 60.0)
+	
 	if Input.is_action_pressed("left_move"):
 		if right_release_timer <= 0:
 			das_left += delta
@@ -368,7 +354,7 @@ func handle_input(delta):
 				if das_left >= das_delay_seconds:
 					das_left -= arr_seconds
 				move_piece(Vector2i.LEFT)
-	# RIGHT MOVEMENT with DCD check
+	
 	elif Input.is_action_pressed("right_move"):
 		if left_release_timer <= 0:
 			das_right += delta
@@ -379,7 +365,7 @@ func handle_input(delta):
 				if das_right >= das_delay_seconds:
 					das_right -= arr_seconds
 				move_piece(Vector2i.RIGHT)
-	# NEITHER direction pressed - start DCD timers
+	
 	else:
 		if das_left > 0:
 			right_release_timer = dcd * FRAME_TIME
@@ -387,7 +373,7 @@ func handle_input(delta):
 			left_release_timer = dcd * FRAME_TIME
 		das_left = 0.0
 		das_right = 0.0
-	# Restart game
+	
 	if Input.is_action_just_pressed("restart"):
 		new_game()
 
@@ -404,10 +390,9 @@ func pick_piece():
 
 func create_piece():
 	print("DEBUG: create_piece() START")
-	gravity_counter = 0.0  # Reset gravity counter for new piece
+	gravity_counter = 0.0
 	cur_pos = start_pos
 	
-	# O piece spawns one row higher and one column to the right
 	if piece_type == o:
 		cur_pos = Vector2i(start_pos.x + 1, start_pos.y)
 	
@@ -424,16 +409,14 @@ func create_piece():
 
 func draw_all_next_pieces():
 	clear_next_panel()
-	
-	# Draw all 5 next pieces vertically stacked
-	const SPACING = 3  # Vertical spacing between pieces
+
+	const SPACING = 3
 	
 	for idx in range(5):
 		var base_y = 1 + (idx * SPACING)
 		var next_pos = Vector2i(14, base_y)
 		var current_piece = next_pieces[idx]
 		
-		# Adjust position for specific pieces
 		if current_piece == o:
 			next_pos = Vector2i(14, base_y)
 		elif current_piece == i:
@@ -455,12 +438,10 @@ func clear_ghost_piece():
 				active_layer.erase_cell(Vector2i(j, i))
 
 func update_timer_display():
-	# Convert game_time (seconds) into minutes:seconds.milliseconds
-	var minutes = int(game_time / 60)  # How many full minutes
-	var seconds = int(game_time) % 60  # Remaining seconds (0-59)
-	var milliseconds = int((game_time - int(game_time)) * 1000)  # Decimal part × 1000
-	
-	# Format as M:SS.mmm (e.g., "2:05.328")
+	var minutes = int(game_time / 60)
+	var seconds = int(game_time) % 60
+	var milliseconds = int((game_time - int(game_time)) * 1000)
+
 	var time_string = "%d:%02d.%03d" % [minutes, seconds, milliseconds]
 	
 	# Update the label
@@ -551,20 +532,17 @@ func hold_piece():
 	clear_ghost_piece()
 	
 	if held_piece == null:
-		# First hold - take from next pieces queue
 		held_piece = piece_type
 		held_piece_atlas = piece_atlas
 		piece_type = next_pieces[0]
 		piece_atlas = next_pieces_atlas[0]
 		
-		# Shift next pieces queue and add new piece at end
 		next_pieces.pop_front()
 		next_pieces_atlas.pop_front()
 		var new_next = pick_piece()
 		next_pieces.append(new_next)
 		next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
 	else:
-		# Swap current with held piece
 		var temp_piece = piece_type
 		var temp_atlas = piece_atlas
 		piece_type = held_piece
@@ -588,7 +566,6 @@ func clear_hold_panel():
 			active_layer.erase_cell(Vector2i(i, j))
 
 func clear_next_panel():
-	# Clear larger area for 5 pieces
 	for i in range(12, 18):
 		for j in range(-2, 18):  # Extended to accommodate 5 pieces
 			active_layer.erase_cell(Vector2i(i, j))
@@ -656,12 +633,10 @@ func lock_piece():
 	if last_action_was_rotation:
 		check_spin_before_clear()
 	check_rows()
-	
-	# Move to next piece in queue
+
 	piece_type = next_pieces[0]
 	piece_atlas = next_pieces_atlas[0]
 	
-	# Shift queue and add new piece at end
 	next_pieces.pop_front()
 	next_pieces_atlas.pop_front()
 	var new_next = pick_piece()
@@ -695,7 +670,7 @@ func check_spin_before_clear() -> void :
 	print("DEBUG: Total blocked_corners = ", blocked_corners)
 	if blocked_corners >= 3:
 		print("DEBUG: SPIN DETECTED! Will award bonus after line count")
-		pending_spin_lines = -1  # -1 means "yes it's a spin, count lines later"
+		pending_spin_lines = -1
 	else:
 		print("DEBUG: Not a spin")
 		pending_spin_lines = 0
@@ -752,7 +727,7 @@ func check_rows():
 		if count == COLS:
 			lines_cleared += 1
 			shift_rows(row)
-			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)  # Increase gravity
+			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)
 		else:
 			row -= 1
 			
