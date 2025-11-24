@@ -15,6 +15,7 @@ extends Node2D
 	# sound design & music
 		# satisfying
 	# background that is like echo idk how to describe
+	# the board has one extra row :sob:
 
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $Game/board
@@ -504,7 +505,32 @@ func hard_drop():
 	clear_piece()
 	cur_pos = get_ghost_position()
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
+	spawn_hard_drop_particles()
 	lock_piece()
+
+func spawn_hard_drop_particles():
+	var particle_template = $Game/Particles/HardDropContact
+	var particle_template2 = $Game/Particles/CPUParticles2D
+	for block_offset in active_piece:
+		var block_grid_pos = cur_pos + block_offset
+		var below_pos = block_grid_pos + Vector2i(0,1)
+		var has_contact = not is_free(below_pos)
+		if has_contact:
+			var new_particles = particle_template.duplicate()
+			var new_particles2 = particle_template2.duplicate()
+			$Game/Particles.add_child(new_particles)
+			$Game/Particles.add_child(new_particles2)
+			var block_world_pos = board_layer.map_to_local(block_grid_pos)
+			block_world_pos.y += 16
+			new_particles.position = block_world_pos
+			new_particles2.position = block_world_pos
+			new_particles.one_shot = true
+			new_particles2.one_shot = true
+			new_particles.emitting = true
+			new_particles2.emitting = true
+			new_particles.restart()
+			new_particles2.restart()
+			# new one is -304
 
 func move_piece(dir):
 	if can_move(dir):

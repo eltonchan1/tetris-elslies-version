@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=11 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
@@ -39,6 +39,13 @@ bg_color = Color(0.3406349, 0.0014206272, 0.7087354, 1)
 bg_color = Color(0.7967922, 0.37047136, 1, 1)
 
 [sub_resource type="Gradient" id="Gradient_1n30v"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Curve" id="Curve_1n30v"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.26966298), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_35kre"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="Main" type="Node2D"]
@@ -511,9 +518,13 @@ text = "TIMER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CPUParticles2D" type="CPUParticles2D" parent="Game"]
-position = Vector2(-88, 520)
+[node name="Particles" type="Node2D" parent="Game"]
+
+[node name="HardDropContact" type="CPUParticles2D" parent="Game/Particles"]
+position = Vector2(-256, 64)
+emitting = false
 lifetime = 0.5
+one_shot = true
 explosiveness = 0.86
 emission_shape = 3
 emission_rect_extents = Vector2(16, 4)
@@ -526,6 +537,28 @@ scale_amount_min = 3.0
 scale_amount_max = 5.0
 color_ramp = SubResource("Gradient_1n30v")
 anim_speed_max = 128.0
+
+[node name="HardDropBG" type="CPUParticles2D" parent="Game/Particles"]
+position = Vector2(-320, 64)
+emitting = false
+amount = 24
+lifetime = 2.5
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(32, 320)
+direction = Vector2(0, 0.1)
+spread = 22.0
+gravity = Vector2(0, -300)
+initial_velocity_max = 50.0
+angular_velocity_min = -720.0
+angular_velocity_max = 720.0
+angle_min = -720.0
+angle_max = 720.0
+scale_amount_min = 2.5
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_1n30v")
+color_ramp = SubResource("Gradient_35kre")
 
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
