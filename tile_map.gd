@@ -510,26 +510,26 @@ func hard_drop():
 
 func spawn_hard_drop_particles():
 	var particle_template = $Game/Particles/HardDropContact
-	var particle_template2 = $Game/Particles/CPUParticles2D
+	var particle_bg_template = $Game/Particles/HardDropBG
 	for block_offset in active_piece:
 		var block_grid_pos = cur_pos + block_offset
-		var below_pos = block_grid_pos + Vector2i(0,1)
+		var below_pos = block_grid_pos + Vector2i(0, 1)
 		var has_contact = not is_free(below_pos)
 		if has_contact:
-			var new_particles = particle_template.duplicate()
-			var new_particles2 = particle_template2.duplicate()
-			$Game/Particles.add_child(new_particles)
-			$Game/Particles.add_child(new_particles2)
 			var block_world_pos = board_layer.map_to_local(block_grid_pos)
 			block_world_pos.y += 16
+			var new_particles = particle_template.duplicate()
+			$Game/Particles.add_child(new_particles)
 			new_particles.position = block_world_pos
-			new_particles2.position = block_world_pos
 			new_particles.one_shot = true
-			new_particles2.one_shot = true
 			new_particles.emitting = true
-			new_particles2.emitting = true
-			new_particles.restart()
-			new_particles2.restart()
+			new_particles.finished.connect(new_particles.queue_free)
+			var new_bg_particles = particle_bg_template.duplicate()
+			$Game/Particles.add_child(new_bg_particles)
+			new_bg_particles.position = block_world_pos + Vector2(0,-304)
+			new_bg_particles.one_shot = true
+			new_bg_particles.emitting = true
+			new_bg_particles.finished.connect(new_bg_particles.queue_free)
 			# new one is -304
 
 func move_piece(dir):
