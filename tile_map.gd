@@ -175,6 +175,16 @@ var ghost_atlas : Vector2i = Vector2i(7, 0)
 var game_time : float = 0.0
 var timer_running : bool = false
 
+# camera system vars
+var camera_offset : Vector2 = Vector2.ZERO
+const CAMERA_NUDGE_AMOUNT : float = 8.0
+const CAMERA_RETURN_SPEED : float = 15.0
+
+# screen shake vars
+var trauma : float = 0.0
+const TRAUMA_DECAY : float = 1.5
+const MAX_SHAKE_OFFSET : float = 30.0
+
 func _ready():
 	print("DEBUG: _ready() called")
 	main_menu(true)
@@ -294,6 +304,11 @@ func new_game():
 		next_pieces_atlas.append(Vector2i(shapes_full.find(next), 0))
 		print("DEBUG: next_pieces[", i, "] = ", next)
 	
+	# reset camera
+	camera_offset = Vector2.ZERO
+	trauma = 0.0
+	$Game/Camera2D.offset = Vector2.ZERO
+	
 	game_running = true
 	timer_running = true
 	print("DEBUG: About to create_piece()")
@@ -303,6 +318,7 @@ func new_game():
 func _process(delta):
 	if game_running:
 		handle_input(delta)
+		update_camera(delta)
 		gravity_counter += gravity
 		if timer_running:
 			game_time += delta
@@ -544,7 +560,12 @@ func move_piece(dir):
 			print("DEBUG: Moved left/right - rotation flag reset to FALSE")
 			reset_lock_delay()
 	else:
-		if dir == Vector2i.DOWN:
+		# collision detected - nudge camera
+		if dir == Vector2i.LEFT:
+			nudge_camera(Vector2.LEFT)
+		elif dir == Vector2i.RIGHT:
+			nudge_camera(Vector2.RIGHT)
+		elif dir == Vector2i.DOWN:
 			if not lock_delay_active:
 				lock_delay_active = true
 				lock_delay_timer = 0.0
@@ -655,6 +676,10 @@ func get_line_clear_score(lines: int) -> int:
 
 func lock_piece():
 	print("DEBUG: lock_piece() called")
+	
+	# nudge camera down on ground impact
+	nudge_camera(Vector2.DOWN)
+	
 	land_piece()
 	if last_action_was_rotation:
 		check_spin_before_clear()
@@ -761,6 +786,8 @@ func check_rows():
 	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
 	
 	if lines_cleared > 0:
+		# add screen shake based on lines cleared
+		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
 		var was_spin = (pending_spin_lines == -1)
 		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
 		
@@ -877,3 +904,23 @@ func _on_sdf_slider_value_changed(value: float) -> void:
 		sdf = value
 		print("DEBUG SDF: Set sdf to ", value)
 	print("DEBUG SDF: Current sdf value is now: ", sdf)
+
+func update_camera(delta):
+	# quickly return camera to center
+	camera_offset = camera_offset.lerp(Vector2.ZERO, CAMERA_RETURN_SPEED * delta)
+	
+	# decay trauma for screen shake
+	trauma = max(trauma - TRAUMA_DECAY * delta, 0.0)
+	
+	# calculate shake offset
+	var shake_offset = Vector2.ZERO
+	if trauma > 0.0:
+		var shake_amount = trauma * trauma
+		shake_offset.x = randf_range(-MAX_SHAKE_OFFSET, MAX_SHAKE_OFFSET) * shake_amount
+		shake_offset.y = randf_range(-MAX_SHAKE_OFFSET, MAX_SHAKE_OFFSET) * shake_amount
+	
+	# apply both offsets to camera
+	$Game/Camera2D.offset = camera_offset + shake_offset
+
+func nudge_camera(direction: Vector2):
+	camera_offset = direction * CAMERA_NUDGE_AMOUNT

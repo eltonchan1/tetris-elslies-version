@@ -560,6 +560,17 @@ scale_amount_max = 5.0
 scale_amount_curve = SubResource("Curve_1n30v")
 color_ramp = SubResource("Gradient_35kre")
 
+[node name="CPUParticles2D" type="CPUParticles2D" parent="Game/Particles"]
+position = Vector2(192, 656)
+amount = 10
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(160, 16)
+gravity = Vector2(0, 0)
+initial_velocity_max = 50.0
+scale_amount_min = 10.0
+scale_amount_max = 10.0
+
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/AboutButton" to="." method="_on_about_button_pressed"]
