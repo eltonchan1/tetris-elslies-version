@@ -111,7 +111,7 @@ const ROWS : int = 19
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
 const steps_req : int = 50
-const start_pos := Vector2i(5, 0)
+const start_pos := Vector2i(5, -1)
 var cur_pos : Vector2i
 const FRAME_TIME : float = 1.0/60.0
 var gravity : float = 0.02
@@ -360,7 +360,7 @@ func handle_input(delta):
 				move_piece(Vector2i.DOWN)
 			gravity_counter = 0.0
 		else:
-			gravity_counter += (BASE_SOFT_DROP * sdf * delta * 60.0)
+			gravity_counter += (2.5 * BASE_SOFT_DROP * sdf * delta * 60.0)
 	else:
 		gravity_counter += gravity
 	
