@@ -321,7 +321,6 @@ func _process(delta):
 	if game_running:
 		handle_input(delta)
 		update_camera(delta)
-		gravity_counter += (BASE_SOFT_DROP * sdf * delta * 60.0)
 		if timer_running:
 			game_time += delta
 			update_timer_display()
@@ -361,7 +360,9 @@ func handle_input(delta):
 				move_piece(Vector2i.DOWN)
 			gravity_counter = 0.0
 		else:
-			gravity_counter += (gravity * sdf * delta * 60.0)
+			gravity_counter += (BASE_SOFT_DROP * sdf * delta * 60.0)
+	else:
+		gravity_counter += gravity
 	
 	if Input.is_action_pressed("left_move"):
 		if right_release_timer <= 0:
