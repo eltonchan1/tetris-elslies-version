@@ -135,6 +135,7 @@ var dcd : float = 1.0
 var left_release_timer : float = 0.0
 var right_release_timer : float = 0.0
 var sdf : float = 6.0
+const BASE_SOFT_DROP : float = 0.01667
 
 # hold
 var held_piece = null
@@ -206,6 +207,7 @@ func main_menu(on: bool):
 		$MainMenu/PopUp/About.visible = false
 		$MainMenu/PopUp/Settings.visible = false
 		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		game_running = false
 	if on == false:
 		$Game.visible = true
 		$MainMenu.visible = false
@@ -246,7 +248,7 @@ func new_game():
 	
 	print("DEBUG: Resetting variables")
 	score = 0
-	gravity = 0.02
+	gravity = 0.01667
 	gravity_counter = 0.0
 	lock_delay_timer = 0.0
 	lock_delay_active = false
@@ -319,7 +321,7 @@ func _process(delta):
 	if game_running:
 		handle_input(delta)
 		update_camera(delta)
-		gravity_counter += gravity
+		gravity_counter += (BASE_SOFT_DROP * sdf * delta * 60.0)
 		if timer_running:
 			game_time += delta
 			update_timer_display()
@@ -776,7 +778,7 @@ func check_rows():
 				count += 1
 		if count == COLS:
 			lines_cleared += 1
-			spawn_line_clear_particles()
+			spawn_line_clear_particles(row - lines_cleared + 1)
 			shift_rows(row)
 			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)
 		else:
@@ -855,12 +857,14 @@ func shift_rows(row):
 			else:
 				board_layer.set_cell(Vector2i(j + 1, i), tile_id, atlas)
 
-func spawn_line_clear_particles():
+func spawn_line_clear_particles(row: int):
 	var particle_template = $Game/Particles/LineClear
-	for rows in ROWS:
+	for col in range(COLS):
+		var block_grid_pos = Vector2i(col + 1, row)
+		var block_world_pos = board_layer.map_to_local(block_grid_pos)
 		var new_particles = particle_template.duplicate()
 		$Game/Particles.add_child(new_particles)
-		# new_particles.position = block_world_pos
+		new_particles.position = block_world_pos
 		new_particles.one_shot = true
 		new_particles.emitting = true
 		new_particles.finished.connect(new_particles.queue_free)
