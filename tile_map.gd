@@ -106,7 +106,7 @@ var srs_offset_i := {
 }
 
 const COLS : int = 10
-const ROWS : int = 20
+const ROWS : int = 19
 
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
@@ -278,7 +278,7 @@ func new_game():
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
 	if board_layer != null:
 		print("DEBUG: Clearing only playfield area (not walls/floor)")
-		for i in range(-5, 21):
+		for i in range(-5, 20):
 			for j in range(1, 11):
 				board_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: Playfield cleared successfully")
@@ -546,7 +546,6 @@ func spawn_hard_drop_particles():
 			new_bg_particles.one_shot = true
 			new_bg_particles.emitting = true
 			new_bg_particles.finished.connect(new_bg_particles.queue_free)
-			# new one is -304
 
 func move_piece(dir):
 	if can_move(dir):
@@ -678,7 +677,7 @@ func lock_piece():
 	print("DEBUG: lock_piece() called")
 	
 	# nudge camera down on ground impact
-	nudge_camera(Vector2.DOWN)
+	nudge_camera(Vector2.UP)
 	
 	land_piece()
 	if last_action_was_rotation:
@@ -777,6 +776,7 @@ func check_rows():
 				count += 1
 		if count == COLS:
 			lines_cleared += 1
+			spawn_line_clear_particles()
 			shift_rows(row)
 			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)
 		else:
@@ -854,6 +854,16 @@ func shift_rows(row):
 				board_layer.erase_cell(Vector2i(j + 1, i))
 			else:
 				board_layer.set_cell(Vector2i(j + 1, i), tile_id, atlas)
+
+func spawn_line_clear_particles():
+	var particle_template = $Game/Particles/LineClear
+	for rows in ROWS:
+		var new_particles = particle_template.duplicate()
+		$Game/Particles.add_child(new_particles)
+		# new_particles.position = block_world_pos
+		new_particles.one_shot = true
+		new_particles.emitting = true
+		new_particles.finished.connect(new_particles.queue_free)
 
 func is_board_empty() -> bool:
 	for row in range(1, ROWS + 1):
