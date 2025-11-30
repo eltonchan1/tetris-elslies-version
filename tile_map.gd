@@ -20,6 +20,7 @@ extends Node2D
 # tilemap layer references
 @onready var board_layer : TileMapLayer = $Game/board
 @onready var active_layer : TileMapLayer = $Game/active
+@onready var wave_material : ShaderMaterial = $Game/Particles/CanvasLayer/ColorRect.material
 
 # tetrominoes (using proper SRS coordinates - relative to rotation center)
 # t piece
@@ -185,6 +186,8 @@ const CAMERA_RETURN_SPEED : float = 15.0
 var trauma : float = 0.0
 const TRAUMA_DECAY : float = 1.5
 const MAX_SHAKE_OFFSET : float = 30.0
+var wave_intensity : float = 0.0
+const WAVE_DECAY : float = 2.0
 
 func _ready():
 	print("DEBUG: _ready() called")
@@ -207,6 +210,7 @@ func main_menu(on: bool):
 		$MainMenu/PopUp/About.visible = false
 		$MainMenu/PopUp/Settings.visible = false
 		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		$Game/Particles/CanvasLayer/ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		game_running = false
 	if on == false:
 		$Game.visible = true
@@ -778,8 +782,8 @@ func check_rows():
 	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
 	
 	if lines_cleared > 0:
-		# add screen shake based on lines cleared
 		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
+		wave_intensity = lines_cleared * 0.3
 		var was_spin = (pending_spin_lines == -1)
 		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
 		
@@ -915,6 +919,10 @@ func update_camera(delta):
 	
 	# decay trauma for screen shake
 	trauma = max(trauma - TRAUMA_DECAY * delta, 0.0)
+	wave_intensity = max(wave_intensity - WAVE_DECAY * delta, 0.0)
+	
+	if wave_material:
+		wave_material.set_shader_parameter("amplitude", wave_intensity * 20.0)
 	
 	# calculate shake offset
 	var shake_offset = Vector2.ZERO

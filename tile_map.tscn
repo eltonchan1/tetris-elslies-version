@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=13 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
@@ -50,6 +50,8 @@ colors = PackedColorArray(1, 1, 1, 0.7490196, 1, 1, 1, 0)
 
 [sub_resource type="Gradient" id="Gradient_03na7"]
 colors = PackedColorArray(1, 1, 1, 0.4, 1, 1, 1, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1n30v"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")
@@ -577,6 +579,22 @@ initial_velocity_max = 5.0
 scale_amount_min = 32.0
 scale_amount_max = 32.0
 color_ramp = SubResource("Gradient_03na7")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Game/Particles"]
+layer = 10
+
+[node name="ColorRect" type="ColorRect" parent="Game/Particles/CanvasLayer"]
+material = SubResource("ShaderMaterial_1n30v")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -192.0
+offset_top = -64.0
+offset_right = -192.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
 
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
