@@ -616,7 +616,7 @@ func clear_hold_panel():
 
 func clear_next_panel():
 	for i in range(12, 18):
-		for j in range(-2, 18):  # Extended to accommodate 5 pieces
+		for j in range(-2, 18):
 			active_layer.erase_cell(Vector2i(i, j))
 
 func reset_lock_delay():
@@ -678,15 +678,11 @@ func get_line_clear_score(lines: int) -> int:
 
 func lock_piece():
 	print("DEBUG: lock_piece() called")
-	
-	# nudge camera down on ground impact
 	nudge_camera(Vector2.UP)
-	
 	land_piece()
 	if last_action_was_rotation:
 		check_spin_before_clear()
 	check_rows()
-
 	piece_type = next_pieces[0]
 	piece_atlas = next_pieces_atlas[0]
 	
@@ -695,7 +691,6 @@ func lock_piece():
 	var new_next = pick_piece()
 	next_pieces.append(new_next)
 	next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
-	
 	clear_ghost_piece()
 	can_hold = true
 	create_piece()
@@ -704,14 +699,12 @@ func lock_piece():
 func check_spin_before_clear() -> void :
 	print("DEBUG: check_spin_before_clear() - checking corners NOW")
 	print("DEBUG: cur_pos = ", cur_pos)
-	
 	var corners = [
 		Vector2i(-1, -1),
 		Vector2i(1, -1),
 		Vector2i(-1, 1),
 		Vector2i(1, 1),
 	]
-	
 	var blocked_corners = 0
 	for corner in corners:
 		var check_pos = cur_pos + corner
@@ -719,7 +712,6 @@ func check_spin_before_clear() -> void :
 		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
 		if is_blocked:
 			blocked_corners += 1
-		
 	print("DEBUG: Total blocked_corners = ", blocked_corners)
 	if blocked_corners >= 3:
 		print("DEBUG: SPIN DETECTED! Will award bonus after line count")
@@ -754,13 +746,10 @@ func is_free(pos):
 	var cell_id = board_layer.get_cell_source_id(pos)
 	if cell_id != -1:
 		return false
-	
 	if pos.y > ROWS:
 		return false
-	
 	if pos.x < 1 or pos.x > COLS:
 		return false
-	
 	return true
 
 func land_piece():

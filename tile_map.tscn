@@ -46,10 +46,10 @@ _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.26966298), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="Gradient" id="Gradient_35kre"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+colors = PackedColorArray(1, 1, 1, 0.7490196, 1, 1, 1, 0)
 
 [sub_resource type="Gradient" id="Gradient_03na7"]
-colors = PackedColorArray(1, 1, 1, 0.49803922, 1, 1, 1, 0)
+colors = PackedColorArray(1, 1, 1, 0.4, 1, 1, 1, 0)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")
@@ -526,6 +526,7 @@ vertical_alignment = 1
 [node name="HardDropContact" type="CPUParticles2D" parent="Game/Particles"]
 position = Vector2(-256, 64)
 emitting = false
+amount = 5
 lifetime = 0.5
 one_shot = true
 explosiveness = 0.86
@@ -533,18 +534,18 @@ emission_shape = 3
 emission_rect_extents = Vector2(16, 4)
 spread = 180.0
 gravity = Vector2(0, 0)
-initial_velocity_max = 30.0
+initial_velocity_max = 15.0
 angle_min = -720.0
 angle_max = 720.0
-scale_amount_min = 3.0
-scale_amount_max = 5.0
+scale_amount_min = 4.0
+scale_amount_max = 6.0
 color_ramp = SubResource("Gradient_1n30v")
 anim_speed_max = 128.0
 
 [node name="HardDropBG" type="CPUParticles2D" parent="Game/Particles"]
 position = Vector2(-320, 64)
 emitting = false
-amount = 24
+amount = 6
 lifetime = 2.5
 one_shot = true
 explosiveness = 1.0
