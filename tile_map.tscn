@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=14 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
+[ext_resource type="Shader" uid="uid://limpibugju4k" path="res://lineclearwave.gdshader" id="3_35kre"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
 resource_name = "tetrisblock"
@@ -52,6 +53,11 @@ colors = PackedColorArray(1, 1, 1, 0.7490196, 1, 1, 1, 0)
 colors = PackedColorArray(1, 1, 1, 0.4, 1, 1, 1, 0)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1n30v"]
+shader = ExtResource("3_35kre")
+shader_parameter/amplitude = 0.0
+shader_parameter/frequency = 10.0
+shader_parameter/speed = 3.0
+shader_parameter/center = Vector2(0.5, 0.5)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")

@@ -568,9 +568,9 @@ func move_piece(dir):
 	else:
 		# collision detected - nudge camera
 		if dir == Vector2i.LEFT:
-			nudge_camera(Vector2.LEFT)
-		elif dir == Vector2i.RIGHT:
 			nudge_camera(Vector2.RIGHT)
+		elif dir == Vector2i.RIGHT:
+			nudge_camera(Vector2.LEFT)
 		elif dir == Vector2i.DOWN:
 			if not lock_delay_active:
 				lock_delay_active = true
@@ -782,7 +782,7 @@ func check_rows():
 	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
 	
 	if lines_cleared > 0:
-		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
+		#trauma = min(trauma + (lines_cleared * 0.25), 1.0) here
 		wave_intensity = lines_cleared * 0.3
 		var was_spin = (pending_spin_lines == -1)
 		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
@@ -922,7 +922,7 @@ func update_camera(delta):
 	wave_intensity = max(wave_intensity - WAVE_DECAY * delta, 0.0)
 	
 	if wave_material:
-		wave_material.set_shader_parameter("amplitude", wave_intensity * 20.0)
+		wave_material.set_shader_parameter("center", Vector2(0.5, 0.5))
 	
 	# calculate shake offset
 	var shake_offset = Vector2.ZERO
