@@ -922,6 +922,7 @@ func update_camera(delta):
 	wave_intensity = max(wave_intensity - WAVE_DECAY * delta, 0.0)
 	
 	if wave_material:
+		wave_material.set_shader_parameter("amplitude", wave_intensity)
 		wave_material.set_shader_parameter("center", Vector2(0.5, 0.5))
 	
 	# calculate shake offset
