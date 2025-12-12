@@ -871,6 +871,7 @@ func check_rows():
 		basescore = 0
 		$Game/HUD/SaveScore/ComboMult.text = str(combomult)
 		$Game/HUD/SaveScore/BaseScore.text = str(basescore)
+		$Game/HUD/SaveScore/AllClearExp.text = "0"
 		last_clear_had_lines = false
 
 func shift_rows(row):
