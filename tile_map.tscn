@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=15 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
@@ -51,6 +51,9 @@ colors = PackedColorArray(1, 1, 1, 0.7490196, 1, 1, 1, 0)
 
 [sub_resource type="Gradient" id="Gradient_03na7"]
 colors = PackedColorArray(1, 1, 1, 0.4, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_xftlc"]
+colors = PackedColorArray(1, 1, 1, 0.24705882, 1, 1, 1, 0)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1n30v"]
 shader = ExtResource("3_35kre")
@@ -529,6 +532,39 @@ text = "TIMER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SaveScore" type="Control" parent="Game/HUD"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BaseScore" type="Label" parent="Game/HUD/SaveScore"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 48.0
+offset_bottom = 31.0
+
+[node name="ComboMult" type="Label" parent="Game/HUD/SaveScore"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 8.0
+offset_right = 96.0
+offset_bottom = 31.0
+
+[node name="B2BMult" type="Label" parent="Game/HUD/SaveScore"]
+layout_mode = 0
+offset_left = 120.0
+offset_top = 16.0
+offset_right = 160.0
+offset_bottom = 39.0
+
+[node name="AllClearExp" type="Label" parent="Game/HUD/SaveScore"]
+layout_mode = 0
+offset_left = 168.0
+offset_top = 16.0
+offset_right = 208.0
+offset_bottom = 39.0
+
 [node name="Particles" type="Node2D" parent="Game"]
 
 [node name="HardDropContact" type="CPUParticles2D" parent="Game/Particles"]
@@ -586,18 +622,36 @@ scale_amount_min = 32.0
 scale_amount_max = 32.0
 color_ramp = SubResource("Gradient_03na7")
 
+[node name="LineClearBoard" type="CPUParticles2D" parent="Game/Particles"]
+position = Vector2(192, 336)
+emitting = false
+amount = 64
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(192, 336)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_max = 5.0
+angle_min = -720.0
+angle_max = 720.0
+scale_amount_min = 5.0
+scale_amount_max = 10.0
+color_ramp = SubResource("Gradient_xftlc")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="Game/Particles"]
 layer = 10
 
 [node name="ColorRect" type="ColorRect" parent="Game/Particles/CanvasLayer"]
+visible = false
 material = SubResource("ShaderMaterial_1n30v")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -192.0
-offset_top = -64.0
+offset_top = -63.0
 offset_right = -192.0
-offset_bottom = -64.0
+offset_bottom = -63.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0)

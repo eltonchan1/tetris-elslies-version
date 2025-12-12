@@ -1,0 +1,24 @@
+regular scoring
+	single -> 100
+	double -> 300
+	triple -> 500
+	tetris -> 800
+	spin single -> 800
+	spin double -> 1200
+	spin triple -> 1600
+	spin quad -> 2600
+combo
+	score so far in combo ^ 1 + (combo/10)
+	so it could be like a menu pop up like 
+		(scoreSoFar) x combo?
+	so 3 combo all singles 300 x 3 = 900 
+	6 combo 2 doubles & 4 singles 1000 x 6 = 6000
+balatro calculation method????
+so it would be only when scoring ig
+maybe b2b is ^...
+	surge???
+
+normal scoring
+	score * combo * b2b???
+surge
+	lines cleared with b2b ^ b2b???
