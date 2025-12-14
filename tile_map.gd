@@ -684,6 +684,7 @@ func award_spin_bonus(lines: int) -> void:
 	basescore += bonus
 	score += bonus
 	$Game/HUD/SaveScore/BaseScore.text = str(basescore)
+	$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 	print("SPIN DETECTED! +" + str(bonus) + " points")
 
 func get_line_clear_score(lines: int) -> int:
@@ -971,3 +972,13 @@ func update_camera(delta):
 
 func nudge_camera(direction: Vector2):
 	camera_offset = direction * CAMERA_NUDGE_AMOUNT
+
+func calc_savescore() -> int:
+	var allclear : int = 0
+	if allclearexp == true:
+		allclear = 2
+	else:
+		allclear = 1
+	var calcsavescore = (basescore * combomult * b2bmult) ** allclear
+	return calcsavescore
+	print(calcsavescore)

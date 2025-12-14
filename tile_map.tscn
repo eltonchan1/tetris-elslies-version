@@ -565,6 +565,14 @@ offset_top = 16.0
 offset_right = 208.0
 offset_bottom = 39.0
 
+[node name="Calculation" type="Label" parent="Game/HUD/SaveScore"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 88.0
+offset_right = 176.0
+offset_bottom = 136.0
+text = "test"
+
 [node name="Particles" type="Node2D" parent="Game"]
 
 [node name="HardDropContact" type="CPUParticles2D" parent="Game/Particles"]
