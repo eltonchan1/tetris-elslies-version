@@ -682,7 +682,7 @@ func award_spin_bonus(lines: int) -> void:
 		4: bonus = SPIN_QUAD
 	
 	basescore += bonus
-	score += bonus
+	#score += bonus
 	$Game/HUD/SaveScore/BaseScore.text = str(basescore)
 	$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 	print("SPIN DETECTED! +" + str(bonus) + " points")
@@ -810,8 +810,9 @@ func check_rows():
 			var line_clear_points = get_line_clear_score(lines_cleared)
 			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
 			basescore += line_clear_points
-			score += line_clear_points
+			#score += line_clear_points
 			$Game/HUD/SaveScore/BaseScore.text = str(basescore)
+			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		pending_spin_lines = 0
 		
 		if last_clear_had_lines:
@@ -821,11 +822,13 @@ func check_rows():
 			print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
 			$Game/HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
 			$Game/HUD/SaveScore/ComboMult.text = str(combomult)
+			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		else:
 			print("First line clear - no combo yet")
 			$Game/HUD.get_node("ComboLabel").text = ""
 			combomult += 1
 			$Game/HUD/SaveScore/ComboMult.text = str(combomult)
+			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		last_clear_had_lines = true
 		
 		if is_board_empty():
@@ -834,6 +837,7 @@ func check_rows():
 			$Game/HUD.get_node("AllClearLabel").text = "ALL CLEAR"
 			$Game/HUD/SaveScore/AllClearExp.text = "2"
 			print("ALL CLEAR! +", all_clear_bonus, " points")
+			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		else:
 			allclearexp = false
 			$Game/HUD/SaveScore/AllClearExp.text = "0"
@@ -846,12 +850,14 @@ func check_rows():
 				print("BACK-TO-BACK x", b2b_count, "! +", b2b_bonus, " bonus")
 				$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
+				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 			else:
 				b2b_count = 1
 				b2bmult = 2
 				print("Back-to-Back started!")
 				$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
 				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
+				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 			last_clear_was_difficult = true
 		else:
 			if b2b_count > 0:
@@ -860,11 +866,13 @@ func check_rows():
 				b2bmult = 1
 				$Game/HUD.get_node("B2BLabel").text = ""
 				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
+				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 				last_clear_was_difficult = false
-		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+		#$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	else:
 		if combo_count > 0:
 			print("Combo broken!")
+		score += calc_savescore()
 		$Game/HUD.get_node("ComboLabel").text = ""
 		$Game/HUD.get_node("AllClearLabel").text = ""
 		combo_count = 0
@@ -873,6 +881,7 @@ func check_rows():
 		$Game/HUD/SaveScore/ComboMult.text = str(combomult)
 		$Game/HUD/SaveScore/BaseScore.text = str(basescore)
 		$Game/HUD/SaveScore/AllClearExp.text = "0"
+		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 		last_clear_had_lines = false
 
 func shift_rows(row):
@@ -981,4 +990,3 @@ func calc_savescore() -> int:
 		allclear = 1
 	var calcsavescore = (basescore * combomult * b2bmult) ** allclear
 	return calcsavescore
-	print(calcsavescore)
