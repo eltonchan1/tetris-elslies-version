@@ -1,8 +1,6 @@
 extends Node2D
 
 # to do
-	# (take stats n stuff from https://tetrio.wiki.gg/wiki/BLITZ)
-	# (https://www.youtube.com/watch?v=twqjQdSwAiY tetrio effects reference)
 	# add like more satisfying scoring n stuff (numbers)
 	# art redesign & uis
 		# ultrakill style
@@ -15,57 +13,94 @@ extends Node2D
 	# sound design & music
 		# satisfying
 	# background that is like echo idk how to describe
-	# the board has one extra row :sob:
 
-# tilemap layer references
+# ============================================================================
+# NODE REFERENCES
+# ============================================================================
+
 @onready var board_layer : TileMapLayer = $Game/board
 @onready var active_layer : TileMapLayer = $Game/active
-@onready var wave_material : ShaderMaterial = $Game/Particles/CanvasLayer/ColorRect.material
+@onready var wave_material : ShaderMaterial = $"Game/Particles/CanvasLayer/ColorRect".material
 
-# tetrominoes (using proper SRS coordinates - relative to rotation center)
-# t piece
+# ============================================================================
+# CONSTANTS
+# ============================================================================
+
+const COLS : int = 10
+const ROWS : int = 19
+const FRAME_TIME : float = 1.0/60.0
+const GRAVITY_INCREASE : float = 0.001
+const MAX_GRAVITY : float = 20.0
+const LOCK_DELAY_MAX : float = 0.5
+const MAX_MOVE_RESETS : int = 15
+const BASE_SOFT_DROP : float = 0.01667
+const CAMERA_NUDGE_AMOUNT : float = 8.0
+const CAMERA_RETURN_SPEED : float = 15.0
+const TRAUMA_DECAY : float = 1.5
+const MAX_SHAKE_OFFSET : float = 30.0
+const WAVE_DECAY : float = 2.0
+
+# Scoring constants
+const SINGLE : int = 100
+const DOUBLE : int = 300
+const TRIPLE : int = 500
+const QUAD : int = 800
+const SPIN_SINGLE: int = 800
+const SPIN_DOUBLE: int = 1200
+const SPIN_TRIPLE: int = 1600
+const SPIN_QUAD: int = 2600
+
+const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
+const start_pos := Vector2i(5, -1)
+const steps_req : int = 50
+
+# ============================================================================
+# TETROMINO DEFINITIONS (SRS coordinates)
+# ============================================================================
+
+# I piece
 var i_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)]
 var i_90 := [Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)]
 var i_180 := [Vector2i(-1, 1), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)]
 var i_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2)]
 var i := [i_0, i_90, i_180, i_270]
 
-# t piece
+# T piece
 var t_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, -1)]
 var t_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 0)]
 var t_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1)]
 var t_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, 0)]
 var t := [t_0, t_90, t_180, t_270]
 
-# o piece
+# O piece
 var o_0 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o_90 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o_180 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o_270 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]
 var o := [o_0, o_90, o_180, o_270]
 
-# z piece
+# Z piece
 var z_0 := [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(0, 0), Vector2i(1, 0)]
 var z_90 := [Vector2i(1, -1), Vector2i(1, 0), Vector2i(0, 0), Vector2i(0, 1)]
 var z_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)]
 var z_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1)]
 var z := [z_0, z_90, z_180, z_270]
 
-# s piece
+# S piece
 var s_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, -1), Vector2i(1, -1)]
 var s_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]
 var s_180 := [Vector2i(-1, 1), Vector2i(0, 1), Vector2i(0, 0), Vector2i(1, 0)]
 var s_270 := [Vector2i(-1, -1), Vector2i(-1, 0), Vector2i(0, 0), Vector2i(0, 1)]
 var s := [s_0, s_90, s_180, s_270]
 
-# l piece
+# L piece
 var l_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1)]
 var l_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1)]
 var l_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 1)]
 var l_270 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(-1, -1)]
 var l := [l_0, l_90, l_180, l_270]
 
-# j piece
+# J piece
 var j_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, -1)]
 var j_90 := [Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, -1)]
 var j_180 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1)]
@@ -75,7 +110,10 @@ var j := [j_0, j_90, j_180, j_270]
 var shapes := [z, l, o, s, i, j, t]
 var shapes_full := shapes.duplicate()
 
-# srs wall kick
+# ============================================================================
+# SRS WALL KICK DATA
+# ============================================================================
+
 var srs_offset_jlstz := {
 	"0->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
 	"1->2": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
@@ -106,28 +144,24 @@ var srs_offset_i := {
 	"3->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 2), Vector2i(-1, 1), Vector2i(0, 2), Vector2i(0, 1)]
 }
 
-const COLS : int = 10
-const ROWS : int = 19
+# ============================================================================
+# GAME STATE VARIABLES
+# ============================================================================
 
-const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 var steps : Array
-const steps_req : int = 50
-const start_pos := Vector2i(5, -1)
 var cur_pos : Vector2i
-const FRAME_TIME : float = 1.0/60.0
 var gravity : float = 0.02
-const GRAVITY_INCREASE : float = 0.001
-const MAX_GRAVITY : float = 20.0
 var gravity_counter : float = 0.0 
+var game_running : bool
+var game_time : float = 0.0
+var timer_running : bool = false
 
-# lock delay vars
+# Lock delay
 var lock_delay_timer : float = 0.0
-const LOCK_DELAY_MAX : float = 0.5
 var lock_delay_active : bool = false
 var move_reset_count : int = 0
-const MAX_MOVE_RESETS : int = 15
 
-# input vars
+# Input handling
 var das_left : float = 0.0
 var das_right : float = 0.0
 var das_delay : float = 10.0
@@ -136,14 +170,13 @@ var dcd : float = 1.0
 var left_release_timer : float = 0.0
 var right_release_timer : float = 0.0
 var sdf : float = 6.0
-const BASE_SOFT_DROP : float = 0.01667
 
-# hold
+# Hold system
 var held_piece = null
 var held_piece_atlas : Vector2i
 var can_hold : bool = true
 
-# game piece vars
+# Active piece
 var piece_type
 var next_pieces : Array = []
 var next_pieces_atlas : Array = []
@@ -152,7 +185,7 @@ var active_piece : Array
 var last_action_was_rotation : bool = false
 var pending_spin_lines : int = 0
 
-# game vars
+# Scoring
 var score : int
 var basescore : int
 var combomult : int
@@ -162,50 +195,42 @@ var combo_count : int = 0
 var last_clear_had_lines : bool = false
 var b2b_count : int = 0
 var last_clear_was_difficult : bool = false
-const SINGLE : int = 100
-const DOUBLE : int = 300
-const TRIPLE : int = 500
-const QUAD : int = 800
-const SPIN_SINGLE: int = 800
-const SPIN_DOUBLE: int = 1200
-const SPIN_TRIPLE: int = 1600
-const SPIN_QUAD: int = 2600
-var game_running : bool
 
-# tilemap vars
+# Tilemap
 var tile_id : int = 1
 var piece_atlas : Vector2i
 var ghost_atlas : Vector2i = Vector2i(7, 0)
 
-# timer vars
-var game_time : float = 0.0
-var timer_running : bool = false
-
-# camera system vars
+# Camera & effects
 var camera_offset : Vector2 = Vector2.ZERO
-const CAMERA_NUDGE_AMOUNT : float = 8.0
-const CAMERA_RETURN_SPEED : float = 15.0
-
-# screen shake vars
 var trauma : float = 0.0
-const TRAUMA_DECAY : float = 1.5
-const MAX_SHAKE_OFFSET : float = 30.0
 var wave_intensity : float = 0.0
-const WAVE_DECAY : float = 2.0
+
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
 
 func _ready():
 	print("DEBUG: _ready() called")
 	main_menu(true)
+	
+	# Initialize settings UI
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - arr
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.value = 20.0 - das_delay + 1.0
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.value = 20.0 - dcd
+	
 	if sdf >= 9999:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = 41
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = sdf
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(sdf)) + "X"
+	
 	print("DEBUG: _ready() complete")
+
+# ============================================================================
+# MENU FUNCTIONS
+# ============================================================================
 
 func main_menu(on: bool):
 	if on == true:
@@ -249,11 +274,16 @@ func _on_settings_exit_button_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = false
 	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
+# ============================================================================
+# GAME LOOP
+# ============================================================================
+
 func new_game():
 	print("DEBUG: new_game() START")
 	game_running = false
 	active_piece = []
 	
+	# Reset game state
 	print("DEBUG: Resetting variables")
 	score = 0
 	basescore = 0
@@ -275,6 +305,10 @@ func new_game():
 	last_clear_had_lines = false
 	b2b_count = 0
 	last_clear_was_difficult = false
+	game_time = 0.0
+	timer_running = false
+	
+	# Reset UI labels
 	$Game/HUD.get_node("ComboLabel").text = ""
 	$Game/HUD.get_node("B2BLabel").text = ""
 	$Game/HUD.get_node("AllClearLabel").text = ""
@@ -282,17 +316,15 @@ func new_game():
 	$Game/HUD/SaveScore/ComboMult.text = "0"
 	$Game/HUD/SaveScore/B2BMult.text = "0"
 	$Game/HUD/SaveScore/AllClearExp.text = "0"
-	game_time = 0.0
-	timer_running = false
 	$Game/HUD.get_node("TimerLabel").text = "TIME: 0:00.000"
-	
-	shapes = shapes_full.duplicate()
-	shapes.shuffle()
-	
-	print("DEBUG: Hiding GameOverLabel")
 	$Game/HUD.get_node("GameOverLabel").hide()
 	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
 	
+	# Reset bag randomizer
+	shapes = shapes_full.duplicate()
+	shapes.shuffle()
+	
+	# Clear playfield
 	print("DEBUG: About to clear board - board_layer is: ", board_layer)
 	if board_layer != null:
 		print("DEBUG: Clearing only playfield area (not walls/floor)")
@@ -301,6 +333,7 @@ func new_game():
 				board_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: Playfield cleared successfully")
 	
+	# Clear active layer
 	print("DEBUG: About to clear active layer - active_layer is: ", active_layer)
 	if active_layer != null:
 		print("DEBUG: Clearing active_layer (current piece and previews)")
@@ -309,6 +342,7 @@ func new_game():
 				active_layer.erase_cell(Vector2i(j, i))
 		print("DEBUG: active_layer cleared successfully")
 	
+	# Initialize pieces
 	print("DEBUG: Picking pieces")
 	piece_type = pick_piece()
 	print("DEBUG: piece_type = ", piece_type)
@@ -322,7 +356,7 @@ func new_game():
 		next_pieces_atlas.append(Vector2i(shapes_full.find(next), 0))
 		print("DEBUG: next_pieces[", i, "] = ", next)
 	
-	# reset camera
+	# Reset camera & effects
 	camera_offset = Vector2.ZERO
 	trauma = 0.0
 	$Game/Camera2D.offset = Vector2.ZERO
@@ -337,9 +371,12 @@ func _process(delta):
 	if game_running:
 		handle_input(delta)
 		update_camera(delta)
+		
 		if timer_running:
 			game_time += delta
 			update_timer_display()
+		
+		# Gravity processing
 		while gravity_counter >= 1.0:
 			if can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
@@ -350,26 +387,59 @@ func _process(delta):
 					lock_delay_active = true
 					lock_delay_timer = 0.0
 				break
+		
+		# Lock delay processing
 		if lock_delay_active:
 			lock_delay_timer += delta
 			if lock_delay_timer >= LOCK_DELAY_MAX:
 				lock_piece()
+		
+		wave_material.set_shader_parameter(
+			"zoom",
+			0.002 + trauma * 0.01
+			)
+		
+		wave_material.set_shader_parameter(
+			"offset",
+			Vector2(
+			randf_range(-0.001, 0.001),
+			randf_range(-0.001, 0.001)
+			) * trauma
+		)
+
+
+func update_timer_display():
+	var minutes = int(game_time / 60)
+	var seconds = int(game_time) % 60
+	var milliseconds = int((game_time - int(game_time)) * 1000)
+	var time_string = "%d:%02d.%03d" % [minutes, seconds, milliseconds]
+	$Game/HUD.get_node("TimerLabel").text = time_string
+
+# ============================================================================
+# INPUT HANDLING
+# ============================================================================
 
 func handle_input(delta):
 	left_release_timer = max(0, left_release_timer - delta)
 	right_release_timer = max(0, right_release_timer - delta)
+	
+	# Priority actions
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 		return
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
 		return
+	
+	# Rotation
 	if Input.is_action_just_pressed("cw_rotation"):
 		rotate_piece_srs(1)
 	if Input.is_action_just_pressed("ccw_rotation"):
 		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
 		rotate_piece_srs(2)
+	
+	# Soft drop
 	if Input.is_action_pressed("soft_drop"):
 		if sdf >= 9999:
 			while can_move(Vector2i.DOWN):
@@ -380,6 +450,7 @@ func handle_input(delta):
 	else:
 		gravity_counter += gravity
 	
+	# Left movement with DAS/ARR
 	if Input.is_action_pressed("left_move"):
 		if right_release_timer <= 0:
 			das_left += delta
@@ -391,6 +462,7 @@ func handle_input(delta):
 					das_left -= arr_seconds
 				move_piece(Vector2i.LEFT)
 	
+	# Right movement with DAS/ARR
 	elif Input.is_action_pressed("right_move"):
 		if left_release_timer <= 0:
 			das_right += delta
@@ -402,6 +474,7 @@ func handle_input(delta):
 					das_right -= arr_seconds
 				move_piece(Vector2i.RIGHT)
 	
+	# DCD (Direction Change Delay)
 	else:
 		if das_left > 0:
 			right_release_timer = dcd * FRAME_TIME
@@ -410,8 +483,13 @@ func handle_input(delta):
 		das_left = 0.0
 		das_right = 0.0
 	
+	# Restart
 	if Input.is_action_just_pressed("restart"):
 		new_game()
+
+# ============================================================================
+# PIECE MANAGEMENT
+# ============================================================================
 
 func pick_piece():
 	var piece
@@ -429,6 +507,7 @@ func create_piece():
 	gravity_counter = 0.0
 	cur_pos = start_pos
 	
+	# O piece spawns one cell to the right
 	if piece_type == o:
 		cur_pos = Vector2i(start_pos.x + 1, start_pos.y)
 	
@@ -443,23 +522,6 @@ func create_piece():
 	draw_all_next_pieces()
 	print("DEBUG: create_piece() COMPLETE")
 
-func draw_all_next_pieces():
-	clear_next_panel()
-
-	const SPACING = 3
-	
-	for idx in range(5):
-		var base_y = 1 + (idx * SPACING)
-		var next_pos = Vector2i(14, base_y)
-		var current_piece = next_pieces[idx]
-		
-		if current_piece == o:
-			next_pos = Vector2i(14, base_y)
-		elif current_piece == i:
-			next_pos = Vector2i(14, base_y)
-		
-		draw_piece(current_piece[0], next_pos, next_pieces_atlas[idx], active_layer)
-
 func clear_piece():
 	if active_piece == null or active_piece.is_empty():
 		return
@@ -473,15 +535,30 @@ func clear_ghost_piece():
 			if coords == ghost_atlas:
 				active_layer.erase_cell(Vector2i(j, i))
 
-func update_timer_display():
-	var minutes = int(game_time / 60)
-	var seconds = int(game_time) % 60
-	var milliseconds = int((game_time - int(game_time)) * 1000)
+# ============================================================================
+# DRAWING FUNCTIONS
+# ============================================================================
 
-	var time_string = "%d:%02d.%03d" % [minutes, seconds, milliseconds]
+func draw_all_next_pieces():
+	clear_next_panel()
+	const SPACING = 3
 	
-	# Update the label
-	$Game/HUD.get_node("TimerLabel").text = time_string
+	for idx in range(5):
+		var base_y = 1 + (idx * SPACING)
+		var next_pos = Vector2i(14, base_y)
+		var current_piece = next_pieces[idx]
+		
+		# Adjust positioning for O and I pieces
+		if current_piece == o:
+			next_pos = Vector2i(14, base_y)
+		elif current_piece == i:
+			next_pos = Vector2i(14, base_y)
+		
+		draw_piece(current_piece[0], next_pos, next_pieces_atlas[idx], active_layer)
+
+func draw_piece(piece, pos, atlas, layer):
+	for i in piece:
+		layer.set_cell(pos + i, tile_id, atlas)
 
 func draw_ghost_piece():
 	clear_ghost_piece()
@@ -501,9 +578,41 @@ func get_ghost_position() -> Vector2i:
 			break
 	return ghost_pos
 
-func draw_piece(piece, pos, atlas, layer):
-	for i in piece:
-		layer.set_cell(pos + i, tile_id, atlas)
+func clear_next_panel():
+	for i in range(12, 18):
+		for j in range(-2, 18):
+			active_layer.erase_cell(Vector2i(i, j))
+
+func clear_hold_panel():
+	for i in range(-5, 2):
+		for j in range(-1, 5):
+			active_layer.erase_cell(Vector2i(i, j))
+
+# ============================================================================
+# PIECE MOVEMENT & ROTATION
+# ============================================================================
+
+func move_piece(dir):
+	if can_move(dir):
+		clear_piece()
+		cur_pos += dir
+		draw_ghost_piece()
+		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
+		
+		if dir != Vector2i.DOWN:
+			last_action_was_rotation = false
+			print("DEBUG: Moved left/right - rotation flag reset to FALSE")
+			reset_lock_delay()
+	else:
+		# Collision detected - nudge camera
+		if dir == Vector2i.LEFT:
+			nudge_camera(Vector2.RIGHT)
+		elif dir == Vector2i.RIGHT:
+			nudge_camera(Vector2.LEFT)
+		elif dir == Vector2i.DOWN:
+			if not lock_delay_active:
+				lock_delay_active = true
+				lock_delay_timer = 0.0
 
 func rotate_piece_srs(direction: int):
 	var old_rotation = rotation_index
@@ -513,13 +622,16 @@ func rotate_piece_srs(direction: int):
 	
 	var new_piece = piece_type[new_rotation]
 	
+	# O piece doesn't rotate
 	if piece_type == o:
 		return
 	
+	# Select wall kick data
 	var offset_data = srs_offset_jlstz
 	if piece_type == i:
 		offset_data = srs_offset_i
 	
+	# Try each wall kick offset
 	var key = str(old_rotation) + "->" + str(new_rotation)
 	var offsets = offset_data.get(key, [Vector2i.ZERO])
 	
@@ -543,51 +655,6 @@ func hard_drop():
 	spawn_hard_drop_particles()
 	lock_piece()
 
-func spawn_hard_drop_particles():
-	var particle_template = $Game/Particles/HardDropContact
-	var particle_bg_template = $Game/Particles/HardDropBG
-	for block_offset in active_piece:
-		var block_grid_pos = cur_pos + block_offset
-		var below_pos = block_grid_pos + Vector2i(0, 1)
-		var has_contact = not is_free(below_pos)
-		if has_contact:
-			var block_world_pos = board_layer.map_to_local(block_grid_pos)
-			block_world_pos.y += 16
-			var new_particles = particle_template.duplicate()
-			$Game/Particles.add_child(new_particles)
-			new_particles.position = block_world_pos
-			new_particles.one_shot = true
-			new_particles.emitting = true
-			new_particles.finished.connect(new_particles.queue_free)
-			var new_bg_particles = particle_bg_template.duplicate()
-			$Game/Particles.add_child(new_bg_particles)
-			new_bg_particles.position = block_world_pos + Vector2(0,-304)
-			new_bg_particles.one_shot = true
-			new_bg_particles.emitting = true
-			new_bg_particles.finished.connect(new_bg_particles.queue_free)
-
-func move_piece(dir):
-	if can_move(dir):
-		clear_piece()
-		cur_pos += dir
-		draw_ghost_piece()
-		draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
-		
-		if dir != Vector2i.DOWN:
-			last_action_was_rotation = false
-			print("DEBUG: Moved left/right - rotation flag reset to FALSE")
-			reset_lock_delay()
-	else:
-		# collision detected - nudge camera
-		if dir == Vector2i.LEFT:
-			nudge_camera(Vector2.RIGHT)
-		elif dir == Vector2i.RIGHT:
-			nudge_camera(Vector2.LEFT)
-		elif dir == Vector2i.DOWN:
-			if not lock_delay_active:
-				lock_delay_active = true
-				lock_delay_timer = 0.0
-
 func hold_piece():
 	if not can_hold:
 		return
@@ -597,6 +664,7 @@ func hold_piece():
 	clear_ghost_piece()
 	
 	if held_piece == null:
+		# First hold - take from next queue
 		held_piece = piece_type
 		held_piece_atlas = piece_atlas
 		piece_type = next_pieces[0]
@@ -608,6 +676,7 @@ func hold_piece():
 		next_pieces.append(new_next)
 		next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
 	else:
+		# Swap with held piece
 		var temp_piece = piece_type
 		var temp_atlas = piece_atlas
 		piece_type = held_piece
@@ -615,6 +684,7 @@ func hold_piece():
 		held_piece = temp_piece
 		held_piece_atlas = temp_atlas
 	
+	# Draw held piece
 	clear_hold_panel()
 	var hold_pos = Vector2i(-3, 1)
 	if held_piece == i:
@@ -625,16 +695,6 @@ func hold_piece():
 	can_hold = false
 	create_piece()
 
-func clear_hold_panel():
-	for i in range(-5, 2):
-		for j in range(-1, 5):
-			active_layer.erase_cell(Vector2i(i, j))
-
-func clear_next_panel():
-	for i in range(12, 18):
-		for j in range(-2, 18):
-			active_layer.erase_cell(Vector2i(i, j))
-
 func reset_lock_delay():
 	if lock_delay_active and move_reset_count < MAX_MOVE_RESETS:
 		lock_delay_timer = 0.0
@@ -644,6 +704,10 @@ func reset_lock_delay():
 			lock_delay_active = true
 		else:
 			lock_delay_active = false
+
+# ============================================================================
+# SCORING & SPIN DETECTION
+# ============================================================================
 
 func check_spin(lines_cleared: int) -> void:
 	print("DEBUG: check_spin() called with lines_cleared = ", lines_cleared)
@@ -682,7 +746,6 @@ func award_spin_bonus(lines: int) -> void:
 		4: bonus = SPIN_QUAD
 	
 	basescore += bonus
-	#score += bonus
 	$Game/HUD/SaveScore/BaseScore.text = str(basescore)
 	$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 	print("SPIN DETECTED! +" + str(bonus) + " points")
@@ -695,56 +758,51 @@ func get_line_clear_score(lines: int) -> int:
 		4: return QUAD
 		_: return 0
 
-func lock_piece():
-	print("DEBUG: lock_piece() called")
-	nudge_camera(Vector2.UP)
-	land_piece()
-	if last_action_was_rotation:
-		check_spin_before_clear()
-	check_rows()
-	piece_type = next_pieces[0]
-	piece_atlas = next_pieces_atlas[0]
-	
-	next_pieces.pop_front()
-	next_pieces_atlas.pop_front()
-	var new_next = pick_piece()
-	next_pieces.append(new_next)
-	next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
-	clear_ghost_piece()
-	can_hold = true
-	create_piece()
-	check_game_over()
-
-func check_spin_before_clear() -> void :
-	print("DEBUG: check_spin_before_clear() - checking corners NOW")
-	print("DEBUG: cur_pos = ", cur_pos)
-	var corners = [
-		Vector2i(-1, -1),
-		Vector2i(1, -1),
-		Vector2i(-1, 1),
-		Vector2i(1, 1),
-	]
-	var blocked_corners = 0
-	for corner in corners:
-		var check_pos = cur_pos + corner
-		var is_blocked = not is_free(check_pos)
-		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
-		if is_blocked:
-			blocked_corners += 1
-	print("DEBUG: Total blocked_corners = ", blocked_corners)
-	if blocked_corners >= 3:
-		print("DEBUG: SPIN DETECTED! Will award bonus after line count")
-		pending_spin_lines = -1
+func calc_savescore() -> int:
+	var allclear : int = 0
+	if allclearexp == true:
+		allclear = 2
 	else:
-		print("DEBUG: Not a spin")
-		pending_spin_lines = 0
+		allclear = 1
+	var calcsavescore = (basescore * combomult * b2bmult) ** allclear
+	return calcsavescore
 
-func is_difficult_clear(lines: int, was_spin: bool) -> bool:
-	if was_spin and lines > 0:
-		return true
-	if lines == 4:
-		return true
-	return false
+# ============================================================================
+# VISUAL EFFECTS
+# ============================================================================
+
+func spawn_hard_drop_particles():
+	var particle_template = $Game/Particles/HardDropContact
+	var particle_bg_template = $Game/Particles/HardDropBG
+	
+	for block_offset in active_piece:
+		var block_grid_pos = cur_pos + block_offset
+		var below_pos = block_grid_pos + Vector2i(0, 1)
+		var has_contact = not is_free(below_pos)
+		
+		if has_contact:
+			var block_world_pos = board_layer.map_to_local(block_grid_pos)
+			block_world_pos.y += 16
+			
+			# Spawn contact particles
+			var new_particles = particle_template.duplicate()
+			$Game/Particles.add_child(new_particles)
+			new_particles.position = block_world_pos
+			new_particles.one_shot = true
+			new_particles.emitting = true
+			new_particles.finished.connect(new_particles.queue_free)
+			
+			# Spawn background particles
+			var new_bg_particles = particle_bg_template.duplicate()
+			$Game/Particles.add_child(new_bg_particles)
+			new_bg_particles.position = block_world_pos + Vector2(0, -304)
+			new_bg_particles.one_shot = true
+			new_bg_particles.emitting = true
+			new_bg_particles.finished.connect(new_bg_particles.queue_free)
+
+# ============================================================================
+# COLLISION DETECTION
+# ============================================================================
 
 func can_move(dir):
 	return can_move_to(cur_pos + dir)
@@ -771,15 +829,72 @@ func is_free(pos):
 		return false
 	return true
 
+# ============================================================================
+# PIECE LOCKING & LINE CLEARING
+# ============================================================================
+
+func lock_piece():
+	print("DEBUG: lock_piece() called")
+	nudge_camera(Vector2.UP)
+	land_piece()
+	
+	if last_action_was_rotation:
+		check_spin_before_clear()
+	
+	check_rows()
+	
+	# Get next piece
+	piece_type = next_pieces[0]
+	piece_atlas = next_pieces_atlas[0]
+	next_pieces.pop_front()
+	next_pieces_atlas.pop_front()
+	var new_next = pick_piece()
+	next_pieces.append(new_next)
+	next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
+	
+	clear_ghost_piece()
+	can_hold = true
+	create_piece()
+	check_game_over()
+
 func land_piece():
 	print("DEBUG: land_piece() called")
 	for i in active_piece:
 		active_layer.erase_cell(cur_pos + i)
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
 
+func check_spin_before_clear() -> void:
+	print("DEBUG: check_spin_before_clear() - checking corners NOW")
+	print("DEBUG: cur_pos = ", cur_pos)
+	
+	var corners = [
+		Vector2i(-1, -1),
+		Vector2i(1, -1),
+		Vector2i(-1, 1),
+		Vector2i(1, 1),
+	]
+	
+	var blocked_corners = 0
+	for corner in corners:
+		var check_pos = cur_pos + corner
+		var is_blocked = not is_free(check_pos)
+		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
+		if is_blocked:
+			blocked_corners += 1
+	
+	print("DEBUG: Total blocked_corners = ", blocked_corners)
+	if blocked_corners >= 3:
+		print("DEBUG: SPIN DETECTED! Will award bonus after line count")
+		pending_spin_lines = -1
+	else:
+		print("DEBUG: Not a spin")
+		pending_spin_lines = 0
+
 func check_rows():
 	var lines_cleared = 0
 	var row : int = ROWS
+	
+	# Count and clear lines
 	while row > 0:
 		var count = 0
 		for i in range(COLS):
@@ -792,17 +907,20 @@ func check_rows():
 			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)
 		else:
 			row -= 1
-			
+	
 	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
 	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
 	
 	if lines_cleared > 0:
+		# Visual feedback
 		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
 		wave_intensity = lines_cleared * 0.2
 		$Game/Particles/LineClearBoard.emitting = true
+		
 		var was_spin = (pending_spin_lines == -1)
 		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
 		
+		# Award base points
 		if pending_spin_lines == -1:
 			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
 			award_spin_bonus(lines_cleared)
@@ -810,11 +928,11 @@ func check_rows():
 			var line_clear_points = get_line_clear_score(lines_cleared)
 			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
 			basescore += line_clear_points
-			#score += line_clear_points
 			$Game/HUD/SaveScore/BaseScore.text = str(basescore)
 			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		pending_spin_lines = 0
 		
+		# Combo handling
 		if last_clear_had_lines:
 			combo_count += 1
 			combomult += 1
@@ -831,6 +949,7 @@ func check_rows():
 			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		last_clear_had_lines = true
 		
+		# All Clear check
 		if is_board_empty():
 			var all_clear_bonus = 3500
 			allclearexp = true
@@ -842,6 +961,7 @@ func check_rows():
 			allclearexp = false
 			$Game/HUD/SaveScore/AllClearExp.text = "0"
 		
+		# Back-to-Back handling
 		if is_difficult:
 			if last_clear_was_difficult:
 				b2b_count += 1
@@ -868,8 +988,8 @@ func check_rows():
 				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
 				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 				last_clear_was_difficult = false
-		#$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	else:
+		# No lines cleared - reset combo and finalize score
 		if combo_count > 0:
 			print("Combo broken!")
 		score += calc_savescore()
@@ -895,17 +1015,12 @@ func shift_rows(row):
 			else:
 				board_layer.set_cell(Vector2i(j + 1, i), tile_id, atlas)
 
-func spawn_line_clear_particles(row: int):
-	var particle_template = $Game/Particles/LineClear
-	for col in range(COLS):
-		var block_grid_pos = Vector2i(col + 1, row)
-		var block_world_pos = board_layer.map_to_local(block_grid_pos)
-		var new_particles = particle_template.duplicate()
-		$Game/Particles.add_child(new_particles)
-		new_particles.position = block_world_pos
-		new_particles.one_shot = true
-		new_particles.emitting = true
-		new_particles.finished.connect(new_particles.queue_free)
+func is_difficult_clear(lines: int, was_spin: bool) -> bool:
+	if was_spin and lines > 0:
+		return true
+	if lines == 4:
+		return true
+	return false
 
 func is_board_empty() -> bool:
 	for row in range(1, ROWS + 1):
@@ -923,6 +1038,52 @@ func check_game_over():
 			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
 			return
+
+func spawn_line_clear_particles(row: int):
+	var particle_template = $Game/Particles/LineClear
+	for col in range(COLS):
+		var block_grid_pos = Vector2i(col + 1, row)
+		var block_world_pos = board_layer.map_to_local(block_grid_pos)
+		var new_particles = particle_template.duplicate()
+		$Game/Particles.add_child(new_particles)
+		new_particles.position = block_world_pos
+		new_particles.one_shot = true
+		new_particles.emitting = true
+		new_particles.finished.connect(new_particles.queue_free)
+
+# ============================================================================
+# CAMERA SYSTEM
+# ============================================================================
+
+func update_camera(delta):
+	# Return camera to center
+	camera_offset = camera_offset.lerp(Vector2.ZERO, CAMERA_RETURN_SPEED * delta)
+	
+	# Decay trauma for screen shake
+	trauma = max(trauma - TRAUMA_DECAY * delta, 0.0)
+	wave_intensity = max(wave_intensity - WAVE_DECAY * delta, 0.0)
+	
+	# Update wave shader
+	if wave_material:
+		wave_material.set_shader_parameter("amplitude", wave_intensity)
+		wave_material.set_shader_parameter("center", Vector2(0.5, 0.5))
+	
+	# Calculate shake offset
+	var shake_offset = Vector2.ZERO
+	if trauma > 0.0:
+		var shake_amount = trauma * trauma
+		shake_offset.x = randf_range(-MAX_SHAKE_OFFSET, MAX_SHAKE_OFFSET) * shake_amount
+		shake_offset.y = randf_range(-MAX_SHAKE_OFFSET, MAX_SHAKE_OFFSET) * shake_amount
+	
+	# Apply both offsets to camera
+	$Game/Camera2D.offset = camera_offset + shake_offset
+
+func nudge_camera(direction: Vector2):
+	camera_offset += direction * CAMERA_NUDGE_AMOUNT
+
+# ============================================================================
+# SETTINGS CALLBACKS
+# ============================================================================
 
 func _on_arr_slider_value_changed(value: float) -> void:
 	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
@@ -956,37 +1117,3 @@ func _on_sdf_slider_value_changed(value: float) -> void:
 		sdf = value
 		print("DEBUG SDF: Set sdf to ", value)
 	print("DEBUG SDF: Current sdf value is now: ", sdf)
-
-func update_camera(delta):
-	# quickly return camera to center
-	camera_offset = camera_offset.lerp(Vector2.ZERO, CAMERA_RETURN_SPEED * delta)
-	
-	# decay trauma for screen shake
-	trauma = max(trauma - TRAUMA_DECAY * delta, 0.0)
-	wave_intensity = max(wave_intensity - WAVE_DECAY * delta, 0.0)
-	
-	if wave_material:
-		wave_material.set_shader_parameter("amplitude", wave_intensity)
-		wave_material.set_shader_parameter("center", Vector2(0.5, 0.5))
-	
-	# calculate shake offset
-	var shake_offset = Vector2.ZERO
-	if trauma > 0.0:
-		var shake_amount = trauma * trauma
-		shake_offset.x = randf_range(-MAX_SHAKE_OFFSET, MAX_SHAKE_OFFSET) * shake_amount
-		shake_offset.y = randf_range(-MAX_SHAKE_OFFSET, MAX_SHAKE_OFFSET) * shake_amount
-	
-	# apply both offsets to camera
-	$Game/Camera2D.offset = camera_offset + shake_offset
-
-func nudge_camera(direction: Vector2):
-	camera_offset = direction * CAMERA_NUDGE_AMOUNT
-
-func calc_savescore() -> int:
-	var allclear : int = 0
-	if allclearexp == true:
-		allclear = 2
-	else:
-		allclear = 1
-	var calcsavescore = (basescore * combomult * b2bmult) ** allclear
-	return calcsavescore

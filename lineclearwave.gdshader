@@ -9,7 +9,7 @@ uniform vec2 center = vec2(0.5, 0.5);
 void fragment() {
     vec2 uv = SCREEN_UV;
     float dist = distance(uv, center);
-    float wave = sin(dist * frequency - TIME * speed) * amplitude * 0.01;
+    float wave = sin(dist * frequency - TIME * speed) * amplitude * 0.02;
     vec2 direction = normalize(uv - center);
     uv += direction * wave;
     COLOR = texture(SCREEN_TEXTURE, uv);
