@@ -1,8 +1,9 @@
-[gd_scene load_steps=16 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=17 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
 [ext_resource type="Shader" uid="uid://limpibugju4k" path="res://lineclearwave.gdshader" id="3_35kre"]
+[ext_resource type="Shader" uid="uid://dbx5edrhf8nwq" path="res://glow.gdshader" id="4_03na7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
 resource_name = "tetrisblock"
@@ -62,13 +63,10 @@ shader_parameter/frequency = 10.0
 shader_parameter/speed = 3.0
 shader_parameter/center = Vector2(0.5, 0.5)
 
-[sub_resource type="Environment" id="Environment_35kre"]
-glow_enabled = true
-glow_levels/2 = 1.0
-glow_levels/4 = 1.0
-glow_intensity = 1.5
-glow_strength = 2.0
-glow_blend_mode = 1
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_03na7"]
+shader = ExtResource("4_03na7")
+shader_parameter/trail_persistence = 0.9900000095367401
+shader_parameter/glow_strength = 0.50000002375
 
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")
@@ -685,8 +683,19 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_35kre")
+[node name="BackBufferCopy" type="BackBufferCopy" parent="Game"]
+position = Vector2(384, 411.99997)
+scale = Vector2(3.9200003, 4.2)
+copy_mode = 2
+
+[node name="MotionBlurRect" type="ColorRect" parent="Game"]
+z_index = 50
+material = SubResource("ShaderMaterial_03na7")
+offset_left = -224.0
+offset_top = -96.0
+offset_right = 608.0
+offset_bottom = 800.0
+mouse_filter = 2
 
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
