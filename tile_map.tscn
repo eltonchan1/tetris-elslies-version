@@ -1,9 +1,8 @@
-[gd_scene load_steps=17 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene load_steps=15 format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
 [ext_resource type="Shader" uid="uid://limpibugju4k" path="res://lineclearwave.gdshader" id="3_35kre"]
-[ext_resource type="Shader" uid="uid://dbx5edrhf8nwq" path="res://glow.gdshader" id="4_03na7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
 resource_name = "tetrisblock"
@@ -43,6 +42,12 @@ bg_color = Color(0.7967922, 0.37047136, 1, 1)
 [sub_resource type="Gradient" id="Gradient_1n30v"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
+[sub_resource type="Gradient" id="Gradient_03na7"]
+colors = PackedColorArray(1, 1, 1, 0.4, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_xftlc"]
+colors = PackedColorArray(1, 1, 1, 0.24705882, 1, 1, 1, 0)
+
 [sub_resource type="Curve" id="Curve_1n30v"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.26966298), 0.0, 0.0, 0, 0]
 point_count = 2
@@ -50,23 +55,12 @@ point_count = 2
 [sub_resource type="Gradient" id="Gradient_35kre"]
 colors = PackedColorArray(1, 1, 1, 0.7490196, 1, 1, 1, 0)
 
-[sub_resource type="Gradient" id="Gradient_03na7"]
-colors = PackedColorArray(1, 1, 1, 0.4, 1, 1, 1, 0)
-
-[sub_resource type="Gradient" id="Gradient_xftlc"]
-colors = PackedColorArray(1, 1, 1, 0.24705882, 1, 1, 1, 0)
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1n30v"]
 shader = ExtResource("3_35kre")
 shader_parameter/amplitude = 0.0
 shader_parameter/frequency = 10.0
 shader_parameter/speed = 3.0
 shader_parameter/center = Vector2(0.5, 0.5)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_03na7"]
-shader = ExtResource("4_03na7")
-shader_parameter/trail_persistence = 0.9900000095367401
-shader_parameter/glow_strength = 0.50000002375
 
 [node name="Main" type="Node2D"]
 script = ExtResource("2_35kre")
@@ -614,28 +608,6 @@ scale_amount_max = 6.0
 color_ramp = SubResource("Gradient_1n30v")
 anim_speed_max = 128.0
 
-[node name="HardDropBG" type="CPUParticles2D" parent="Game/Particles"]
-position = Vector2(-320, 64)
-emitting = false
-amount = 6
-lifetime = 2.5
-one_shot = true
-explosiveness = 1.0
-emission_shape = 3
-emission_rect_extents = Vector2(32, 320)
-direction = Vector2(0, 0.1)
-spread = 22.0
-gravity = Vector2(0, -300)
-initial_velocity_max = 50.0
-angular_velocity_min = -720.0
-angular_velocity_max = 720.0
-angle_min = -720.0
-angle_max = 720.0
-scale_amount_min = 2.5
-scale_amount_max = 5.0
-scale_amount_curve = SubResource("Curve_1n30v")
-color_ramp = SubResource("Gradient_35kre")
-
 [node name="LineClear" type="CPUParticles2D" parent="Game/Particles"]
 position = Vector2(-384, 64)
 emitting = false
@@ -667,6 +639,28 @@ scale_amount_min = 5.0
 scale_amount_max = 10.0
 color_ramp = SubResource("Gradient_xftlc")
 
+[node name="HardDropBG" type="CPUParticles2D" parent="Game/Particles"]
+position = Vector2(-320, 64)
+emitting = false
+amount = 12
+lifetime = 2.5
+one_shot = true
+explosiveness = 1.0
+emission_shape = 3
+emission_rect_extents = Vector2(32, 320)
+direction = Vector2(0, 0.1)
+spread = 22.0
+gravity = Vector2(0, -300)
+initial_velocity_max = 50.0
+angular_velocity_min = -720.0
+angular_velocity_max = 720.0
+angle_min = -720.0
+angle_max = 720.0
+scale_amount_min = 2.5
+scale_amount_max = 5.0
+scale_amount_curve = SubResource("Curve_1n30v")
+color_ramp = SubResource("Gradient_35kre")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="Game/Particles"]
 layer = 10
 
@@ -682,20 +676,6 @@ offset_bottom = -63.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0)
-
-[node name="BackBufferCopy" type="BackBufferCopy" parent="Game"]
-position = Vector2(384, 411.99997)
-scale = Vector2(3.9200003, 4.2)
-copy_mode = 2
-
-[node name="MotionBlurRect" type="ColorRect" parent="Game"]
-z_index = 50
-material = SubResource("ShaderMaterial_03na7")
-offset_left = -224.0
-offset_top = -96.0
-offset_right = 608.0
-offset_bottom = 800.0
-mouse_filter = 2
 
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]

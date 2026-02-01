@@ -12,20 +12,16 @@ extends Node2D
 		# 40l, blitz, etc
 	# sound design & music
 		# satisfying
-	# background that is like echo idk how to describe
+	# hall o/ mirrors -> unsuccessful?
 
-# ============================================================================
+
 # NODE REFERENCES
-# ============================================================================
-
 @onready var board_layer : TileMapLayer = $Game/board
 @onready var active_layer : TileMapLayer = $Game/active
 @onready var wave_material : ShaderMaterial = $"Game/Particles/CanvasLayer/ColorRect".material
 
-# ============================================================================
-# CONSTANTS
-# ============================================================================
 
+# CONSTANTS
 const COLS : int = 10
 const ROWS : int = 19
 const FRAME_TIME : float = 1.0/60.0
@@ -54,10 +50,7 @@ const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 const start_pos := Vector2i(5, -1)
 const steps_req : int = 50
 
-# ============================================================================
 # TETROMINO DEFINITIONS (SRS coordinates)
-# ============================================================================
-
 # I piece
 var i_0 := [Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0)]
 var i_90 := [Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)]
@@ -110,10 +103,7 @@ var j := [j_0, j_90, j_180, j_270]
 var shapes := [z, l, o, s, i, j, t]
 var shapes_full := shapes.duplicate()
 
-# ============================================================================
 # SRS WALL KICK DATA
-# ============================================================================
-
 var srs_offset_jlstz := {
 	"0->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
 	"1->2": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
@@ -144,10 +134,7 @@ var srs_offset_i := {
 	"3->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 2), Vector2i(-1, 1), Vector2i(0, 2), Vector2i(0, 1)]
 }
 
-# ============================================================================
 # GAME STATE VARIABLES
-# ============================================================================
-
 var steps : Array
 var cur_pos : Vector2i
 var gravity : float = 0.02
@@ -206,10 +193,7 @@ var camera_offset : Vector2 = Vector2.ZERO
 var trauma : float = 0.0
 var wave_intensity : float = 0.0
 
-# ============================================================================
 # INITIALIZATION
-# ============================================================================
-
 func _ready():
 	print("DEBUG: _ready() called")
 	main_menu(true)
@@ -228,10 +212,7 @@ func _ready():
 	
 	print("DEBUG: _ready() complete")
 
-# ============================================================================
 # MENU FUNCTIONS
-# ============================================================================
-
 func main_menu(on: bool):
 	if on == true:
 		$Game.visible = false
@@ -274,10 +255,7 @@ func _on_settings_exit_button_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = false
 	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-# ============================================================================
 # GAME LOOP
-# ============================================================================
-
 func new_game():
 	print("DEBUG: new_game() START")
 	game_running = false
@@ -415,10 +393,7 @@ func update_timer_display():
 	var time_string = "%d:%02d.%03d" % [minutes, seconds, milliseconds]
 	$Game/HUD.get_node("TimerLabel").text = time_string
 
-# ============================================================================
 # INPUT HANDLING
-# ============================================================================
-
 func handle_input(delta):
 	left_release_timer = max(0, left_release_timer - delta)
 	right_release_timer = max(0, right_release_timer - delta)
@@ -487,10 +462,7 @@ func handle_input(delta):
 	if Input.is_action_just_pressed("restart"):
 		new_game()
 
-# ============================================================================
 # PIECE MANAGEMENT
-# ============================================================================
-
 func pick_piece():
 	var piece
 	if not shapes.is_empty():
@@ -535,10 +507,7 @@ func clear_ghost_piece():
 			if coords == ghost_atlas:
 				active_layer.erase_cell(Vector2i(j, i))
 
-# ============================================================================
 # DRAWING FUNCTIONS
-# ============================================================================
-
 func draw_all_next_pieces():
 	clear_next_panel()
 	const SPACING = 3
@@ -588,10 +557,7 @@ func clear_hold_panel():
 		for j in range(-1, 5):
 			active_layer.erase_cell(Vector2i(i, j))
 
-# ============================================================================
 # PIECE MOVEMENT & ROTATION
-# ============================================================================
-
 func move_piece(dir):
 	if can_move(dir):
 		clear_piece()
@@ -705,9 +671,7 @@ func reset_lock_delay():
 		else:
 			lock_delay_active = false
 
-# ============================================================================
 # SCORING & SPIN DETECTION
-# ============================================================================
 
 func check_spin(lines_cleared: int) -> void:
 	print("DEBUG: check_spin() called with lines_cleared = ", lines_cleared)
@@ -767,13 +731,13 @@ func calc_savescore() -> int:
 	var calcsavescore = (basescore * combomult * b2bmult) ** allclear
 	return calcsavescore
 
-# ============================================================================
 # VISUAL EFFECTS
-# ============================================================================
-
 func spawn_hard_drop_particles():
 	var particle_template = $Game/Particles/HardDropContact
 	var particle_bg_template = $Game/Particles/HardDropBG
+	
+	# Get the piece color from its atlas coordinates
+	var piece_color = get_piece_color(piece_atlas)
 	
 	for block_offset in active_piece:
 		var block_grid_pos = cur_pos + block_offset
@@ -788,6 +752,7 @@ func spawn_hard_drop_particles():
 			var new_particles = particle_template.duplicate()
 			$Game/Particles.add_child(new_particles)
 			new_particles.position = block_world_pos
+			new_particles.color = piece_color  # Set color
 			new_particles.one_shot = true
 			new_particles.emitting = true
 			new_particles.finished.connect(new_particles.queue_free)
@@ -796,14 +761,23 @@ func spawn_hard_drop_particles():
 			var new_bg_particles = particle_bg_template.duplicate()
 			$Game/Particles.add_child(new_bg_particles)
 			new_bg_particles.position = block_world_pos + Vector2(0, -304)
+			new_bg_particles.color = piece_color  # Set color
 			new_bg_particles.one_shot = true
 			new_bg_particles.emitting = true
 			new_bg_particles.finished.connect(new_bg_particles.queue_free)
 
-# ============================================================================
-# COLLISION DETECTION
-# ============================================================================
+func get_piece_color(atlas_coords: Vector2i) -> Color:
+	match atlas_coords.x:
+		0: return Color(1, 0, 0, 0.5)
+		1: return Color(1, 0.5, 0, 0.5)
+		2: return Color(1, 1, 0, 0.5)
+		3: return Color(0, 1, 0, 0.5)
+		4: return Color(0, 1, 1, 0.5)
+		5: return Color(0, 0, 1, 0.5)
+		6: return Color(0.5, 0, 1, 0.5)
+		_: return Color(1, 1, 1, 0.5)
 
+# COLLISION DETECTION
 func can_move(dir):
 	return can_move_to(cur_pos + dir)
 
@@ -829,10 +803,7 @@ func is_free(pos):
 		return false
 	return true
 
-# ============================================================================
 # PIECE LOCKING & LINE CLEARING
-# ============================================================================
-
 func lock_piece():
 	print("DEBUG: lock_piece() called")
 	nudge_camera(Vector2.UP)
@@ -1051,10 +1022,7 @@ func spawn_line_clear_particles(row: int):
 		new_particles.emitting = true
 		new_particles.finished.connect(new_particles.queue_free)
 
-# ============================================================================
 # CAMERA SYSTEM
-# ============================================================================
-
 func update_camera(delta):
 	# Return camera to center
 	camera_offset = camera_offset.lerp(Vector2.ZERO, CAMERA_RETURN_SPEED * delta)
@@ -1081,10 +1049,7 @@ func update_camera(delta):
 func nudge_camera(direction: Vector2):
 	camera_offset += direction * CAMERA_NUDGE_AMOUNT
 
-# ============================================================================
 # SETTINGS CALLBACKS
-# ============================================================================
-
 func _on_arr_slider_value_changed(value: float) -> void:
 	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
 	if reverse_value == int(reverse_value):
