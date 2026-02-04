@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=4 uid="uid://b4xyptdtg7pl"]
+[gd_scene format=4 uid="uid://b4xyptdtg7pl"]
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
@@ -62,10 +62,10 @@ shader_parameter/frequency = 10.0
 shader_parameter/speed = 3.0
 shader_parameter/center = Vector2(0.5, 0.5)
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=1271957725]
 script = ExtResource("2_35kre")
 
-[node name="MainMenu" type="Control" parent="."]
+[node name="MainMenu" type="Control" parent="." unique_id=1410716151]
 layout_mode = 3
 anchors_preset = 0
 offset_left = -192.0
@@ -73,7 +73,7 @@ offset_top = -64.0
 offset_right = 576.0
 offset_bottom = 768.0
 
-[node name="Title" type="Label" parent="MainMenu"]
+[node name="Title" type="Label" parent="MainMenu" unique_id=667998518]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -89,7 +89,7 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 100
 text = "TETRAEFFECT"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu" unique_id=767421159]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -104,27 +104,27 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 15
 
-[node name="PlayButton" type="Button" parent="MainMenu/VBoxContainer"]
+[node name="PlayButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=104271462]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "PLAY"
 
-[node name="SettingsButton" type="Button" parent="MainMenu/VBoxContainer"]
+[node name="SettingsButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=1996477134]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "SETTINGS"
 
-[node name="AboutButton" type="Button" parent="MainMenu/VBoxContainer"]
+[node name="AboutButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=396146502]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "ABOUT"
 
-[node name="ExitGameButton" type="Button" parent="MainMenu/VBoxContainer"]
+[node name="ExitGameButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=1727234832]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "EXIT"
 
-[node name="PopUp" type="Control" parent="MainMenu"]
+[node name="PopUp" type="Control" parent="MainMenu" unique_id=404550507]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -138,12 +138,12 @@ offset_bottom = 416.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="About" type="Control" parent="MainMenu/PopUp"]
+[node name="About" type="Control" parent="MainMenu/PopUp" unique_id=949326442]
 anchors_preset = 0
 offset_right = 768.0
 offset_bottom = 832.0
 
-[node name="AboutBackground" type="Panel" parent="MainMenu/PopUp/About"]
+[node name="AboutBackground" type="Panel" parent="MainMenu/PopUp/About" unique_id=378290486]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -157,7 +157,7 @@ offset_bottom = 416.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="AboutPanel" type="ScrollContainer" parent="MainMenu/PopUp/About"]
+[node name="AboutPanel" type="ScrollContainer" parent="MainMenu/PopUp/About" unique_id=22287065]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -171,10 +171,10 @@ offset_bottom = 416.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu/PopUp/About/AboutPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu/PopUp/About/AboutPanel" unique_id=537407545]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer"]
+[node name="Label" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=2105776399]
 layout_mode = 2
 text = "how to play the game
 how the game was made
@@ -182,7 +182,7 @@ inspo & credits
 thanks for playing
 "
 
-[node name="AboutExitButton" type="Button" parent="MainMenu/PopUp/About"]
+[node name="AboutExitButton" type="Button" parent="MainMenu/PopUp/About" unique_id=1202463305]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -197,7 +197,7 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "X"
 
-[node name="ABOUT" type="Label" parent="MainMenu/PopUp/About"]
+[node name="ABOUT" type="Label" parent="MainMenu/PopUp/About" unique_id=2005484441]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -213,7 +213,7 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 60
 text = "ABOUT"
 
-[node name="Settings" type="Control" parent="MainMenu/PopUp"]
+[node name="Settings" type="Control" parent="MainMenu/PopUp" unique_id=309475448]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -227,7 +227,7 @@ offset_bottom = 416.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsBackground" type="Panel" parent="MainMenu/PopUp/Settings"]
+[node name="SettingsBackground" type="Panel" parent="MainMenu/PopUp/Settings" unique_id=246012114]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -241,7 +241,7 @@ offset_bottom = 416.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SettingsPanel" type="ScrollContainer" parent="MainMenu/PopUp/Settings"]
+[node name="SettingsPanel" type="ScrollContainer" parent="MainMenu/PopUp/Settings" unique_id=267202313]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -255,45 +255,45 @@ offset_bottom = 384.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel" unique_id=1349873858]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
+[node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=85367526]
 layout_mode = 2
 text = "arr - 5 -> 0, 0.1
 das - 20 -> 1, 0.1
 dcd - 20 -> 0, 0.1
 sdf - 5 -> 40 + inf, 1"
 
-[node name="ARRContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
+[node name="ARRContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=472661799]
 layout_mode = 2
 
-[node name="ARR" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer"]
+[node name="ARR" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=1706491023]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "ARR"
 
-[node name="ARRSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer"]
+[node name="ARRSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=480997518]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_value = 5.0
 step = 0.1
 value = 2.0
 
-[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer"]
+[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=778859819]
 layout_mode = 2
 
-[node name="DASContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
+[node name="DASContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=108188437]
 layout_mode = 2
 
-[node name="DAS" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer"]
+[node name="DAS" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=1429650166]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "DAS"
 
-[node name="DASSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer"]
+[node name="DASSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=409460258]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 min_value = 1.0
@@ -301,46 +301,46 @@ max_value = 20.0
 step = 0.1
 value = 10.0
 
-[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer"]
+[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=1787186281]
 layout_mode = 2
 
-[node name="DCDContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
+[node name="DCDContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=459987740]
 layout_mode = 2
 
-[node name="DCD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer"]
+[node name="DCD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=2074981704]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "DCD"
 
-[node name="DCDSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer"]
+[node name="DCDSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=1075074809]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_value = 20.0
 step = 0.1
 value = 1.0
 
-[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer"]
+[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=922550056]
 layout_mode = 2
 
-[node name="SDFContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer"]
+[node name="SDFContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=613909135]
 layout_mode = 2
 
-[node name="SDF" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer"]
+[node name="SDF" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=1063931856]
 layout_mode = 2
 size_flags_horizontal = 4
 text = "SDF"
 
-[node name="SDFSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer"]
+[node name="SDFSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=364324570]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 min_value = 5.0
 max_value = 41.0
 value = 6.0
 
-[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer"]
+[node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=251180211]
 layout_mode = 2
 
-[node name="SettingsExitButton" type="Button" parent="MainMenu/PopUp/Settings"]
+[node name="SettingsExitButton" type="Button" parent="MainMenu/PopUp/Settings" unique_id=408030468]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -355,7 +355,7 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "X"
 
-[node name="SETTINGS" type="Label" parent="MainMenu/PopUp/Settings"]
+[node name="SETTINGS" type="Label" parent="MainMenu/PopUp/Settings" unique_id=529778220]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -371,9 +371,10 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 60
 text = "SETTINGS"
 
-[node name="Game" type="Node2D" parent="."]
+[node name="Game" type="Node2D" parent="." unique_id=1494167064]
 
-[node name="BlackBackground" type="ColorRect" parent="Game"]
+[node name="BlackBackground" type="ColorRect" parent="Game" unique_id=2014588060]
+visible = false
 z_index = -100
 z_as_relative = false
 anchors_preset = 15
@@ -387,21 +388,21 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
-[node name="Camera2D" type="Camera2D" parent="Game"]
+[node name="Camera2D" type="Camera2D" parent="Game" unique_id=236940302]
 position = Vector2(192, 352)
 
-[node name="board" type="TileMapLayer" parent="Game"]
+[node name="board" type="TileMapLayer" parent="Game" unique_id=1987894635]
 use_parent_material = true
 tile_map_data = PackedByteArray("AAAAAAAAAQAHAAAAAAALAAAAAQAHAAAAAAAAAAEAAQAHAAAAAAAAAAIAAQAHAAAAAAAAAAMAAQAHAAAAAAAAAAQAAQAHAAAAAAAAAAUAAQAHAAAAAAAAAAYAAQAHAAAAAAAAAAcAAQAHAAAAAAAAAAgAAQAHAAAAAAAAAAkAAQAHAAAAAAAAAAoAAQAHAAAAAAAAAAsAAQAHAAAAAAAAAAwAAQAHAAAAAAAAAA0AAQAHAAAAAAAAAA4AAQAHAAAAAAAAAA8AAQAHAAAAAAAAABAAAQAHAAAAAAAAABEAAQAHAAAAAAAAABIAAQAHAAAAAAAAABMAAQAHAAAAAAAAABQAAQAHAAAAAAALAAEAAQAHAAAAAAALAAIAAQAHAAAAAAALAAMAAQAHAAAAAAALAAQAAQAHAAAAAAALAAYAAQAHAAAAAAALAAcAAQAHAAAAAAALAAgAAQAHAAAAAAALAAkAAQAHAAAAAAALAAoAAQAHAAAAAAALAAsAAQAHAAAAAAALAAwAAQAHAAAAAAALAA0AAQAHAAAAAAALAA4AAQAHAAAAAAALAA8AAQAHAAAAAAALABAAAQAHAAAAAAALABEAAQAHAAAAAAALABIAAQAHAAAAAAALABMAAQAHAAAAAAALABQAAQAHAAAAAAALAAUAAQAHAAAAAAABABQAAQAHAAAAAAACABQAAQAHAAAAAAADABQAAQAHAAAAAAAEABQAAQAHAAAAAAAFABQAAQAHAAAAAAAGABQAAQAHAAAAAAAHABQAAQAHAAAAAAAIABQAAQAHAAAAAAAJABQAAQAHAAAAAAAKABQAAQAHAAAAAAA=")
 tile_set = SubResource("TileSet_xftlc")
 rendering_quadrant_size = 32
 
-[node name="active" type="TileMapLayer" parent="Game"]
+[node name="active" type="TileMapLayer" parent="Game" unique_id=1701866625]
 use_parent_material = true
 tile_map_data = PackedByteArray("AAAAAAAAAQAHAAAAAAAAAAEAAQAHAAAAAAAAAAIAAQAHAAAAAAAAAAMAAQAHAAAAAAAAAAQAAQAHAAAAAAAAAAUAAQAHAAAAAAAAAAYAAQAHAAAAAAAAAAcAAQAHAAAAAAAAAAgAAQAHAAAAAAAAAAkAAQAHAAAAAAAAAAoAAQAHAAAAAAAAAAsAAQAHAAAAAAAAAAwAAQAHAAAAAAAAAA0AAQAHAAAAAAAAAA4AAQAHAAAAAAAAAA8AAQAHAAAAAAAAABAAAQAHAAAAAAAAABEAAQAHAAAAAAAAABIAAQAHAAAAAAAAABMAAQAHAAAAAAAAABQAAQAHAAAAAAALAAAAAQAHAAAAAAALAAEAAQAHAAAAAAALAAIAAQAHAAAAAAALAAMAAQAHAAAAAAALAAQAAQAHAAAAAAALAAUAAQAHAAAAAAALAAYAAQAHAAAAAAALAAcAAQAHAAAAAAALAAgAAQAHAAAAAAALAAkAAQAHAAAAAAALAAoAAQAHAAAAAAALAAsAAQAHAAAAAAALAAwAAQAHAAAAAAALAA0AAQAHAAAAAAALAA4AAQAHAAAAAAALAA8AAQAHAAAAAAALABAAAQAHAAAAAAALABEAAQAHAAAAAAALABIAAQAHAAAAAAALABMAAQAHAAAAAAALABQAAQAHAAAAAAAKABQAAQAHAAAAAAAJABQAAQAHAAAAAAAIABQAAQAHAAAAAAAHABQAAQAHAAAAAAAGABQAAQAHAAAAAAAFABQAAQAHAAAAAAAEABQAAQAHAAAAAAADABQAAQAHAAAAAAACABQAAQAHAAAAAAABABQAAQAHAAAAAAA=")
 tile_set = SubResource("TileSet_xftlc")
 
-[node name="HUD" type="Control" parent="Game"]
+[node name="HUD" type="Control" parent="Game" unique_id=827361770]
 layout_mode = 3
 anchors_preset = 0
 offset_left = -192.0
@@ -409,7 +410,7 @@ offset_top = -64.0
 offset_right = 576.0
 offset_bottom = 768.0
 
-[node name="ScoreLabel" type="Label" parent="Game/HUD"]
+[node name="ScoreLabel" type="Label" parent="Game/HUD" unique_id=1818038071]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -427,7 +428,7 @@ text = "SCORE: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ComboLabel" type="Label" parent="Game/HUD"]
+[node name="ComboLabel" type="Label" parent="Game/HUD" unique_id=1920879416]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -445,7 +446,7 @@ text = "COMBO: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="B2BLabel" type="Label" parent="Game/HUD"]
+[node name="B2BLabel" type="Label" parent="Game/HUD" unique_id=655820980]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -463,7 +464,7 @@ text = "B2B: 0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="AllClearLabel" type="Label" parent="Game/HUD"]
+[node name="AllClearLabel" type="Label" parent="Game/HUD" unique_id=521491788]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -481,7 +482,7 @@ text = "ALL CLEAR"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GameOverLabel" type="Label" parent="Game/HUD"]
+[node name="GameOverLabel" type="Label" parent="Game/HUD" unique_id=721796065]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -499,7 +500,7 @@ text = "GAME OVER!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StartButton" type="Button" parent="Game/HUD"]
+[node name="StartButton" type="Button" parent="Game/HUD" unique_id=2111962542]
 layout_mode = 0
 offset_left = 592.0
 offset_top = 688.0
@@ -511,7 +512,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_35kre")
 theme_override_styles/hover = SubResource("StyleBoxFlat_03na7")
 text = "NEW GAME"
 
-[node name="MainMenuButton" type="Button" parent="Game/HUD"]
+[node name="MainMenuButton" type="Button" parent="Game/HUD" unique_id=509352887]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -527,7 +528,7 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 28
 text = "MAIN MENU"
 
-[node name="TimerLabel" type="Label" parent="Game/HUD"]
+[node name="TimerLabel" type="Label" parent="Game/HUD" unique_id=149607614]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -545,40 +546,40 @@ text = "TIMER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SaveScore" type="Control" parent="Game/HUD"]
+[node name="SaveScore" type="Control" parent="Game/HUD" unique_id=120533881]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="BaseScore" type="Label" parent="Game/HUD/SaveScore"]
+[node name="BaseScore" type="Label" parent="Game/HUD/SaveScore" unique_id=369119966]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 48.0
 offset_bottom = 31.0
 
-[node name="ComboMult" type="Label" parent="Game/HUD/SaveScore"]
+[node name="ComboMult" type="Label" parent="Game/HUD/SaveScore" unique_id=1523498812]
 layout_mode = 0
 offset_left = 56.0
 offset_top = 8.0
 offset_right = 96.0
 offset_bottom = 31.0
 
-[node name="B2BMult" type="Label" parent="Game/HUD/SaveScore"]
+[node name="B2BMult" type="Label" parent="Game/HUD/SaveScore" unique_id=1267023476]
 layout_mode = 0
 offset_left = 120.0
 offset_top = 16.0
 offset_right = 160.0
 offset_bottom = 39.0
 
-[node name="AllClearExp" type="Label" parent="Game/HUD/SaveScore"]
+[node name="AllClearExp" type="Label" parent="Game/HUD/SaveScore" unique_id=228172190]
 layout_mode = 0
 offset_left = 168.0
 offset_top = 16.0
 offset_right = 208.0
 offset_bottom = 39.0
 
-[node name="Calculation" type="Label" parent="Game/HUD/SaveScore"]
+[node name="Calculation" type="Label" parent="Game/HUD/SaveScore" unique_id=888587688]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 88.0
@@ -586,10 +587,10 @@ offset_right = 176.0
 offset_bottom = 136.0
 text = "test"
 
-[node name="Particles" type="Node2D" parent="Game"]
+[node name="Particles" type="Node2D" parent="Game" unique_id=1854291771]
 scale = Vector2(1, 0.9798307)
 
-[node name="HardDropContact" type="CPUParticles2D" parent="Game/Particles"]
+[node name="HardDropContact" type="CPUParticles2D" parent="Game/Particles" unique_id=1277166437]
 position = Vector2(-256, 64)
 emitting = false
 amount = 5
@@ -608,7 +609,7 @@ scale_amount_max = 6.0
 color_ramp = SubResource("Gradient_1n30v")
 anim_speed_max = 128.0
 
-[node name="LineClear" type="CPUParticles2D" parent="Game/Particles"]
+[node name="LineClear" type="CPUParticles2D" parent="Game/Particles" unique_id=674903210]
 position = Vector2(-384, 64)
 emitting = false
 amount = 1
@@ -622,7 +623,7 @@ scale_amount_min = 32.0
 scale_amount_max = 32.0
 color_ramp = SubResource("Gradient_03na7")
 
-[node name="LineClearBoard" type="CPUParticles2D" parent="Game/Particles"]
+[node name="LineClearBoard" type="CPUParticles2D" parent="Game/Particles" unique_id=1265921379]
 position = Vector2(192, 336)
 emitting = false
 amount = 64
@@ -639,7 +640,7 @@ scale_amount_min = 5.0
 scale_amount_max = 10.0
 color_ramp = SubResource("Gradient_xftlc")
 
-[node name="HardDropBG" type="CPUParticles2D" parent="Game/Particles"]
+[node name="HardDropBG" type="CPUParticles2D" parent="Game/Particles" unique_id=1636280311]
 position = Vector2(-320, 64)
 emitting = false
 amount = 12
@@ -661,18 +662,18 @@ scale_amount_max = 5.0
 scale_amount_curve = SubResource("Curve_1n30v")
 color_ramp = SubResource("Gradient_35kre")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="Game/Particles"]
+[node name="CanvasLayer" type="CanvasLayer" parent="Game/Particles" unique_id=1107849124]
 layer = 10
 
-[node name="ColorRect" type="ColorRect" parent="Game/Particles/CanvasLayer"]
+[node name="ColorRect" type="ColorRect" parent="Game/Particles/CanvasLayer" unique_id=555807986]
 material = SubResource("ShaderMaterial_1n30v")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -192.0
-offset_top = -63.0
-offset_right = -192.0
-offset_bottom = -63.0
+offset_left = -232.0
+offset_top = -64.0
+offset_right = -232.0
+offset_bottom = -64.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0)
