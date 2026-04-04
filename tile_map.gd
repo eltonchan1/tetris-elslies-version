@@ -865,7 +865,6 @@ func get_spin_type() -> int:
 func check_rows():
 	var lines_cleared = 0
 	var row : int = ROWS
-	update_level(lines_cleared)
 	while row > 0:
 		var count = 0
 		for i in range(COLS):
@@ -878,19 +877,16 @@ func check_rows():
 			gravity = min(gravity + GRAVITY_INCREASE, MAX_GRAVITY)
 		else:
 			row -= 1
-	
+	update_level(lines_cleared)
 	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
 	print("DEBUG: pending_spin_type = ", pending_spin_type)
-	
 	if lines_cleared > 0:
 		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
 		wave_intensity = lines_cleared * 0.2
 		$Game/Particles/LineClearBoard.emitting = true
-		
 		var spin_type = get_spin_type()  # 0, 1, or 2
 		var points = 0
 		var is_difficult = false
-		
 		if spin_type == 2:  # full spin
 			is_difficult = true
 			match lines_cleared:
@@ -1012,9 +1008,37 @@ func update_level(lines_just_cleared: int):
 	while lines_cleared_total >= lines_for_next_level:
 		lines_cleared_total -= lines_for_next_level
 		level += 1
-		lines_for_next_level = (level * 2) + 1  # 3, 5, 7, 9...
-		gravity = min(gravity + 0.002, MAX_GRAVITY)
+		lines_for_next_level = (level * 2) + 1
+		gravity = get_gravity_for_level(level)
 		$Game/HUD.get_node("LevelLabel").text = "LEVEL: " + str(level)
+
+func get_gravity_for_level(lvl: int) -> float:
+	match lvl:
+		1: return 0.01667
+		2: return 0.021
+		3: return 0.027
+		4: return 0.035
+		5: return 0.045
+		6: return 0.059
+		7: return 0.077
+		8: return 0.1
+		9: return 0.133
+		10: return 0.18
+		11: return 0.25
+		12: return 0.35
+		13: return 0.5
+		14: return 0.7
+		15: return 1.0
+		16: return 1.4
+		17: return 2.0
+		18: return 3.0
+		19: return 4.0
+		20: return 5.5
+		21: return 7.0
+		22: return 9.0
+		23: return 11.0
+		24: return 14.0
+		_: return 20.0
 
 # CAMERA SYSTEM
 func update_camera(delta):
