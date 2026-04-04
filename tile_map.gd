@@ -44,7 +44,6 @@ const QUAD : int = 800
 const SPIN_SINGLE: int = 800
 const SPIN_DOUBLE: int = 1200
 const SPIN_TRIPLE: int = 1600
-const SPIN_QUAD: int = 2600
 
 const directions := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 const start_pos := Vector2i(5, -1)
@@ -157,6 +156,7 @@ var dcd : float = 1.0
 var left_release_timer : float = 0.0
 var right_release_timer : float = 0.0
 var sdf : float = 6.0
+var soft_dropping : bool = false
 
 # Hold system
 var held_piece = null
@@ -170,18 +170,20 @@ var next_pieces_atlas : Array = []
 var rotation_index : int = 0
 var active_piece : Array
 var last_action_was_rotation : bool = false
-var pending_spin_lines : int = 0
+var pending_spin_type : int = 0
 
 # Scoring
 var score : int
-var basescore : int
-var combomult : int
-var b2bmult : int
-var allclearexp : bool
 var combo_count : int = 0
+var b2b_active : bool = false
+var soft_drop_cells : int = 0
+var hard_drop_cells : int = 0
 var last_clear_had_lines : bool = false
 var b2b_count : int = 0
 var last_clear_was_difficult : bool = false
+var level : int = 1
+var lines_cleared_total : int = 0
+var lines_for_next_level : int = 3
 
 # Tilemap
 var tile_id : int = 1
@@ -264,10 +266,6 @@ func new_game():
 	# Reset game state
 	print("DEBUG: Resetting variables")
 	score = 0
-	basescore = 0
-	combomult = 0
-	b2bmult = 1
-	allclearexp = false
 	gravity = 0.01667
 	gravity_counter = 0.0
 	lock_delay_timer = 0.0
@@ -284,16 +282,15 @@ func new_game():
 	b2b_count = 0
 	last_clear_was_difficult = false
 	game_time = 0.0
+	level = 1
+	lines_cleared_total = 0
+	lines_for_next_level = 3
 	timer_running = false
 	
 	# Reset UI labels
 	$Game/HUD.get_node("ComboLabel").text = ""
 	$Game/HUD.get_node("B2BLabel").text = ""
 	$Game/HUD.get_node("AllClearLabel").text = ""
-	$Game/HUD/SaveScore/BaseScore.text = "0"
-	$Game/HUD/SaveScore/ComboMult.text = "0"
-	$Game/HUD/SaveScore/B2BMult.text = "0"
-	$Game/HUD/SaveScore/AllClearExp.text = "0"
 	$Game/HUD.get_node("TimerLabel").text = "TIME: 0:00.000"
 	$Game/HUD.get_node("GameOverLabel").hide()
 	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
@@ -349,15 +346,16 @@ func _process(delta):
 	if game_running:
 		handle_input(delta)
 		update_camera(delta)
-		
 		if timer_running:
 			game_time += delta
 			update_timer_display()
-		
 		# Gravity processing
 		while gravity_counter >= 1.0:
 			if can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
+				if soft_dropping:
+					score += 1
+					$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 				gravity_counter -= 1.0
 			else:
 				gravity_counter = 0.0
@@ -365,13 +363,11 @@ func _process(delta):
 					lock_delay_active = true
 					lock_delay_timer = 0.0
 				break
-		
 		# Lock delay processing
 		if lock_delay_active:
 			lock_delay_timer += delta
 			if lock_delay_timer >= LOCK_DELAY_MAX:
 				lock_piece()
-		
 		wave_material.set_shader_parameter(
 			"zoom",
 			0.002 + trauma * 0.01
@@ -405,28 +401,38 @@ func handle_input(delta):
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
 		return
-	
-	# Rotation
 	if Input.is_action_just_pressed("cw_rotation"):
 		rotate_piece_srs(1)
 	if Input.is_action_just_pressed("ccw_rotation"):
 		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
 		rotate_piece_srs(2)
-	
+	if Input.is_action_just_pressed("left_move"):
+		right_release_timer = 0.0
+		das_right = 0.0
+	if Input.is_action_just_pressed("right_move"):
+		left_release_timer = 0.0
+		das_left = 0.0
 	# Soft drop
 	if Input.is_action_pressed("soft_drop"):
+		soft_dropping = true
 		if sdf >= 9999:
 			while can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
+				score += 1
+				$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 			gravity_counter = 0.0
 		else:
+			var old_counter = gravity_counter
 			gravity_counter += (2.5 * BASE_SOFT_DROP * sdf * delta * 60.0)
+			var cells_this_frame = int(gravity_counter) - int(old_counter)
+			if cells_this_frame > 0 and can_move(Vector2i.DOWN):
+				score += cells_this_frame
 	else:
+		soft_dropping = false
 		gravity_counter += gravity
-	
 	# Left movement with DAS/ARR
-	if Input.is_action_pressed("left_move"):
+	if Input.is_action_pressed("left_move") and not Input.is_action_pressed("right_move"):
 		if right_release_timer <= 0:
 			das_left += delta
 			das_right = 0.0
@@ -436,9 +442,7 @@ func handle_input(delta):
 				if das_left >= das_delay_seconds:
 					das_left -= arr_seconds
 				move_piece(Vector2i.LEFT)
-	
-	# Right movement with DAS/ARR
-	elif Input.is_action_pressed("right_move"):
+	elif Input.is_action_pressed("right_move") and not Input.is_action_pressed("left_move"):
 		if left_release_timer <= 0:
 			das_right += delta
 			das_left = 0.0
@@ -448,12 +452,17 @@ func handle_input(delta):
 				if das_right >= das_delay_seconds:
 					das_right -= arr_seconds
 				move_piece(Vector2i.RIGHT)
-	
-	# DCD (Direction Change Delay)
+	# Both held simultaneously - move in the most recently pressed direction
+	elif Input.is_action_pressed("left_move") and Input.is_action_pressed("right_move"):
+		if Input.is_action_just_pressed("right_move"):
+			move_piece(Vector2i.RIGHT)
+		elif Input.is_action_just_pressed("left_move"):
+			move_piece(Vector2i.LEFT)
 	else:
-		if das_left > 0:
+		var das_delay_seconds = das_delay * FRAME_TIME
+		if das_left >= das_delay_seconds:
 			right_release_timer = dcd * FRAME_TIME
-		if das_right > 0:
+		if das_right >= das_delay_seconds:
 			left_release_timer = dcd * FRAME_TIME
 		das_left = 0.0
 		das_right = 0.0
@@ -616,8 +625,11 @@ func rotate_piece_srs(direction: int):
 
 func hard_drop():
 	clear_piece()
-	cur_pos = get_ghost_position()
+	var ghost_pos = get_ghost_position()
+	hard_drop_cells = ghost_pos.y - cur_pos.y  # cells dropped
+	cur_pos = ghost_pos
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
+	score += hard_drop_cells * 2
 	spawn_hard_drop_particles()
 	lock_piece()
 
@@ -707,11 +719,7 @@ func award_spin_bonus(lines: int) -> void:
 		1: bonus = SPIN_SINGLE
 		2: bonus = SPIN_DOUBLE
 		3: bonus = SPIN_TRIPLE
-		4: bonus = SPIN_QUAD
 	
-	basescore += bonus
-	$Game/HUD/SaveScore/BaseScore.text = str(basescore)
-	$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 	print("SPIN DETECTED! +" + str(bonus) + " points")
 
 func get_line_clear_score(lines: int) -> int:
@@ -721,15 +729,6 @@ func get_line_clear_score(lines: int) -> int:
 		3: return TRIPLE
 		4: return QUAD
 		_: return 0
-
-func calc_savescore() -> int:
-	var allclear : int = 0
-	if allclearexp == true:
-		allclear = 2
-	else:
-		allclear = 1
-	var calcsavescore = (basescore * combomult * b2bmult) ** allclear
-	return calcsavescore
 
 # VISUAL EFFECTS
 func spawn_hard_drop_particles():
@@ -808,12 +807,8 @@ func lock_piece():
 	print("DEBUG: lock_piece() called")
 	nudge_camera(Vector2.UP)
 	land_piece()
-	
-	if last_action_was_rotation:
-		check_spin_before_clear()
-	
+	pending_spin_type = get_spin_type()
 	check_rows()
-	
 	# Get next piece
 	piece_type = next_pieces[0]
 	piece_atlas = next_pieces_atlas[0]
@@ -822,7 +817,6 @@ func lock_piece():
 	var new_next = pick_piece()
 	next_pieces.append(new_next)
 	next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
-	
 	clear_ghost_piece()
 	can_hold = true
 	create_piece()
@@ -834,38 +828,44 @@ func land_piece():
 		active_layer.erase_cell(cur_pos + i)
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
 
-func check_spin_before_clear() -> void:
-	print("DEBUG: check_spin_before_clear() - checking corners NOW")
-	print("DEBUG: cur_pos = ", cur_pos)
+# 0 no spin, 1 mini spin, 2 full spin
+func get_spin_type() -> int:
+	if not last_action_was_rotation:
+		return 0
+	if piece_type == o:
+		return 0
 	
-	var corners = [
-		Vector2i(-1, -1),
-		Vector2i(1, -1),
-		Vector2i(-1, 1),
-		Vector2i(1, 1),
-	]
+	var corners = [Vector2i(-1,-1), Vector2i(1,-1), Vector2i(-1,1), Vector2i(1,1)]
+	var blocked = 0
+	for c in corners:
+		if not is_free(cur_pos + c):
+			blocked += 1
 	
-	var blocked_corners = 0
-	for corner in corners:
-		var check_pos = cur_pos + corner
-		var is_blocked = not is_free(check_pos)
-		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
-		if is_blocked:
-			blocked_corners += 1
+	if blocked < 3:
+		return 0
 	
-	print("DEBUG: Total blocked_corners = ", blocked_corners)
-	if blocked_corners >= 3:
-		print("DEBUG: SPIN DETECTED! Will award bonus after line count")
-		pending_spin_lines = -1
-	else:
-		print("DEBUG: Not a spin")
-		pending_spin_lines = 0
+	# t mini vs full distinction
+	if piece_type == t:
+		var front_corners : Array
+		match rotation_index:
+			0: front_corners = [Vector2i(-1,-1), Vector2i(1,-1)]
+			1: front_corners = [Vector2i(1,-1), Vector2i(1,1)]
+			2: front_corners = [Vector2i(-1,1), Vector2i(1,1)]
+			3: front_corners = [Vector2i(-1,-1), Vector2i(-1,1)]
+		var front_blocked = 0
+		for fc in front_corners:
+			if not is_free(cur_pos + fc):
+				front_blocked += 1
+		if front_blocked == 2:
+			return 2  # full spin
+		else:
+			return 1  # mini spin
+	return 2
 
 func check_rows():
 	var lines_cleared = 0
 	var row : int = ROWS
-	
-	# Count and clear lines
+	update_level(lines_cleared)
 	while row > 0:
 		var count = 0
 		for i in range(COLS):
@@ -880,100 +880,85 @@ func check_rows():
 			row -= 1
 	
 	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
-	print("DEBUG: pending_spin_lines = ", pending_spin_lines)
+	print("DEBUG: pending_spin_type = ", pending_spin_type)
 	
 	if lines_cleared > 0:
-		# Visual feedback
 		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
 		wave_intensity = lines_cleared * 0.2
 		$Game/Particles/LineClearBoard.emitting = true
 		
-		var was_spin = (pending_spin_lines == -1)
-		var is_difficult = is_difficult_clear(lines_cleared, was_spin)
+		var spin_type = get_spin_type()  # 0, 1, or 2
+		var points = 0
+		var is_difficult = false
 		
-		# Award base points
-		if pending_spin_lines == -1:
-			print("DEBUG: This was a spin! Awarding bonus for ", lines_cleared, " lines")
-			award_spin_bonus(lines_cleared)
+		if spin_type == 2:  # full spin
+			is_difficult = true
+			match lines_cleared:
+				0: points = 400
+				1: points = 800
+				2: points = 1200
+				3: points = 1600
+				4: points = 2600
+		elif spin_type == 1:  # mini spin
+			match lines_cleared:
+				0: points = 100
+				1: points = 200
+				2: points = 400
+				3: points = 800
+				4: points = 1600
 		else:
-			var line_clear_points = get_line_clear_score(lines_cleared)
-			print("DEBUG: Regular line clear - awarding ", line_clear_points, " points for ", lines_cleared, " lines")
-			basescore += line_clear_points
-			$Game/HUD/SaveScore/BaseScore.text = str(basescore)
-			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
-		pending_spin_lines = 0
+			match lines_cleared:
+				1: points = 100
+				2: points = 300
+				3: points = 500
+				4: 
+					points = 800
+					is_difficult = true
+		# b2b mult
+		if is_difficult and b2b_active:
+			points = int(points * 1.5)
+			b2b_count += 1
+			$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
+		elif is_difficult:
+			b2b_active = true
+			b2b_count = 1
+			$Game/HUD.get_node("B2BLabel").text = "B2B: 1"
+		else:
+			if b2b_active:
+				$Game/HUD.get_node("B2BLabel").text = ""
+			b2b_active = false
+			b2b_count = 0
 		
-		# Combo handling
+		# Combo bonus (combo_count * 50, added separately)
 		if last_clear_had_lines:
 			combo_count += 1
-			combomult += 1
-			var combo_bonus = combo_count * 50
-			print("COMBO x", combo_count, "! +", combo_bonus, " bonus")
+			score += combo_count * 50
 			$Game/HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
-			$Game/HUD/SaveScore/ComboMult.text = str(combomult)
-			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		else:
-			print("First line clear - no combo yet")
+			combo_count = 1
 			$Game/HUD.get_node("ComboLabel").text = ""
-			combomult += 1
-			$Game/HUD/SaveScore/ComboMult.text = str(combomult)
-			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		last_clear_had_lines = true
 		
-		# All Clear check
+		# All Clear
 		if is_board_empty():
-			var all_clear_bonus = 3500
-			allclearexp = true
+			points += 3500
 			$Game/HUD.get_node("AllClearLabel").text = "ALL CLEAR"
-			$Game/HUD/SaveScore/AllClearExp.text = "2"
-			print("ALL CLEAR! +", all_clear_bonus, " points")
-			$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
 		else:
-			allclearexp = false
-			$Game/HUD/SaveScore/AllClearExp.text = "0"
+			$Game/HUD.get_node("AllClearLabel").text = ""
 		
-		# Back-to-Back handling
-		if is_difficult:
-			if last_clear_was_difficult:
-				b2b_count += 1
-				b2bmult += 1
-				var b2b_bonus = b2b_count * 100
-				print("BACK-TO-BACK x", b2b_count, "! +", b2b_bonus, " bonus")
-				$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
-				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
-				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
-			else:
-				b2b_count = 1
-				b2bmult = 2
-				print("Back-to-Back started!")
-				$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
-				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
-				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
-			last_clear_was_difficult = true
-		else:
-			if b2b_count > 0:
-				print("Back-to-Back broken!")
-				b2b_count = 0
-				b2bmult = 1
-				$Game/HUD.get_node("B2BLabel").text = ""
-				$Game/HUD/SaveScore/B2BMult.text = str(b2bmult)
-				$Game/HUD/SaveScore/Calculation.text = str(calc_savescore())
-				last_clear_was_difficult = false
-	else:
-		# No lines cleared - reset combo and finalize score
-		if combo_count > 0:
-			print("Combo broken!")
-		score += calc_savescore()
-		$Game/HUD.get_node("ComboLabel").text = ""
-		$Game/HUD.get_node("AllClearLabel").text = ""
-		combo_count = 0
-		combomult = 0
-		basescore = 0
-		$Game/HUD/SaveScore/ComboMult.text = str(combomult)
-		$Game/HUD/SaveScore/BaseScore.text = str(basescore)
-		$Game/HUD/SaveScore/AllClearExp.text = "0"
+		score += points * level
 		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+	
+	else:
+		var spin_type = get_spin_type()
+		if spin_type == 2:
+			score += 400
+		elif spin_type == 1:
+			score += 100
+		combo_count = 0
 		last_clear_had_lines = false
+		$Game/HUD.get_node("ComboLabel").text = ""
+		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
@@ -1021,6 +1006,15 @@ func spawn_line_clear_particles(row: int):
 		new_particles.one_shot = true
 		new_particles.emitting = true
 		new_particles.finished.connect(new_particles.queue_free)
+
+func update_level(lines_just_cleared: int):
+	lines_cleared_total += lines_just_cleared
+	while lines_cleared_total >= lines_for_next_level:
+		lines_cleared_total -= lines_for_next_level
+		level += 1
+		lines_for_next_level = (level * 2) + 1  # 3, 5, 7, 9...
+		gravity = min(gravity + 0.002, MAX_GRAVITY)
+		$Game/HUD.get_node("LevelLabel").text = "LEVEL: " + str(level)
 
 # CAMERA SYSTEM
 func update_camera(delta):
