@@ -4,22 +4,19 @@ extends Node2D
 	# add like more satisfying scoring n stuff (numbers)
 	# art redesign & uis
 		# ultrakill style
-	# vfx
-		# balatro inspired (naneinf)
 	# main menu
 		# fancy it up, make it look good
 	# diff gamemodes???
 		# 40l, blitz, etc
 	# sound design & music
 		# satisfying
-	# hall o/ mirrors -> unsuccessful?
 
 
 # NODE REFERENCES
 @onready var board_layer : TileMapLayer = $Game/board
 @onready var active_layer : TileMapLayer = $Game/active
 @onready var wave_material : ShaderMaterial = $"Game/Particles/CanvasLayer/ColorRect".material
-
+@onready var hold_layer : TileMapLayer = $Game/hold
 
 # CONSTANTS
 const COLS : int = 10
@@ -277,6 +274,8 @@ func new_game():
 	right_release_timer = 0.0
 	held_piece = null
 	can_hold = true
+	hold_layer.modulate = Color(1, 1, 1, 1.0)
+	clear_hold_panel()
 	combo_count = 0
 	last_clear_had_lines = false
 	b2b_count = 0
@@ -294,6 +293,7 @@ func new_game():
 	$Game/HUD.get_node("TimerLabel").text = "TIME: 0:00.000"
 	$Game/HUD.get_node("GameOverLabel").hide()
 	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
+	$Game/HUD.get_node("LevelLabel").text = "LEVEL: " + str(level)
 	
 	# Reset bag randomizer
 	shapes = shapes_full.duplicate()
@@ -564,7 +564,7 @@ func clear_next_panel():
 func clear_hold_panel():
 	for i in range(-5, 2):
 		for j in range(-1, 5):
-			active_layer.erase_cell(Vector2i(i, j))
+			hold_layer.erase_cell(Vector2i(i, j))
 
 # PIECE MOVEMENT & ROTATION
 func move_piece(dir):
@@ -669,8 +669,9 @@ func hold_piece():
 		hold_pos = Vector2i(-4, 1)
 	elif held_piece == o:
 		hold_pos = Vector2i(-2, 1)
-	draw_piece(held_piece[0], hold_pos, held_piece_atlas, active_layer)
+	draw_piece(held_piece[0], hold_pos, held_piece_atlas, hold_layer)
 	can_hold = false
+	hold_layer.modulate = Color(0.4, 0.4, 0.4, 1.0)
 	create_piece()
 
 func reset_lock_delay():
@@ -819,6 +820,7 @@ func lock_piece():
 	next_pieces_atlas.append(Vector2i(shapes_full.find(new_next), 0))
 	clear_ghost_piece()
 	can_hold = true
+	hold_layer.modulate = Color(1, 1, 1, 1.0)
 	create_piece()
 	check_game_over()
 
@@ -884,10 +886,10 @@ func check_rows():
 		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
 		wave_intensity = lines_cleared * 0.2
 		$Game/Particles/LineClearBoard.emitting = true
-		var spin_type = get_spin_type()  # 0, 1, or 2
+		var spin_type = pending_spin_type
 		var points = 0
 		var is_difficult = false
-		if spin_type == 2:  # full spin
+		if spin_type == 2:
 			is_difficult = true
 			match lines_cleared:
 				0: points = 400
@@ -895,7 +897,8 @@ func check_rows():
 				2: points = 1200
 				3: points = 1600
 				4: points = 2600
-		elif spin_type == 1:  # mini spin
+		elif spin_type == 1:
+			is_difficult = true
 			match lines_cleared:
 				0: points = 100
 				1: points = 200
@@ -946,7 +949,7 @@ func check_rows():
 		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 	
 	else:
-		var spin_type = get_spin_type()
+		var spin_type = pending_spin_type
 		if spin_type == 2:
 			score += 400
 		elif spin_type == 1:
@@ -954,6 +957,7 @@ func check_rows():
 		combo_count = 0
 		last_clear_had_lines = false
 		$Game/HUD.get_node("ComboLabel").text = ""
+		$Game/HUD.get_node("AllClearLabel").text = ""
 		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
 
 func shift_rows(row):

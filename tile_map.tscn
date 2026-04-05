@@ -262,10 +262,7 @@ size_flags_vertical = 4
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=85367526]
 layout_mode = 2
-text = "arr - 5 -> 0, 0.1
-das - 20 -> 1, 0.1
-dcd - 20 -> 0, 0.1
-sdf - 5 -> 40 + inf, 1"
+text = "HANDLING"
 
 [node name="ARRContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=472661799]
 layout_mode = 2
@@ -273,17 +270,23 @@ layout_mode = 2
 [node name="ARR" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=1706491023]
 layout_mode = 2
 size_flags_horizontal = 4
+tooltip_text = "Auto Repeat Rate: The speed of the pieces when holding down movement keys."
+mouse_filter = 0
 text = "ARR"
 
 [node name="ARRSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=480997518]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+tooltip_text = "Auto Repeat Rate: The speed of the pieces when holding down movement keys."
 max_value = 5.0
 step = 0.1
 value = 2.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=778859819]
 layout_mode = 2
+tooltip_text = "Auto Repeat Rate: The speed of the pieces when holding down movement keys."
+mouse_filter = 0
+text = "0"
 
 [node name="DASContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=108188437]
 layout_mode = 2
@@ -291,11 +294,16 @@ layout_mode = 2
 [node name="DAS" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=1429650166]
 layout_mode = 2
 size_flags_horizontal = 4
+tooltip_text = "Delayed Auto Shift: The time between the initial keypress
+and the start of its auto repeat rate in frames."
+mouse_filter = 0
 text = "DAS"
 
 [node name="DASSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=409460258]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+tooltip_text = "Delayed Auto Shift: The time between the initial keypress
+and the start of its auto repeat rate in frames."
 min_value = 1.0
 max_value = 20.0
 step = 0.1
@@ -303,6 +311,10 @@ value = 10.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=1787186281]
 layout_mode = 2
+tooltip_text = "Delayed Auto Shift: The time between the initial keypress
+and the start of its auto repeat rate in frames."
+mouse_filter = 0
+text = "0"
 
 [node name="DCDContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=459987740]
 layout_mode = 2
@@ -310,17 +322,26 @@ layout_mode = 2
 [node name="DCD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=2074981704]
 layout_mode = 2
 size_flags_horizontal = 4
+tooltip_text = "DAS Cut Delay: If not 0, any ongoing DAS movement will pause
+for a set amount of time after dropping/rotating a piece, measured in frames."
+mouse_filter = 0
 text = "DCD"
 
 [node name="DCDSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=1075074809]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+tooltip_text = "DAS Cut Delay: If not 0, any ongoing DAS movement will pause
+for a set amount of time after dropping/rotating a piece, measured in frames."
 max_value = 20.0
 step = 0.1
 value = 1.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=922550056]
 layout_mode = 2
+tooltip_text = "DAS Cut Delay: If not 0, any ongoing DAS movement will pause
+for a set amount of time after dropping/rotating a piece, measured in frames."
+mouse_filter = 0
+text = "0"
 
 [node name="SDFContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=613909135]
 layout_mode = 2
@@ -328,17 +349,23 @@ layout_mode = 2
 [node name="SDF" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=1063931856]
 layout_mode = 2
 size_flags_horizontal = 4
+tooltip_text = "Soft Drop Factor: The factor with which soft drops change the gravity speed."
+mouse_filter = 0
 text = "SDF"
 
 [node name="SDFSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=364324570]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+tooltip_text = "Soft Drop Factor: The factor with which soft drops change the gravity speed."
 min_value = 5.0
 max_value = 41.0
 value = 6.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=251180211]
 layout_mode = 2
+tooltip_text = "Soft Drop Factor: The factor with which soft drops change the gravity speed."
+mouse_filter = 0
+text = "0"
 
 [node name="SettingsExitButton" type="Button" parent="MainMenu/PopUp/Settings" unique_id=408030468]
 layout_mode = 1
@@ -372,9 +399,9 @@ theme_override_font_sizes/font_size = 60
 text = "SETTINGS"
 
 [node name="Game" type="Node2D" parent="." unique_id=1494167064]
+visible = false
 
 [node name="BlackBackground" type="ColorRect" parent="Game" unique_id=2014588060]
-visible = false
 z_index = -100
 z_as_relative = false
 anchors_preset = 15
@@ -399,7 +426,11 @@ rendering_quadrant_size = 32
 
 [node name="active" type="TileMapLayer" parent="Game" unique_id=1701866625]
 use_parent_material = true
-tile_map_data = PackedByteArray("AAAAAAAAAQAHAAAAAAAAAAEAAQAHAAAAAAAAAAIAAQAHAAAAAAAAAAMAAQAHAAAAAAAAAAQAAQAHAAAAAAAAAAUAAQAHAAAAAAAAAAYAAQAHAAAAAAAAAAcAAQAHAAAAAAAAAAgAAQAHAAAAAAAAAAkAAQAHAAAAAAAAAAoAAQAHAAAAAAAAAAsAAQAHAAAAAAAAAAwAAQAHAAAAAAAAAA0AAQAHAAAAAAAAAA4AAQAHAAAAAAAAAA8AAQAHAAAAAAAAABAAAQAHAAAAAAAAABEAAQAHAAAAAAAAABIAAQAHAAAAAAAAABMAAQAHAAAAAAAAABQAAQAHAAAAAAALAAAAAQAHAAAAAAALAAEAAQAHAAAAAAALAAIAAQAHAAAAAAALAAMAAQAHAAAAAAALAAQAAQAHAAAAAAALAAUAAQAHAAAAAAALAAYAAQAHAAAAAAALAAcAAQAHAAAAAAALAAgAAQAHAAAAAAALAAkAAQAHAAAAAAALAAoAAQAHAAAAAAALAAsAAQAHAAAAAAALAAwAAQAHAAAAAAALAA0AAQAHAAAAAAALAA4AAQAHAAAAAAALAA8AAQAHAAAAAAALABAAAQAHAAAAAAALABEAAQAHAAAAAAALABIAAQAHAAAAAAALABMAAQAHAAAAAAALABQAAQAHAAAAAAAKABQAAQAHAAAAAAAJABQAAQAHAAAAAAAIABQAAQAHAAAAAAAHABQAAQAHAAAAAAAGABQAAQAHAAAAAAAFABQAAQAHAAAAAAAEABQAAQAHAAAAAAADABQAAQAHAAAAAAACABQAAQAHAAAAAAABABQAAQAHAAAAAAA=")
+tile_map_data = PackedByteArray("AAAAAAAAAQAHAAAAAAAAAAEAAQAHAAAAAAAAAAIAAQAHAAAAAAAAAAMAAQAHAAAAAAAAAAQAAQAHAAAAAAAAAAUAAQAHAAAAAAAAAAYAAQAHAAAAAAAAAAcAAQAHAAAAAAAAAAgAAQAHAAAAAAAAAAkAAQAHAAAAAAAAAAoAAQAHAAAAAAAAAAsAAQAHAAAAAAAAAAwAAQAHAAAAAAAAAA0AAQAHAAAAAAAAAA4AAQAHAAAAAAAAAA8AAQAHAAAAAAAAABAAAQAHAAAAAAAAABEAAQAHAAAAAAAAABIAAQAHAAAAAAAAABMAAQAHAAAAAAAAABQAAQAHAAAAAAABABQAAQAHAAAAAAACABQAAQAHAAAAAAADABQAAQAHAAAAAAAEABQAAQAHAAAAAAAFABQAAQAHAAAAAAAGABQAAQAHAAAAAAAHABQAAQAHAAAAAAAIABQAAQAHAAAAAAAJABQAAQAHAAAAAAAKABQAAQAHAAAAAAALABQAAQAHAAAAAAALABMAAQAHAAAAAAALABIAAQAHAAAAAAALABEAAQAHAAAAAAALABAAAQAHAAAAAAALAA8AAQAHAAAAAAALAA4AAQAHAAAAAAALAA0AAQAHAAAAAAALAAwAAQAHAAAAAAALAAsAAQAHAAAAAAALAAoAAQAHAAAAAAALAAkAAQAHAAAAAAALAAgAAQAHAAAAAAALAAcAAQAHAAAAAAALAAYAAQAHAAAAAAALAAUAAQAHAAAAAAALAAQAAQAHAAAAAAALAAMAAQAHAAAAAAALAAIAAQAHAAAAAAALAAEAAQAHAAAAAAALAAAAAQAHAAAAAAA=")
+tile_set = SubResource("TileSet_xftlc")
+
+[node name="hold" type="TileMapLayer" parent="Game" unique_id=362150981]
+use_parent_material = true
 tile_set = SubResource("TileSet_xftlc")
 
 [node name="HUD" type="Control" parent="Game" unique_id=827361770]
@@ -554,47 +585,6 @@ theme_override_font_sizes/font_size = 30
 text = "TIMER"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="SaveScore" type="Control" parent="Game/HUD" unique_id=120533881]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="BaseScore" type="Label" parent="Game/HUD/SaveScore" unique_id=369119966]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 48.0
-offset_bottom = 31.0
-
-[node name="ComboMult" type="Label" parent="Game/HUD/SaveScore" unique_id=1523498812]
-layout_mode = 0
-offset_left = 56.0
-offset_top = 8.0
-offset_right = 96.0
-offset_bottom = 31.0
-
-[node name="B2BMult" type="Label" parent="Game/HUD/SaveScore" unique_id=1267023476]
-layout_mode = 0
-offset_left = 120.0
-offset_top = 16.0
-offset_right = 160.0
-offset_bottom = 39.0
-
-[node name="AllClearExp" type="Label" parent="Game/HUD/SaveScore" unique_id=228172190]
-layout_mode = 0
-offset_left = 168.0
-offset_top = 16.0
-offset_right = 208.0
-offset_bottom = 39.0
-
-[node name="Calculation" type="Label" parent="Game/HUD/SaveScore" unique_id=888587688]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 88.0
-offset_right = 176.0
-offset_bottom = 136.0
-text = "test"
 
 [node name="Particles" type="Node2D" parent="Game" unique_id=1854291771]
 scale = Vector2(1, 0.9798307)
