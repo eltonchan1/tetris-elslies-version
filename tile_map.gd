@@ -21,7 +21,6 @@ extends Node2D
 # CONSTANTS
 const COLS : int = 10
 const ROWS : int = 19
-const FRAME_TIME : float = 1.0/60.0
 const GRAVITY_INCREASE : float = 0.001
 const MAX_GRAVITY : float = 20.0
 const LOCK_DELAY_MAX : float = 0.5
@@ -145,11 +144,24 @@ var lock_delay_active : bool = false
 var move_reset_count : int = 0
 
 # Input handling
+var remappable_actions : Array = [
+	["left_move", "LeftContainer/LButton"],
+	["right_move", "RightContainer/RButton"],
+	["soft_drop", "SDContainer/SDButton"],
+	["hard_drop", "HDContainer/HDButton"],
+	["ccw_rotation", "CCWContainer/CCWButton"],
+	["cw_rotation", "CWContainer/CWButton"],
+	["180_rotation", "180Container/180Button"],
+	["hold", "HoldContainer/HoldButton"],
+	["pause_exit", "PauseExitContainer/PauseExitButton"],
+]
+var awaiting_remap_action : String = ""
+var remap_buttons : Dictionary = {}
 var das_left : float = 0.0
 var das_right : float = 0.0
-var das_delay : float = 10.0
-var arr : float = 2.0
-var dcd : float = 1.0
+var das_delay_sec : float = 10.0 / 60.0
+var arr_sec : float = 2.0 / 60.0
+var dcd_sec : float = 1.0 / 60.0
 var left_release_timer : float = 0.0
 var right_release_timer : float = 0.0
 var sdf : float = 6.0
@@ -196,20 +208,28 @@ var wave_intensity : float = 0.0
 func _ready():
 	print("DEBUG: _ready() called")
 	main_menu(true)
-	
-	# Initialize settings UI
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - arr
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.value = 20.0 - das_delay + 1.0
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.value = 20.0 - dcd
-	
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - (arr_sec * 60.0)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.value = 20.0 - (das_delay_sec * 60.0) + 1.0
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.value = 20.0 - (dcd_sec * 60.0)
 	if sdf >= 9999:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = 41
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = sdf
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(sdf)) + "X"
-	
+	var keybinds_base = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer
+	for entry in remappable_actions:
+		var action = entry[0]
+		var btn_name = entry[1]
+		var btn = keybinds_base.get_node(btn_name)
+		remap_buttons[action] = btn
+		btn.pressed.connect(_on_remap_button_pressed.bind(action))
+	load_keybinds()
+	refresh_remap_buttons()
 	print("DEBUG: _ready() complete")
+
+func get_remap_button(action: String) -> Button:
+	return remap_buttons.get(action, null)
 
 # MENU FUNCTIONS
 func main_menu(on: bool):
@@ -430,27 +450,23 @@ func handle_input(delta):
 				score += cells_this_frame
 	else:
 		soft_dropping = false
-		gravity_counter += gravity
+		gravity_counter += gravity * delta * 60.0
 	# Left movement with DAS/ARR
 	if Input.is_action_pressed("left_move") and not Input.is_action_pressed("right_move"):
 		if right_release_timer <= 0:
 			das_left += delta
 			das_right = 0.0
-			var das_delay_seconds = das_delay * FRAME_TIME
-			var arr_seconds = arr * FRAME_TIME
-			if Input.is_action_just_pressed("left_move") or das_left >= das_delay_seconds:
-				if das_left >= das_delay_seconds:
-					das_left -= arr_seconds
+			if Input.is_action_just_pressed("left_move") or das_left >= das_delay_sec:
+				if das_left >= das_delay_sec:
+					das_left -= arr_sec
 				move_piece(Vector2i.LEFT)
 	elif Input.is_action_pressed("right_move") and not Input.is_action_pressed("left_move"):
 		if left_release_timer <= 0:
 			das_right += delta
 			das_left = 0.0
-			var das_delay_seconds = das_delay * FRAME_TIME
-			var arr_seconds = arr * FRAME_TIME
-			if Input.is_action_just_pressed("right_move") or das_right >= das_delay_seconds:
-				if das_right >= das_delay_seconds:
-					das_right -= arr_seconds
+			if Input.is_action_just_pressed("right_move") or das_right >= das_delay_sec:
+				if das_right >= das_delay_sec:
+					das_right -= arr_sec
 				move_piece(Vector2i.RIGHT)
 	# Both held simultaneously - move in the most recently pressed direction
 	elif Input.is_action_pressed("left_move") and Input.is_action_pressed("right_move"):
@@ -459,17 +475,69 @@ func handle_input(delta):
 		elif Input.is_action_just_pressed("left_move"):
 			move_piece(Vector2i.LEFT)
 	else:
-		var das_delay_seconds = das_delay * FRAME_TIME
-		if das_left >= das_delay_seconds:
-			right_release_timer = dcd * FRAME_TIME
-		if das_right >= das_delay_seconds:
-			left_release_timer = dcd * FRAME_TIME
+		if das_left >= das_delay_sec:
+			right_release_timer = dcd_sec
+		if das_right >= das_delay_sec:
+			left_release_timer = dcd_sec
 		das_left = 0.0
 		das_right = 0.0
 	
 	# Restart
 	if Input.is_action_just_pressed("restart"):
 		new_game()
+
+func refresh_remap_buttons():
+	for action in remap_buttons:
+		var btn = remap_buttons[action]
+		btn.text = get_key_name_for_action(action)
+
+func get_key_name_for_action(action: String) -> String:
+	var events = InputMap.action_get_events(action)
+	for event in events:
+		if event is InputEventKey:
+			return event.as_text_physical_keycode()
+	return "UNBOUND"
+
+func _on_remap_button_pressed(action: String):
+	awaiting_remap_action = action
+	remap_buttons[action].text = "Press a key..."
+
+func _input(event):
+	if awaiting_remap_action == "":
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE:
+			awaiting_remap_action = ""
+			refresh_remap_buttons()
+			get_viewport().set_input_as_handled()
+			return
+		InputMap.action_erase_events(awaiting_remap_action)
+		InputMap.action_add_event(awaiting_remap_action, event)
+		save_keybinds()
+		awaiting_remap_action = ""
+		refresh_remap_buttons()
+		get_viewport().set_input_as_handled()
+
+func save_keybinds():
+	var config = ConfigFile.new()
+	for action in remap_buttons:
+		var events = InputMap.action_get_events(action)
+		for event in events:
+			if event is InputEventKey:
+				config.set_value("keybinds", action, event.physical_keycode)
+	config.save("user://keybinds.cfg")
+
+func load_keybinds():
+	var config = ConfigFile.new()
+	if config.load("user://keybinds.cfg") != OK:
+		return
+	for action in remap_buttons:
+		if config.has_section_key("keybinds", action):
+			var keycode = config.get_value("keybinds", action)
+			var event = InputEventKey.new()
+			event.physical_keycode = keycode
+			InputMap.action_erase_events(action)
+			InputMap.action_add_event(action, event)
 
 # PIECE MANAGEMENT
 func pick_piece():
@@ -685,7 +753,6 @@ func reset_lock_delay():
 			lock_delay_active = false
 
 # SCORING & SPIN DETECTION
-
 func check_spin(lines_cleared: int) -> void:
 	print("DEBUG: check_spin() called with lines_cleared = ", lines_cleared)
 	print("DEBUG: cur_pos = ", cur_pos)
@@ -1073,25 +1140,22 @@ func nudge_camera(direction: Vector2):
 
 # SETTINGS CALLBACKS
 func _on_arr_slider_value_changed(value: float) -> void:
-	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
-	if reverse_value == int(reverse_value):
-		reverse_value = int(reverse_value)
-	arr = reverse_value
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(reverse_value) + "F"
+	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
+	arr_sec = frames / 60.0
+	var ms = snapped(arr_sec * 1000.0, 0.01)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(int(frames)) + "F / " + str(ms) + "ms"
 
 func _on_das_slider_value_changed(value: float) -> void:
-	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
-	if reverse_value == int(reverse_value):
-		reverse_value = int(reverse_value)
-	das_delay = reverse_value
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(reverse_value) + "F"
+	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
+	das_delay_sec = frames / 60.0
+	var ms = snapped(das_delay_sec * 1000.0, 0.01)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(int(frames)) + "F / " + str(ms) + "ms"
 
 func _on_dcd_slider_value_changed(value: float) -> void:
-	var reverse_value = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
-	if reverse_value == int(reverse_value):
-		reverse_value = int(reverse_value)
-	dcd = reverse_value
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(reverse_value) + "F"
+	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
+	dcd_sec = frames / 60.0
+	var ms = snapped(dcd_sec * 1000.0, 0.01)
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(int(frames)) + "F / " + str(ms) + "ms"
 
 func _on_sdf_slider_value_changed(value: float) -> void:
 	print("DEBUG SDF: Slider changed to: ", value)

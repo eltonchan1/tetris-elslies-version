@@ -260,9 +260,112 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
+[node name="Label2" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=1507916723]
+layout_mode = 2
+text = "CONTROLS (click the button to change, then press the key/button you want)"
+
+[node name="LeftContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=129468134]
+layout_mode = 2
+
+[node name="Left" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/LeftContainer" unique_id=553553798]
+layout_mode = 2
+text = "MOVE LEFT"
+
+[node name="LButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/LeftContainer" unique_id=1689984235]
+layout_mode = 2
+text = "TEST"
+
+[node name="RightContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=1865218163]
+layout_mode = 2
+
+[node name="Left" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/RightContainer" unique_id=1030223558]
+layout_mode = 2
+text = "MOVE RIGHT"
+
+[node name="RButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/RightContainer" unique_id=1234411863]
+layout_mode = 2
+text = "TEST"
+
+[node name="SDContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=1024489219]
+layout_mode = 2
+
+[node name="SD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDContainer" unique_id=1862925229]
+layout_mode = 2
+text = "SOFT DROP"
+
+[node name="SDButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDContainer" unique_id=2137290455]
+layout_mode = 2
+text = "TEST"
+
+[node name="HDContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=2061124882]
+layout_mode = 2
+
+[node name="HD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HDContainer" unique_id=1153658898]
+layout_mode = 2
+text = "HARD DROP"
+
+[node name="HDButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HDContainer" unique_id=1278349884]
+layout_mode = 2
+text = "TEST"
+
+[node name="CCWContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=1940418347]
+layout_mode = 2
+
+[node name="CCW" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CCWContainer" unique_id=442796052]
+layout_mode = 2
+text = "ROTATE COUNTERCLOCKWISE"
+
+[node name="CCWButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CCWContainer" unique_id=1321773489]
+layout_mode = 2
+text = "TEST"
+
+[node name="CWContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=2092792934]
+layout_mode = 2
+
+[node name="CW" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CWContainer" unique_id=208139492]
+layout_mode = 2
+text = "ROTATE CLOCKWISE"
+
+[node name="CWButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CWContainer" unique_id=2022355693]
+layout_mode = 2
+text = "TEST"
+
+[node name="180Container" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=2033294647]
+layout_mode = 2
+
+[node name="180" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/180Container" unique_id=1059822306]
+layout_mode = 2
+text = "ROTATE 180"
+
+[node name="180Button" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/180Container" unique_id=47117867]
+layout_mode = 2
+text = "TEST"
+
+[node name="HoldContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=1225588510]
+layout_mode = 2
+
+[node name="Hold" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HoldContainer" unique_id=1253026183]
+layout_mode = 2
+text = "SWAP HOLD PIECE"
+
+[node name="HoldButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HoldContainer" unique_id=451020633]
+layout_mode = 2
+text = "TEST"
+
+[node name="PauseExitContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=123631414]
+layout_mode = 2
+
+[node name="PauseExit" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/PauseExitContainer" unique_id=57966285]
+layout_mode = 2
+text = "PAUSE/EXIT"
+
+[node name="PauseExitButton" type="Button" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/PauseExitContainer" unique_id=1909011886]
+layout_mode = 2
+text = "TEST"
+
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=85367526]
 layout_mode = 2
-text = "HANDLING"
+text = "HANDLING (drag to change, slow <-> fast)"
 
 [node name="ARRContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=472661799]
 layout_mode = 2
