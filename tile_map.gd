@@ -238,6 +238,8 @@ func main_menu(on: bool):
 		$MainMenu.visible = true
 		$MainMenu/PopUp/About.visible = false
 		$MainMenu/PopUp/Settings.visible = false
+		$MainMenu/PopUp/ExitConfirm.visible = false
+		$Game/PauseMenu.visible = false
 		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		$Game/Particles/CanvasLayer/ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		game_running = false
@@ -273,6 +275,58 @@ func _on_about_exit_button_pressed() -> void:
 func _on_settings_exit_button_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = false
 	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
+#here
+func _on_pause_exit_button_pressed() -> void:
+	if game_running:
+		open_pause_menu()
+	elif $MainMenu/PopUp/Settings.visible:
+		_on_settings_exit_button_pressed()
+	elif $MainMenu/PopUp/About.visible:
+		_on_about_exit_button_pressed()
+	else:
+		open_exit_confirm()
+
+func open_pause_menu():
+	game_running = false
+	timer_running = false
+	$Game/PauseMenu.visible = true
+	$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_STOP
+
+func close_pause_menu():
+	$Game/PauseMenu.visible = false
+	$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	game_running = true
+	timer_running = true
+
+func open_exit_confirm():
+	$MainMenu/PopUp/ExitConfirm.visible = true
+	$MainMenu/PopUp/ExitConfirm.mouse_filter = Control.MOUSE_FILTER_STOP
+
+func close_exit_confirm():
+	$MainMenu/PopUp/ExitConfirm.visible = false
+	$MainMenu/PopUp/ExitConfirm.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _on_pause_restart_pressed() -> void:
+	close_pause_menu()
+	new_game()
+
+func _on_pause_settings_pressed() -> void:
+	$Game/PauseMenu/Settings.visible = true
+	$Game/PauseMenu/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
+
+func _on_pause_settings_exit_pressed() -> void:
+	$Game/PauseMenu/Settings.visible = false
+	$Game/PauseMenu/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _on_pause_quit_pressed() -> void:
+	close_pause_menu()
+	main_menu(true)
+
+func _on_exit_confirm_yes_pressed() -> void:
+	get_tree().quit()
+
+func _on_exit_confirm_no_pressed() -> void:
+	close_exit_confirm()
 
 # GAME LOOP
 func new_game():
@@ -481,10 +535,11 @@ func handle_input(delta):
 			left_release_timer = dcd_sec
 		das_left = 0.0
 		das_right = 0.0
-	
-	# Restart
 	if Input.is_action_just_pressed("restart"):
 		new_game()
+	if Input.is_action_just_pressed("pause_exit"):
+		_on_pause_exit_button_pressed()
+		return
 
 func refresh_remap_buttons():
 	for action in remap_buttons:

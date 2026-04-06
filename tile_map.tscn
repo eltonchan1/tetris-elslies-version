@@ -81,13 +81,22 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -318.5
-offset_top = -368.0
+offset_top = -352.0
 offset_right = 318.5
-offset_bottom = -231.0
+offset_bottom = -215.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 100
 text = "TETRAEFFECT"
+
+[node name="ExitGameButton" type="Button" parent="MainMenu" unique_id=1727234832]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 80.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 40
+text = "X"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MainMenu" unique_id=767421159]
 layout_mode = 1
@@ -97,9 +106,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = 23.5
+offset_top = 104.0
 offset_right = 200.0
-offset_bottom = 376.5
+offset_bottom = 366.00024
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 15
@@ -118,11 +127,6 @@ text = "SETTINGS"
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "ABOUT"
-
-[node name="ExitGameButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=1727234832]
-layout_mode = 2
-theme_override_font_sizes/font_size = 50
-text = "EXIT"
 
 [node name="PopUp" type="Control" parent="MainMenu" unique_id=404550507]
 layout_mode = 1
@@ -504,8 +508,98 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 60
 text = "SETTINGS"
 
-[node name="Game" type="Node2D" parent="." unique_id=1494167064]
+[node name="ExitConfirm" type="Control" parent="MainMenu/PopUp" unique_id=2125026897]
 visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG2" type="Panel" parent="MainMenu/PopUp/ExitConfirm" unique_id=1661047650]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -384.0
+offset_top = -416.0
+offset_right = 384.0
+offset_bottom = 416.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG" type="Panel" parent="MainMenu/PopUp/ExitConfirm" unique_id=634354952]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -232.0
+offset_top = -24.0
+offset_right = 232.0
+offset_bottom = 88.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="MainMenu/PopUp/ExitConfirm" unique_id=2055498094]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -114.0
+offset_top = -11.5
+offset_right = 114.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "noooooo pls dont leav meeee"
+
+[node name="NoButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=444443196]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = 27.0
+offset_right = -34.0
+offset_bottom = 77.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "No, stay"
+
+[node name="YesButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=1335635369]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 32.0
+offset_top = 27.0
+offset_right = 182.0
+offset_bottom = 77.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Yes, leave"
+
+[node name="Game" type="Node2D" parent="." unique_id=1494167064]
 
 [node name="BlackBackground" type="ColorRect" parent="Game" unique_id=2014588060]
 z_index = -100
@@ -776,10 +870,62 @@ offset_top = -64.0
 offset_right = 576.0
 offset_bottom = 768.0
 
+[node name="PauseMenu" type="Control" parent="Game" unique_id=1677891011]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = -224.0
+offset_top = -96.0
+offset_right = 608.0
+offset_bottom = 800.0
+
+[node name="Panel" type="Panel" parent="Game/PauseMenu" unique_id=1452905968]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -416.0
+offset_top = -448.0
+offset_right = 416.0
+offset_bottom = 448.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Game/PauseMenu" unique_id=251509418]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -224.0
+offset_top = -131.0
+offset_right = 224.0
+offset_bottom = 131.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Restart" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=1860935217]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "RESTART"
+
+[node name="Settings" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=1502014313]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "SETTINGS"
+
+[node name="ReturnToMenu" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=2120810052]
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "RETURN TO MENU"
+
+[connection signal="pressed" from="MainMenu/ExitGameButton" to="." method="_on_exit_game_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/AboutButton" to="." method="_on_about_button_pressed"]
-[connection signal="pressed" from="MainMenu/VBoxContainer/ExitGameButton" to="." method="_on_exit_game_button_pressed"]
 [connection signal="pressed" from="MainMenu/PopUp/About/AboutExitButton" to="." method="_on_about_exit_button_pressed"]
 [connection signal="value_changed" from="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider" to="." method="_on_arr_slider_value_changed"]
 [connection signal="value_changed" from="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider" to="." method="_on_das_slider_value_changed"]
