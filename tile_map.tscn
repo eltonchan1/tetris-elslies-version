@@ -363,6 +363,9 @@ text = "PAUSE/EXIT"
 layout_mode = 2
 text = "TEST"
 
+[node name="Label3" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=172688239]
+layout_mode = 2
+
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=85367526]
 layout_mode = 2
 text = "HANDLING (drag to change, slow <-> fast)"
