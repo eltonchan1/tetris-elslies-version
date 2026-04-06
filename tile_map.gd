@@ -251,12 +251,6 @@ func _on_play_button_pressed() -> void:
 	main_menu(false)
 	new_game()
 
-func _on_start_button_pressed() -> void:
-	new_game()
-
-func _on_main_menu_button_pressed() -> void:
-	main_menu(true)
-
 func _on_about_button_pressed() -> void:
 	$MainMenu/PopUp/About.visible = true
 	$MainMenu/PopUp/About.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -276,6 +270,7 @@ func _on_settings_exit_button_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = false
 	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 #here
+
 func _on_pause_exit_button_pressed() -> void:
 	if game_running:
 		open_pause_menu()
@@ -311,12 +306,12 @@ func _on_pause_restart_pressed() -> void:
 	new_game()
 
 func _on_pause_settings_pressed() -> void:
-	$Game/PauseMenu/Settings.visible = true
-	$Game/PauseMenu/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
+	$MainMenu/PopUp/Settings.visible = true
+	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func _on_pause_settings_exit_pressed() -> void:
-	$Game/PauseMenu/Settings.visible = false
-	$Game/PauseMenu/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$Game/PauseMenu/VBoxContainer/Settings.visible = false
+	$Game/PauseMenu/VBoxContainer/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func _on_pause_quit_pressed() -> void:
 	close_pause_menu()

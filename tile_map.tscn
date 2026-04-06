@@ -30,15 +30,6 @@ tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
 sources/1 = SubResource("TileSetAtlasSource_35kre")
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1n30v"]
-bg_color = Color(0.33002013, 0.5941898, 1, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35kre"]
-bg_color = Color(0.3406349, 0.0014206272, 0.7087354, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03na7"]
-bg_color = Color(0.7967922, 0.37047136, 1, 1)
-
 [sub_resource type="Gradient" id="Gradient_1n30v"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
@@ -567,22 +558,6 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 30
 text = "noooooo pls dont leav meeee"
 
-[node name="NoButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=444443196]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -184.0
-offset_top = 27.0
-offset_right = -34.0
-offset_bottom = 77.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 30
-text = "No, stay"
-
 [node name="YesButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=1335635369]
 layout_mode = 1
 anchors_preset = 8
@@ -598,6 +573,22 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
 text = "Yes, leave"
+
+[node name="NoButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=444443196]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -184.0
+offset_top = 27.0
+offset_right = -34.0
+offset_bottom = 77.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "No, stay"
 
 [node name="Game" type="Node2D" parent="." unique_id=1494167064]
 
@@ -730,34 +721,6 @@ theme_override_font_sizes/font_size = 40
 text = "GAME OVER!"
 horizontal_alignment = 1
 vertical_alignment = 1
-
-[node name="StartButton" type="Button" parent="Game/HUD" unique_id=2111962542]
-layout_mode = 0
-offset_left = 592.0
-offset_top = 688.0
-offset_right = 760.0
-offset_bottom = 727.0
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_1n30v")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_35kre")
-theme_override_styles/hover = SubResource("StyleBoxFlat_03na7")
-text = "NEW GAME"
-
-[node name="MainMenuButton" type="Button" parent="Game/HUD" unique_id=509352887]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = 208.0
-offset_top = 320.0
-offset_right = 382.0
-offset_bottom = 367.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 28
-text = "MAIN MENU"
 
 [node name="LevelLabel" type="Label" parent="Game/HUD" unique_id=1058383126]
 layout_mode = 0
@@ -917,7 +880,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "SETTINGS"
 
-[node name="ReturnToMenu" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=2120810052]
+[node name="PauseQuit" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=2120810052]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
 text = "RETURN TO MENU"
@@ -932,5 +895,8 @@ text = "RETURN TO MENU"
 [connection signal="value_changed" from="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider" to="." method="_on_dcd_slider_value_changed"]
 [connection signal="value_changed" from="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider" to="." method="_on_sdf_slider_value_changed"]
 [connection signal="pressed" from="MainMenu/PopUp/Settings/SettingsExitButton" to="." method="_on_settings_exit_button_pressed"]
-[connection signal="pressed" from="Game/HUD/StartButton" to="." method="_on_start_button_pressed"]
-[connection signal="pressed" from="Game/HUD/MainMenuButton" to="." method="_on_main_menu_button_pressed"]
+[connection signal="pressed" from="MainMenu/PopUp/ExitConfirm/YesButton" to="." method="_on_exit_confirm_yes_pressed"]
+[connection signal="pressed" from="MainMenu/PopUp/ExitConfirm/NoButton" to="." method="_on_exit_confirm_no_pressed"]
+[connection signal="pressed" from="Game/PauseMenu/VBoxContainer/Restart" to="." method="_on_pause_restart_pressed"]
+[connection signal="pressed" from="Game/PauseMenu/VBoxContainer/Settings" to="." method="_on_pause_settings_pressed"]
+[connection signal="pressed" from="Game/PauseMenu/VBoxContainer/PauseQuit" to="." method="_on_pause_quit_pressed"]
