@@ -157,6 +157,8 @@ var remappable_actions : Array = [
 ]
 var awaiting_remap_action : String = ""
 var remap_buttons : Dictionary = {}
+var settings_opened_from : String = ""
+var is_paused : bool = false
 var das_left : float = 0.0
 var das_right : float = 0.0
 var das_delay_sec : float = 10.0 / 60.0
@@ -240,7 +242,6 @@ func main_menu(on: bool):
 		$MainMenu/PopUp/Settings.visible = false
 		$MainMenu/PopUp/ExitConfirm.visible = false
 		$Game/PauseMenu.visible = false
-		$MainMenu/PopUp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		$Game/Particles/CanvasLayer/ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		game_running = false
 	if on == false:
@@ -253,36 +254,38 @@ func _on_play_button_pressed() -> void:
 
 func _on_about_button_pressed() -> void:
 	$MainMenu/PopUp/About.visible = true
-	$MainMenu/PopUp/About.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func _on_settings_button_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = true
-	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func _on_exit_game_button_pressed() -> void:
 	get_tree().quit()
 
 func _on_about_exit_button_pressed() -> void:
 	$MainMenu/PopUp/About.visible = false
-	$MainMenu/PopUp/About.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func _on_settings_exit_button_pressed() -> void:
-	$MainMenu/PopUp/Settings.visible = false
-	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
-#here
+	$MainMenu/PopUp/Settings.visible = false  # make sure this line is there
+	if settings_opened_from == "pause":
+		$Game/PauseMenu.visible = true
+		$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_STOP
+	settings_opened_from = ""
 
 func _on_pause_exit_button_pressed() -> void:
-	if game_running:
-		open_pause_menu()
-	elif $MainMenu/PopUp/Settings.visible:
+	if $MainMenu/PopUp/Settings.visible:
 		_on_settings_exit_button_pressed()
 	elif $MainMenu/PopUp/About.visible:
 		_on_about_exit_button_pressed()
+	elif game_running:
+		open_pause_menu()
+	elif is_paused:
+		close_pause_menu()
 	else:
 		open_exit_confirm()
 
 func open_pause_menu():
 	game_running = false
+	is_paused = true
 	timer_running = false
 	$Game/PauseMenu.visible = true
 	$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -291,27 +294,30 @@ func close_pause_menu():
 	$Game/PauseMenu.visible = false
 	$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	game_running = true
+	is_paused = false
 	timer_running = true
 
 func open_exit_confirm():
 	$MainMenu/PopUp/ExitConfirm.visible = true
-	$MainMenu/PopUp/ExitConfirm.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func close_exit_confirm():
 	$MainMenu/PopUp/ExitConfirm.visible = false
-	$MainMenu/PopUp/ExitConfirm.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 func _on_pause_restart_pressed() -> void:
 	close_pause_menu()
 	new_game()
 
 func _on_pause_settings_pressed() -> void:
+	settings_opened_from = "pause"
+	$Game/PauseMenu.visible = false
 	$MainMenu/PopUp/Settings.visible = true
-	$MainMenu/PopUp/Settings.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func _on_pause_settings_exit_pressed() -> void:
 	$Game/PauseMenu/VBoxContainer/Settings.visible = false
-	$Game/PauseMenu/VBoxContainer/Settings.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if settings_opened_from == "pause":
+		$Game/PauseMenu.visible = true
+		$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_STOP
+	settings_opened_from = ""
 
 func _on_pause_quit_pressed() -> void:
 	close_pause_menu()
@@ -359,10 +365,10 @@ func new_game():
 	$Game/HUD.get_node("ComboLabel").text = ""
 	$Game/HUD.get_node("B2BLabel").text = ""
 	$Game/HUD.get_node("AllClearLabel").text = ""
-	$Game/HUD.get_node("TimerLabel").text = "TIME: 0:00.000"
+	$Game/HUD.get_node("TimerLabel").text = "0:00.000"
 	$Game/HUD.get_node("GameOverLabel").hide()
-	$Game/HUD.get_node("ScoreLabel").text = "SCORE: 0"
-	$Game/HUD.get_node("LevelLabel").text = "LEVEL: " + str(level)
+	$Game/HUD.get_node("ScoreLabel").text = "0"
+	$Game/HUD.get_node("LevelLabel").text = "LEVEL " + str(level)
 	
 	# Reset bag randomizer
 	shapes = shapes_full.duplicate()
@@ -412,6 +418,8 @@ func new_game():
 	print("DEBUG: new_game() COMPLETE")
 
 func _process(delta):
+	if Input.is_action_just_pressed("pause_exit"):
+		_on_pause_exit_button_pressed()
 	if game_running:
 		handle_input(delta)
 		update_camera(delta)
@@ -424,7 +432,7 @@ func _process(delta):
 				move_piece(Vector2i.DOWN)
 				if soft_dropping:
 					score += 1
-					$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+					$Game/HUD.get_node("ScoreLabel").text = str(score)
 				gravity_counter -= 1.0
 			else:
 				gravity_counter = 0.0
@@ -432,7 +440,6 @@ func _process(delta):
 					lock_delay_active = true
 					lock_delay_timer = 0.0
 				break
-		# Lock delay processing
 		if lock_delay_active:
 			lock_delay_timer += delta
 			if lock_delay_timer >= LOCK_DELAY_MAX:
@@ -441,7 +448,6 @@ func _process(delta):
 			"zoom",
 			0.002 + trauma * 0.01
 			)
-		
 		wave_material.set_shader_parameter(
 			"offset",
 			Vector2(
@@ -449,7 +455,6 @@ func _process(delta):
 			randf_range(-0.001, 0.001)
 			) * trauma
 		)
-
 
 func update_timer_display():
 	var minutes = int(game_time / 60)
@@ -489,7 +494,7 @@ func handle_input(delta):
 			while can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
 				score += 1
-				$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+				$Game/HUD.get_node("ScoreLabel").text = str(score)
 			gravity_counter = 0.0
 		else:
 			var old_counter = gravity_counter
@@ -532,10 +537,6 @@ func handle_input(delta):
 		das_right = 0.0
 	if Input.is_action_just_pressed("restart"):
 		new_game()
-	if Input.is_action_just_pressed("pause_exit"):
-		_on_pause_exit_button_pressed()
-		return
-
 func refresh_remap_buttons():
 	for action in remap_buttons:
 		var btn = remap_buttons[action]
@@ -1034,11 +1035,11 @@ func check_rows():
 		if is_difficult and b2b_active:
 			points = int(points * 1.5)
 			b2b_count += 1
-			$Game/HUD.get_node("B2BLabel").text = "B2B: " + str(b2b_count)
+			$Game/HUD.get_node("B2BLabel").text = "B2B " + str(b2b_count)
 		elif is_difficult:
 			b2b_active = true
 			b2b_count = 1
-			$Game/HUD.get_node("B2BLabel").text = "B2B: 1"
+			$Game/HUD.get_node("B2BLabel").text = "B2B 1"
 		else:
 			if b2b_active:
 				$Game/HUD.get_node("B2BLabel").text = ""
@@ -1049,7 +1050,7 @@ func check_rows():
 		if last_clear_had_lines:
 			combo_count += 1
 			score += combo_count * 50
-			$Game/HUD.get_node("ComboLabel").text = "COMBO: " + str(combo_count)
+			$Game/HUD.get_node("ComboLabel").text = "COMBO " + str(combo_count)
 		else:
 			combo_count = 1
 			$Game/HUD.get_node("ComboLabel").text = ""
@@ -1063,7 +1064,7 @@ func check_rows():
 			$Game/HUD.get_node("AllClearLabel").text = ""
 		
 		score += points * level
-		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+		$Game/HUD.get_node("ScoreLabel").text = str(score)
 	
 	else:
 		var spin_type = pending_spin_type
@@ -1075,7 +1076,7 @@ func check_rows():
 		last_clear_had_lines = false
 		$Game/HUD.get_node("ComboLabel").text = ""
 		$Game/HUD.get_node("AllClearLabel").text = ""
-		$Game/HUD.get_node("ScoreLabel").text = "SCORE: " + str(score)
+		$Game/HUD.get_node("ScoreLabel").text = str(score)
 
 func shift_rows(row):
 	print("DEBUG: shift_rows() for row ", row)
@@ -1131,7 +1132,7 @@ func update_level(lines_just_cleared: int):
 		level += 1
 		lines_for_next_level = (level * 2) + 1
 		gravity = get_gravity_for_level(level)
-		$Game/HUD.get_node("LevelLabel").text = "LEVEL: " + str(level)
+		$Game/HUD.get_node("LevelLabel").text = "LEVEL " + str(level)
 
 func get_gravity_for_level(lvl: int) -> float:
 	match lvl:
@@ -1193,28 +1194,27 @@ func _on_arr_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.max_value - value
 	arr_sec = frames / 60.0
 	var ms = snapped(arr_sec * 1000.0, 0.01)
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(int(frames)) + "F / " + str(ms) + "ms"
+	var ms_str = "%.2f" % ms
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(int(frames)) + "F / " + ms_str + "ms"
 
 func _on_das_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
 	das_delay_sec = frames / 60.0
 	var ms = snapped(das_delay_sec * 1000.0, 0.01)
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(int(frames)) + "F / " + str(ms) + "ms"
+	var ms_str = "%.2f" % ms
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(int(frames)) + "F / " + ms_str + "ms"
 
 func _on_dcd_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
 	dcd_sec = frames / 60.0
 	var ms = snapped(dcd_sec * 1000.0, 0.01)
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(int(frames)) + "F / " + str(ms) + "ms"
+	var ms_str = "%.2f" % ms
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(int(frames)) + "F / " + ms_str + "ms"
 
 func _on_sdf_slider_value_changed(value: float) -> void:
-	print("DEBUG SDF: Slider changed to: ", value)
 	if value == 41:
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞X"
 		sdf = 9999
-		print("DEBUG SDF: Set sdf to 9999")
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(value)) + "X"
 		sdf = value
-		print("DEBUG SDF: Set sdf to ", value)
-	print("DEBUG SDF: Current sdf value is now: ", sdf)
