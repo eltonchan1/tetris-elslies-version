@@ -2,7 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://dqsarqan8qn8u" path="res://assets/tetrisblock.png" id="2_1n30v"]
 [ext_resource type="Script" uid="uid://c3vefdj4ifug0" path="res://tile_map.gd" id="2_35kre"]
+[ext_resource type="Texture2D" uid="uid://dy8ysb8scwg88" path="res://images/tetriosmall.png" id="2_xftlc"]
 [ext_resource type="Shader" uid="uid://limpibugju4k" path="res://lineclearwave.gdshader" id="3_35kre"]
+[ext_resource type="Texture2D" uid="uid://bas61j44s78si" path="res://images/tetriseffect.jpg" id="3_anah5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03na7"]
 bg_color = Color(0, 0, 0, 0.78431374)
@@ -177,7 +179,7 @@ horizontal_alignment = 1
 [node name="Label" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=2105776399]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "[name here] is a modern Tetr*s (copyright) clone "
+text = "[name here] is a modern Tetr*s (copyright) clone made to have a satisfying feel and look while being adjustable, meaning you can fine-tune how the pieces respond to your inputs, whether you like to play slowly or quickly."
 autowrap_mode = 3
 
 [node name="Label3" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1932031628]
@@ -186,11 +188,42 @@ theme_override_font_sizes/font_size = 40
 text = "INSPIRATION"
 horizontal_alignment = 1
 
+[node name="HBoxContainer" type="HBoxContainer" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=122655275]
+layout_mode = 2
+
+[node name="Label5" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=1680734928]
+layout_mode = 2
+text = "
+
+
+
+
+
+"
+
+[node name="Sprite2D" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=1299061744]
+position = Vector2(208, 84)
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_xftlc")
+
+[node name="Sprite2D3" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=518947228]
+position = Vector2(496, 84)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_anah5")
+
 [node name="Label4" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1391589318]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "ME"
 horizontal_alignment = 1
+
+[node name="Label5" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1778198336]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "I like Tetr*s. Across all the different Tetr*s games, I have ~300-400hrs.
+
+add tetrio profile here once i get a rank ~11k tr "
+autowrap_mode = 3
 
 [node name="AboutExitButton" type="Button" parent="MainMenu/PopUp/About" unique_id=1202463305]
 layout_mode = 1
@@ -225,7 +258,6 @@ theme_override_font_sizes/font_size = 60
 text = "ABOUT"
 
 [node name="Settings" type="Control" parent="MainMenu/PopUp" unique_id=309475448]
-visible = false
 z_index = 100
 layout_mode = 3
 anchors_preset = 8
