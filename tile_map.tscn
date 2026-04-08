@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://dy8ysb8scwg88" path="res://images/tetriosmall.png" id="2_xftlc"]
 [ext_resource type="Shader" uid="uid://limpibugju4k" path="res://lineclearwave.gdshader" id="3_35kre"]
 [ext_resource type="Texture2D" uid="uid://bas61j44s78si" path="res://images/tetriseffect.jpg" id="3_anah5"]
+[ext_resource type="Texture2D" uid="uid://cr1grpr26yflq" path="res://images/elslietetrioprofile040726.png" id="4_anah5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03na7"]
 bg_color = Color(0, 0, 0, 0.78431374)
@@ -197,18 +198,16 @@ text = "
 
 
 
-
-
 "
 
 [node name="Sprite2D" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=1299061744]
-position = Vector2(208, 84)
-scale = Vector2(0.75, 0.75)
+position = Vector2(232, 60)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_xftlc")
 
 [node name="Sprite2D3" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=518947228]
-position = Vector2(496, 84)
-scale = Vector2(0.5, 0.5)
+position = Vector2(472, 60)
+scale = Vector2(0.34, 0.34)
 texture = ExtResource("3_anah5")
 
 [node name="Label4" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1391589318]
@@ -220,10 +219,13 @@ horizontal_alignment = 1
 [node name="Label5" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1778198336]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "I like Tetr*s. Across all the different Tetr*s games, I have ~300-400hrs.
-
-add tetrio profile here once i get a rank ~11k tr "
+text = "I play TETRIO a lot so here's my profile :)"
 autowrap_mode = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1425410641]
+position = Vector2(352, 624)
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("4_anah5")
 
 [node name="AboutExitButton" type="Button" parent="MainMenu/PopUp/About" unique_id=1202463305]
 layout_mode = 1
@@ -258,6 +260,7 @@ theme_override_font_sizes/font_size = 60
 text = "ABOUT"
 
 [node name="Settings" type="Control" parent="MainMenu/PopUp" unique_id=309475448]
+visible = false
 z_index = 100
 layout_mode = 3
 anchors_preset = 8
@@ -672,9 +675,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -232.0
+offset_left = -280.0
 offset_top = -24.0
-offset_right = 232.0
+offset_right = 280.0
 offset_bottom = 88.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -693,7 +696,7 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "noooooo pls dont leav meeee"
+text = "Are you sure you want to quit?"
 
 [node name="YesButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=1335635369]
 layout_mode = 1
@@ -704,12 +707,12 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = 32.0
 offset_top = 27.0
-offset_right = 182.0
+offset_right = 202.0
 offset_bottom = 77.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "Yes, leave"
+text = "Yes, quit"
 
 [node name="NoButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=444443196]
 layout_mode = 1
@@ -720,7 +723,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -184.0
 offset_top = 27.0
-offset_right = -34.0
+offset_right = -32.0
 offset_bottom = 77.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -773,9 +776,9 @@ offset_bottom = 768.0
 [node name="ScoreLabel1" type="Label" parent="Game/HUD" unique_id=1919521473]
 layout_mode = 0
 offset_left = 628.0
-offset_top = 672.0
+offset_top = 656.0
 offset_right = 718.0
-offset_bottom = 700.0
+offset_bottom = 696.0
 theme_override_font_sizes/font_size = 30
 text = "SCORE"
 

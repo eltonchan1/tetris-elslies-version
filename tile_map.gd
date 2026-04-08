@@ -1059,6 +1059,7 @@ func check_rows():
 		# All Clear
 		if is_board_empty():
 			points += 3500
+			is_difficult = true
 			$Game/HUD.get_node("AllClearLabel").text = "ALL CLEAR"
 		else:
 			$Game/HUD.get_node("AllClearLabel").text = ""
@@ -1195,21 +1196,21 @@ func _on_arr_slider_value_changed(value: float) -> void:
 	arr_sec = frames / 60.0
 	var ms = snapped(arr_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(int(frames)) + "F / " + ms_str + "ms"
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(frames) + "F / " + ms_str + "ms"
 
 func _on_das_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
 	das_delay_sec = frames / 60.0
 	var ms = snapped(das_delay_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(int(frames)) + "F / " + ms_str + "ms"
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(frames) + "F / " + ms_str + "ms"
 
 func _on_dcd_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
 	dcd_sec = frames / 60.0
 	var ms = snapped(dcd_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(int(frames)) + "F / " + ms_str + "ms"
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(frames) + "F / " + ms_str + "ms"
 
 func _on_sdf_slider_value_changed(value: float) -> void:
 	if value == 41:
