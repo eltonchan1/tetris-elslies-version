@@ -66,13 +66,18 @@ shader_parameter/center = Vector2(0.5, 0.5)
 script = ExtResource("2_35kre")
 
 [node name="MainMenu" type="Control" parent="." unique_id=1410716151]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -192.0
 offset_top = -64.0
 offset_right = 576.0
 offset_bottom = 768.0
+
+[node name="ColorRect" type="ColorRect" parent="MainMenu" unique_id=1673890144]
+layout_mode = 0
+offset_right = 768.0
+offset_bottom = 832.0
+color = Color(0, 0, 0, 1)
 
 [node name="Title" type="Label" parent="MainMenu" unique_id=667998518]
 layout_mode = 1
@@ -88,7 +93,7 @@ offset_bottom = -215.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 100
-text = "TETRAEFFECT"
+text = "[name here]"
 
 [node name="ExitGameButton" type="Button" parent="MainMenu" unique_id=1727234832]
 layout_mode = 0
@@ -117,17 +122,17 @@ theme_override_constants/separation = 15
 [node name="PlayButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=104271462]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "PLAY"
+text = "[play]"
 
 [node name="SettingsButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=1996477134]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "SETTINGS"
+text = "[settings]"
 
 [node name="AboutButton" type="Button" parent="MainMenu/VBoxContainer" unique_id=396146502]
 layout_mode = 2
 theme_override_font_sizes/font_size = 50
-text = "ABOUT"
+text = "[about]"
 
 [node name="PopUp" type="CanvasLayer" parent="MainMenu" unique_id=1795626839]
 layer = 999
@@ -174,19 +179,19 @@ size_flags_horizontal = 3
 [node name="Label2" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1524350139]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "THE GAME"
+text = "[the game]"
 horizontal_alignment = 1
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=2105776399]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "[name here] is a modern Tetr*s (copyright) clone made to have a satisfying feel and look while being adjustable, meaning you can fine-tune how the pieces respond to your inputs, whether you like to play slowly or quickly."
+text = "[name here] is a modern tetr*s (copyright) clone made to have a satisfying feel and look while being adjustable, meaning you can fine-tune how the pieces respond to your inputs, whether you like to play slowly or quickly."
 autowrap_mode = 3
 
 [node name="Label3" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1932031628]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "INSPIRATION"
+text = "[inspiration]"
 horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=122655275]
@@ -201,25 +206,28 @@ text = "
 "
 
 [node name="Sprite2D" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=1299061744]
-position = Vector2(232, 60)
+position = Vector2(56, 60)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_xftlc")
 
 [node name="Sprite2D3" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer/HBoxContainer" unique_id=518947228]
-position = Vector2(472, 60)
+position = Vector2(347.42, 60)
 scale = Vector2(0.34, 0.34)
 texture = ExtResource("3_anah5")
 
 [node name="Label4" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1391589318]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "ME"
+text = "[me]"
 horizontal_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1493745849]
+layout_mode = 2
 
 [node name="Label5" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1778198336]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "I play TETRIO a lot so here's my profile :)"
+text = "i play tetr.io a lot so here's my profile :)"
 autowrap_mode = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1425410641]
@@ -257,10 +265,38 @@ offset_bottom = -325.0002
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 60
-text = "ABOUT"
+text = "[about]"
+
+[node name="Label" type="Label" parent="MainMenu/PopUp/About" unique_id=1381096156]
+layout_mode = 0
+offset_left = 585.36
+offset_top = 625.38
+offset_right = 758.3627
+offset_bottom = 647.38025
+theme_override_font_sizes/font_size = 14
+text = "[def not tryna flex]"
+
+[node name="Label2" type="Label" parent="MainMenu/PopUp/About" unique_id=1743300557]
+layout_mode = 0
+offset_left = 164.0
+offset_top = 432.5
+offset_right = 311.0
+offset_bottom = 479.5
+theme_override_font_sizes/font_size = 30
+text = "tetr.io"
+
+[node name="Label3" type="Label" parent="MainMenu/PopUp/About" unique_id=1364118445]
+layout_mode = 0
+offset_left = 452.52
+offset_top = 414.61
+offset_right = 733.448
+offset_bottom = 497.61002
+theme_override_font_sizes/font_size = 30
+text = "tetris® effect:
+connected"
+horizontal_alignment = 1
 
 [node name="Settings" type="Control" parent="MainMenu/PopUp" unique_id=309475448]
-visible = false
 z_index = 100
 layout_mode = 3
 anchors_preset = 8
@@ -317,7 +353,7 @@ layout_mode = 2
 tooltip_text = "Click the button in-game, then press the physical key/button you want."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 40
-text = "CONTROLS"
+text = "[controls]"
 horizontal_alignment = 1
 
 [node name="LeftContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=129468134]
@@ -327,7 +363,7 @@ size_flags_horizontal = 4
 [node name="Left" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/LeftContainer" unique_id=553553798]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "MOVE LEFT"
+text = "[move left]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/LeftContainer" unique_id=1489490359]
 layout_mode = 2
@@ -345,7 +381,7 @@ size_flags_horizontal = 4
 [node name="Right" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/RightContainer" unique_id=1030223558]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "MOVE RIGHT"
+text = "[move right]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/RightContainer" unique_id=1694924608]
 layout_mode = 2
@@ -363,7 +399,7 @@ size_flags_horizontal = 4
 [node name="SD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDContainer" unique_id=1862925229]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "SOFT DROP"
+text = "[soft drop]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDContainer" unique_id=774991276]
 layout_mode = 2
@@ -381,7 +417,7 @@ size_flags_horizontal = 4
 [node name="HD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HDContainer" unique_id=1153658898]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "HARD DROP"
+text = "[hard drop]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HDContainer" unique_id=702975472]
 layout_mode = 2
@@ -399,7 +435,7 @@ size_flags_horizontal = 4
 [node name="CCW" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CCWContainer" unique_id=442796052]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "ROTATE COUNTERCLOCKWISE"
+text = "[rotate counterclockwise]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CCWContainer" unique_id=1064167285]
 layout_mode = 2
@@ -417,7 +453,7 @@ size_flags_horizontal = 4
 [node name="CW" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CWContainer" unique_id=208139492]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "ROTATE CLOCKWISE"
+text = "[rotate clockwise]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/CWContainer" unique_id=1870505893]
 layout_mode = 2
@@ -435,7 +471,7 @@ size_flags_horizontal = 4
 [node name="180" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/180Container" unique_id=1059822306]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "ROTATE 180"
+text = "[rotate 180]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/180Container" unique_id=2146891162]
 layout_mode = 2
@@ -453,7 +489,7 @@ size_flags_horizontal = 4
 [node name="Hold" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HoldContainer" unique_id=1253026183]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "SWAP HOLD PIECE"
+text = "[swap hold piece]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/HoldContainer" unique_id=1589064060]
 layout_mode = 2
@@ -471,7 +507,7 @@ size_flags_horizontal = 4
 [node name="PauseExit" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/PauseExitContainer" unique_id=57966285]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "PAUSE/EXIT"
+text = "[pause/exit]"
 
 [node name="Label" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/PauseExitContainer" unique_id=1504331264]
 layout_mode = 2
@@ -497,22 +533,22 @@ size_flags_horizontal = 4
 [node name="ARR" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=1706491023]
 layout_mode = 2
 size_flags_horizontal = 4
-tooltip_text = "Auto Repeat Rate: The speed of the pieces when holding down movement keys."
+tooltip_text = "auto repeat rate: the speed of the pieces when holding down movement keys."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
-text = "ARR"
+text = "[arr]"
 
 [node name="ARRSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=480997518]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-tooltip_text = "Auto Repeat Rate: The speed of the pieces when holding down movement keys."
+tooltip_text = "auto repeat rate: the speed of the pieces when holding down movement keys."
 max_value = 5.0
 step = 0.1
 value = 2.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer" unique_id=778859819]
 layout_mode = 2
-tooltip_text = "Auto Repeat Rate: The speed of the pieces when holding down movement keys."
+tooltip_text = "auto repeat rate: the speed of the pieces when holding down movement keys."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
 text = "0"
@@ -524,16 +560,16 @@ size_flags_horizontal = 4
 [node name="DAS" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=1429650166]
 layout_mode = 2
 size_flags_horizontal = 4
-tooltip_text = "Delayed Auto Shift: The time between the initial keypress
+tooltip_text = "delayed auto shift: the time between the initial keypress
 and the start of its auto repeat rate in frames."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
-text = "DAS"
+text = "[das]"
 
 [node name="DASSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=409460258]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-tooltip_text = "Delayed Auto Shift: The time between the initial keypress
+tooltip_text = "delayed auto shift: the time between the initial keypress
 and the start of its auto repeat rate in frames."
 min_value = 1.0
 max_value = 20.0
@@ -542,7 +578,7 @@ value = 10.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer" unique_id=1787186281]
 layout_mode = 2
-tooltip_text = "Delayed Auto Shift: The time between the initial keypress
+tooltip_text = "delayed auto shift: the time between the initial keypress
 and the start of its auto repeat rate in frames."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
@@ -555,16 +591,16 @@ size_flags_horizontal = 4
 [node name="DCD" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=2074981704]
 layout_mode = 2
 size_flags_horizontal = 4
-tooltip_text = "DAS Cut Delay: If not 0, any ongoing DAS movement will pause
+tooltip_text = "das cut delay: if not 0, any ongoing das movement will pause
 for a set amount of time after dropping/rotating a piece, measured in frames."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
-text = "DCD"
+text = "[dcd]"
 
 [node name="DCDSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=1075074809]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-tooltip_text = "DAS Cut Delay: If not 0, any ongoing DAS movement will pause
+tooltip_text = "das cut delay: if not 0, any ongoing das movement will pause
 for a set amount of time after dropping/rotating a piece, measured in frames."
 max_value = 20.0
 step = 0.1
@@ -572,7 +608,7 @@ value = 1.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer" unique_id=922550056]
 layout_mode = 2
-tooltip_text = "DAS Cut Delay: If not 0, any ongoing DAS movement will pause
+tooltip_text = "das cut delay: if not 0, any ongoing das movement will pause
 for a set amount of time after dropping/rotating a piece, measured in frames."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
@@ -585,22 +621,22 @@ size_flags_horizontal = 4
 [node name="SDF" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=1063931856]
 layout_mode = 2
 size_flags_horizontal = 4
-tooltip_text = "Soft Drop Factor: The factor with which soft drops change the gravity speed."
+tooltip_text = "soft drop factor: the factor with which soft drops change the gravity speed."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
-text = "SDF"
+text = "[sdf]"
 
 [node name="SDFSlider" type="HSlider" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=364324570]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-tooltip_text = "Soft Drop Factor: The factor with which soft drops change the gravity speed."
+tooltip_text = "soft drop factor: the factor with which soft drops change the gravity speed."
 min_value = 5.0
 max_value = 41.0
 value = 6.0
 
 [node name="SettingsValue" type="Label" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer" unique_id=251180211]
 layout_mode = 2
-tooltip_text = "Soft Drop Factor: The factor with which soft drops change the gravity speed."
+tooltip_text = "soft drop factor: the factor with which soft drops change the gravity speed."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 25
 text = "0"
@@ -637,10 +673,9 @@ offset_bottom = -324.99994
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 60
-text = "SETTINGS"
+text = "[settings]"
 
 [node name="ExitConfirm" type="Control" parent="MainMenu/PopUp" unique_id=2125026897]
-visible = false
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -675,9 +710,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -24.0
-offset_right = 280.0
+offset_left = -288.0
+offset_top = -32.0
+offset_right = 288.0
 offset_bottom = 88.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -696,7 +731,7 @@ offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "Are you sure you want to quit?"
+text = "[are you sure you want to quit]"
 
 [node name="YesButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=1335635369]
 layout_mode = 1
@@ -712,7 +747,7 @@ offset_bottom = 77.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "Yes, quit"
+text = "[yes, quit]"
 
 [node name="NoButton" type="Button" parent="MainMenu/PopUp/ExitConfirm" unique_id=444443196]
 layout_mode = 1
@@ -728,10 +763,9 @@ offset_bottom = 77.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "No, stay"
+text = "[no, stay]"
 
 [node name="Game" type="Node2D" parent="." unique_id=1494167064]
-visible = false
 
 [node name="BlackBackground" type="ColorRect" parent="Game" unique_id=2014588060]
 z_index = -100

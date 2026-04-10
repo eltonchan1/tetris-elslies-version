@@ -3,11 +3,7 @@ extends Node2D
 # to do
 	# add like more satisfying scoring n stuff (numbers)
 	# art redesign & uis
-		# ultrakill style
-	# main menu
-		# fancy it up, make it look good
-	# diff gamemodes???
-		# 40l, blitz, etc
+		# make it codey, like the og tetris with [ ]
 	# sound design & music
 		# satisfying
 
@@ -208,17 +204,16 @@ var wave_intensity : float = 0.0
 
 # INITIALIZATION
 func _ready():
-	print("DEBUG: _ready() called")
 	main_menu(true)
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - (arr_sec * 60.0)
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.value = 20.0 - (das_delay_sec * 60.0) + 1.0
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.value = 20.0 - (dcd_sec * 60.0)
 	if sdf >= 9999:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = 41
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞"
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "[∞X]"
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SDFSlider.value = sdf
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(sdf)) + "X"
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "[" + str(int(sdf)) + "X]"
 	var keybinds_base = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer
 	for entry in remappable_actions:
 		var action = entry[0]
@@ -228,7 +223,6 @@ func _ready():
 		btn.pressed.connect(_on_remap_button_pressed.bind(action))
 	load_keybinds()
 	refresh_remap_buttons()
-	print("DEBUG: _ready() complete")
 
 func get_remap_button(action: String) -> Button:
 	return remap_buttons.get(action, null)
@@ -331,12 +325,10 @@ func _on_exit_confirm_no_pressed() -> void:
 
 # GAME LOOP
 func new_game():
-	print("DEBUG: new_game() START")
 	game_running = false
 	active_piece = []
 	
 	# Reset game state
-	print("DEBUG: Resetting variables")
 	score = 0
 	gravity = 0.01667
 	gravity_counter = 0.0
@@ -365,46 +357,36 @@ func new_game():
 	$Game/HUD.get_node("ComboLabel").text = ""
 	$Game/HUD.get_node("B2BLabel").text = ""
 	$Game/HUD.get_node("AllClearLabel").text = ""
-	$Game/HUD.get_node("TimerLabel").text = "0:00.000"
+	$Game/HUD.get_node("TimerLabel").text = "[0:00.000]"
 	$Game/HUD.get_node("GameOverLabel").hide()
-	$Game/HUD.get_node("ScoreLabel").text = "0"
-	$Game/HUD.get_node("LevelLabel").text = "LEVEL " + str(level)
+	$Game/HUD.get_node("ScoreLabel").text = "[0]"
+	$Game/HUD.get_node("LevelLabel").text = "[LEVEL " + str(level) + "]"
 	
 	# Reset bag randomizer
 	shapes = shapes_full.duplicate()
 	shapes.shuffle()
 	
 	# Clear playfield
-	print("DEBUG: About to clear board - board_layer is: ", board_layer)
 	if board_layer != null:
-		print("DEBUG: Clearing only playfield area (not walls/floor)")
 		for i in range(-5, 20):
 			for j in range(1, 11):
 				board_layer.erase_cell(Vector2i(j, i))
-		print("DEBUG: Playfield cleared successfully")
 	
 	# Clear active layer
-	print("DEBUG: About to clear active layer - active_layer is: ", active_layer)
 	if active_layer != null:
-		print("DEBUG: Clearing active_layer (current piece and previews)")
 		for i in range(-5, ROWS + 10):
 			for j in range(-5, COLS + 20):
 				active_layer.erase_cell(Vector2i(j, i))
-		print("DEBUG: active_layer cleared successfully")
 	
 	# Initialize pieces
-	print("DEBUG: Picking pieces")
 	piece_type = pick_piece()
-	print("DEBUG: piece_type = ", piece_type)
 	piece_atlas = Vector2i(shapes_full.find(piece_type), 0)
-	print("DEBUG: piece_atlas = ", piece_atlas)
 	next_pieces.clear()
 	next_pieces_atlas.clear()
 	for i in range(5):
 		var next = pick_piece()
 		next_pieces.append(next)
 		next_pieces_atlas.append(Vector2i(shapes_full.find(next), 0))
-		print("DEBUG: next_pieces[", i, "] = ", next)
 	
 	# Reset camera & effects
 	camera_offset = Vector2.ZERO
@@ -413,9 +395,7 @@ func new_game():
 	
 	game_running = true
 	timer_running = true
-	print("DEBUG: About to create_piece()")
 	create_piece()
-	print("DEBUG: new_game() COMPLETE")
 
 func _process(delta):
 	if Input.is_action_just_pressed("pause_exit"):
@@ -432,7 +412,7 @@ func _process(delta):
 				move_piece(Vector2i.DOWN)
 				if soft_dropping:
 					score += 1
-					$Game/HUD.get_node("ScoreLabel").text = str(score)
+					$Game/HUD.get_node("ScoreLabel").text = "[" + str(score) + "]"
 				gravity_counter -= 1.0
 			else:
 				gravity_counter = 0.0
@@ -460,7 +440,7 @@ func update_timer_display():
 	var minutes = int(game_time / 60)
 	var seconds = int(game_time) % 60
 	var milliseconds = int((game_time - int(game_time)) * 1000)
-	var time_string = "%d:%02d.%03d" % [minutes, seconds, milliseconds]
+	var time_string = "[" + "%d:%02d.%03d" % [minutes, seconds, milliseconds] + "]"
 	$Game/HUD.get_node("TimerLabel").text = time_string
 
 # INPUT HANDLING
@@ -494,7 +474,7 @@ func handle_input(delta):
 			while can_move(Vector2i.DOWN):
 				move_piece(Vector2i.DOWN)
 				score += 1
-				$Game/HUD.get_node("ScoreLabel").text = str(score)
+				$Game/HUD.get_node("ScoreLabel").text = "[" + str(score) + "]"
 			gravity_counter = 0.0
 		else:
 			var old_counter = gravity_counter
@@ -502,6 +482,7 @@ func handle_input(delta):
 			var cells_this_frame = int(gravity_counter) - int(old_counter)
 			if cells_this_frame > 0 and can_move(Vector2i.DOWN):
 				score += cells_this_frame
+				$Game/HUD.get_node("ScoreLabel").text = "[" + str(score) + "]"
 	else:
 		soft_dropping = false
 		gravity_counter += gravity * delta * 60.0
@@ -540,7 +521,7 @@ func handle_input(delta):
 func refresh_remap_buttons():
 	for action in remap_buttons:
 		var btn = remap_buttons[action]
-		btn.text = get_key_name_for_action(action)
+		btn.text = "[" + get_key_name_for_action(action) + "]"
 
 func get_key_name_for_action(action: String) -> String:
 	var events = InputMap.action_get_events(action)
@@ -603,7 +584,6 @@ func pick_piece():
 	return piece
 
 func create_piece():
-	print("DEBUG: create_piece() START")
 	gravity_counter = 0.0
 	cur_pos = start_pos
 	
@@ -620,7 +600,6 @@ func create_piece():
 	draw_ghost_piece()
 	draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 	draw_all_next_pieces()
-	print("DEBUG: create_piece() COMPLETE")
 
 func clear_piece():
 	if active_piece == null or active_piece.is_empty():
@@ -671,7 +650,6 @@ func get_ghost_position() -> Vector2i:
 		ghost_pos += Vector2i.DOWN
 		iterations += 1
 		if iterations > 30:
-			print("ERROR: Infinite loop in get_ghost_position!")
 			break
 	return ghost_pos
 
@@ -695,7 +673,6 @@ func move_piece(dir):
 		
 		if dir != Vector2i.DOWN:
 			last_action_was_rotation = false
-			print("DEBUG: Moved left/right - rotation flag reset to FALSE")
 			reset_lock_delay()
 	else:
 		# Collision detected - nudge camera
@@ -739,7 +716,6 @@ func rotate_piece_srs(direction: int):
 			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
 			reset_lock_delay()
 			last_action_was_rotation = true
-			print("DEBUG: Rotation successful! Flag set to TRUE")
 			return
 
 func hard_drop():
@@ -755,18 +731,14 @@ func hard_drop():
 func hold_piece():
 	if not can_hold:
 		return
-	
-	print("DEBUG: hold_piece() called")
 	clear_piece()
 	clear_ghost_piece()
-	
 	if held_piece == null:
 		# First hold - take from next queue
 		held_piece = piece_type
 		held_piece_atlas = piece_atlas
 		piece_type = next_pieces[0]
 		piece_atlas = next_pieces_atlas[0]
-		
 		next_pieces.pop_front()
 		next_pieces_atlas.pop_front()
 		var new_next = pick_piece()
@@ -805,32 +777,20 @@ func reset_lock_delay():
 
 # SCORING & SPIN DETECTION
 func check_spin(lines_cleared: int) -> void:
-	print("DEBUG: check_spin() called with lines_cleared = ", lines_cleared)
-	print("DEBUG: cur_pos = ", cur_pos)
-	print("DEBUG: Checking corners around rotation center...")
-	
 	var corners = [
 		Vector2i(-1, -1),
 		Vector2i(1, -1),
 		Vector2i(-1, 1),
 		Vector2i(1, 1),
 	]
-	
 	var blocked_corners = 0
 	for corner in corners:
 		var check_pos = cur_pos + corner
 		var is_blocked = not is_free(check_pos)
-		print("DEBUG: Corner ", corner, " (world pos ", check_pos, ") is_blocked = ", is_blocked)
 		if is_blocked:
 			blocked_corners += 1
-	
-	print("DEBUG: Total blocked_corners = ", blocked_corners)
-	
 	if blocked_corners >= 3:
-		print("DEBUG: SPIN CONDITION MET! Awarding bonus...")
 		award_spin_bonus(lines_cleared)
-	else:
-		print("DEBUG: Not enough blocked corners for spin (need 3+)")
 
 func award_spin_bonus(lines: int) -> void:
 	var bonus = 0
@@ -838,8 +798,6 @@ func award_spin_bonus(lines: int) -> void:
 		1: bonus = SPIN_SINGLE
 		2: bonus = SPIN_DOUBLE
 		3: bonus = SPIN_TRIPLE
-	
-	print("SPIN DETECTED! +" + str(bonus) + " points")
 
 func get_line_clear_score(lines: int) -> int:
 	match lines:
@@ -923,7 +881,6 @@ func is_free(pos):
 
 # PIECE LOCKING & LINE CLEARING
 func lock_piece():
-	print("DEBUG: lock_piece() called")
 	nudge_camera(Vector2.UP)
 	land_piece()
 	pending_spin_type = get_spin_type()
@@ -943,7 +900,6 @@ func lock_piece():
 	check_game_over()
 
 func land_piece():
-	print("DEBUG: land_piece() called")
 	for i in active_piece:
 		active_layer.erase_cell(cur_pos + i)
 		board_layer.set_cell(cur_pos + i, tile_id, piece_atlas)
@@ -998,8 +954,6 @@ func check_rows():
 		else:
 			row -= 1
 	update_level(lines_cleared)
-	print("DEBUG: check_rows() complete - lines_cleared = ", lines_cleared)
-	print("DEBUG: pending_spin_type = ", pending_spin_type)
 	if lines_cleared > 0:
 		trauma = min(trauma + (lines_cleared * 0.25), 1.0)
 		wave_intensity = lines_cleared * 0.2
@@ -1035,11 +989,11 @@ func check_rows():
 		if is_difficult and b2b_active:
 			points = int(points * 1.5)
 			b2b_count += 1
-			$Game/HUD.get_node("B2BLabel").text = "B2B " + str(b2b_count)
+			$Game/HUD.get_node("B2BLabel").text = "[B2B " + str(b2b_count) + "]"
 		elif is_difficult:
 			b2b_active = true
 			b2b_count = 1
-			$Game/HUD.get_node("B2BLabel").text = "B2B 1"
+			$Game/HUD.get_node("B2BLabel").text = "[B2B 1]"
 		else:
 			if b2b_active:
 				$Game/HUD.get_node("B2BLabel").text = ""
@@ -1050,7 +1004,7 @@ func check_rows():
 		if last_clear_had_lines:
 			combo_count += 1
 			score += combo_count * 50
-			$Game/HUD.get_node("ComboLabel").text = "COMBO " + str(combo_count)
+			$Game/HUD.get_node("ComboLabel").text = "[COMBO " + str(combo_count) + "]"
 		else:
 			combo_count = 1
 			$Game/HUD.get_node("ComboLabel").text = ""
@@ -1060,12 +1014,12 @@ func check_rows():
 		if is_board_empty():
 			points += 3500
 			is_difficult = true
-			$Game/HUD.get_node("AllClearLabel").text = "ALL CLEAR"
+			$Game/HUD.get_node("AllClearLabel").text = "[ALL CLEAR]"
 		else:
 			$Game/HUD.get_node("AllClearLabel").text = ""
 		
 		score += points * level
-		$Game/HUD.get_node("ScoreLabel").text = str(score)
+		$Game/HUD.get_node("ScoreLabel").text = "[" + str(score) + "]"
 	
 	else:
 		var spin_type = pending_spin_type
@@ -1077,10 +1031,9 @@ func check_rows():
 		last_clear_had_lines = false
 		$Game/HUD.get_node("ComboLabel").text = ""
 		$Game/HUD.get_node("AllClearLabel").text = ""
-		$Game/HUD.get_node("ScoreLabel").text = str(score)
+		$Game/HUD.get_node("ScoreLabel").text = "[" + str(score) + "]"
 
 func shift_rows(row):
-	print("DEBUG: shift_rows() for row ", row)
 	var atlas
 	for i in range(row, -5, -1):
 		for j in range(COLS):
@@ -1105,10 +1058,8 @@ func is_board_empty() -> bool:
 	return true
 
 func check_game_over():
-	print("DEBUG: check_game_over() called")
 	for i in active_piece:
 		if not is_free(i + cur_pos):
-			print("DEBUG: GAME OVER - collision detected")
 			timer_running = false
 			$Game/HUD.get_node("GameOverLabel").show()
 			game_running = false
@@ -1133,7 +1084,7 @@ func update_level(lines_just_cleared: int):
 		level += 1
 		lines_for_next_level = (level * 2) + 1
 		gravity = get_gravity_for_level(level)
-		$Game/HUD.get_node("LevelLabel").text = "LEVEL " + str(level)
+		$Game/HUD.get_node("LevelLabel").text = "[LEVEL " + str(level) + "]"
 
 func get_gravity_for_level(lvl: int) -> float:
 	match lvl:
@@ -1196,26 +1147,26 @@ func _on_arr_slider_value_changed(value: float) -> void:
 	arr_sec = frames / 60.0
 	var ms = snapped(arr_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = str(frames) + "F / " + ms_str + "ms"
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = "[" + str(frames) + "F / " + ms_str + "ms]"
 
 func _on_das_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
 	das_delay_sec = frames / 60.0
 	var ms = snapped(das_delay_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = str(frames) + "F / " + ms_str + "ms"
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = "[" + str(frames) + "F / " + ms_str + "ms]"
 
 func _on_dcd_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
 	dcd_sec = frames / 60.0
 	var ms = snapped(dcd_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
-	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = str(frames) + "F / " + ms_str + "ms"
+	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = "[" + str(frames) + "F / " + ms_str + "ms]"
 
 func _on_sdf_slider_value_changed(value: float) -> void:
 	if value == 41:
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "∞X"
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "[∞X]"
 		sdf = 9999
 	else:
-		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = str(int(value)) + "X"
+		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "[" + str(int(value)) + "X]"
 		sdf = value
