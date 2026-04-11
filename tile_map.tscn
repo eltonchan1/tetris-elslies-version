@@ -278,12 +278,12 @@ text = "[def not tryna flex]"
 
 [node name="Label2" type="Label" parent="MainMenu/PopUp/About" unique_id=1743300557]
 layout_mode = 0
-offset_left = 164.0
+offset_left = 153.845
 offset_top = 432.5
-offset_right = 311.0
+offset_right = 315.8451
 offset_bottom = 479.5
 theme_override_font_sizes/font_size = 30
-text = "tetr.io"
+text = "[tetr.io]"
 
 [node name="Label3" type="Label" parent="MainMenu/PopUp/About" unique_id=1364118445]
 layout_mode = 0
@@ -292,8 +292,8 @@ offset_top = 414.61
 offset_right = 733.448
 offset_bottom = 497.61002
 theme_override_font_sizes/font_size = 30
-text = "tetris® effect:
-connected"
+text = "[tetris® effect:
+connected]"
 horizontal_alignment = 1
 
 [node name="Settings" type="Control" parent="MainMenu/PopUp" unique_id=309475448]
@@ -523,7 +523,7 @@ layout_mode = 2
 tooltip_text = "Drag to change, hover for more details, slow <-> fast."
 mouse_filter = 0
 theme_override_font_sizes/font_size = 40
-text = "HANDLING"
+text = "[handling]"
 horizontal_alignment = 1
 
 [node name="ARRContainer" type="HBoxContainer" parent="MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer" unique_id=472661799]
@@ -809,12 +809,12 @@ offset_bottom = 768.0
 
 [node name="ScoreLabel1" type="Label" parent="Game/HUD" unique_id=1919521473]
 layout_mode = 0
-offset_left = 628.0
+offset_left = 610.0
 offset_top = 656.0
-offset_right = 718.0
+offset_right = 736.0
 offset_bottom = 696.0
 theme_override_font_sizes/font_size = 30
-text = "SCORE"
+text = "[SCORE]"
 
 [node name="ScoreLabel" type="Label" parent="Game/HUD" unique_id=1818038071]
 layout_mode = 1
@@ -830,7 +830,7 @@ offset_bottom = 320.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "12345678"
+text = "[12345678]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -848,7 +848,7 @@ offset_bottom = -134.99994
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "COMBO 0"
+text = "[COMBO 0]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -866,7 +866,7 @@ offset_bottom = -89.725006
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "B2B 0"
+text = "[B2B 0]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -884,7 +884,7 @@ offset_bottom = -41.815002
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "ALL CLEAR"
+text = "[ALL CLEAR]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -902,18 +902,18 @@ offset_bottom = 29.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 40
-text = "GAME OVER!"
+text = "[game over]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="LevelLabel" type="Label" parent="Game/HUD" unique_id=1058383126]
 layout_mode = 0
-offset_left = 31.0
+offset_left = 15.0
 offset_top = 654.0
-offset_right = 162.0
+offset_right = 177.0
 offset_bottom = 696.0
 theme_override_font_sizes/font_size = 30
-text = "LEVEL 1"
+text = "[LEVEL 1]"
 
 [node name="TimerLabel" type="Label" parent="Game/HUD" unique_id=149607614]
 layout_mode = 1
@@ -929,7 +929,7 @@ offset_bottom = 320.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 30
-text = "TIMER"
+text = "[TIMER]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -1018,6 +1018,7 @@ offset_right = 576.0
 offset_bottom = 768.0
 
 [node name="PauseMenu" type="Control" parent="Game" unique_id=1677891011]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -224.0
@@ -1057,19 +1058,19 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 50
-text = "RESTART"
+text = "[restart]"
 
 [node name="Settings" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=1502014313]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 50
-text = "SETTINGS"
+text = "[settings]"
 
 [node name="PauseQuit" type="Button" parent="Game/PauseMenu/VBoxContainer" unique_id=2120810052]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/font_size = 50
-text = "RETURN TO MENU"
+text = "[return to menu]"
 
 [connection signal="pressed" from="MainMenu/ExitGameButton" to="." method="_on_exit_game_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]

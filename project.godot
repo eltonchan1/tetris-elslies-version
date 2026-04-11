@@ -19,6 +19,10 @@ run/main_scene="uid://b4xyptdtg7pl"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+flowerwall_crt="*uid://cc1fomjf362h5"
+
 [display]
 
 window/size/viewport_width=768
@@ -26,7 +30,7 @@ window/size/viewport_height=832
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg")
+enabled=PackedStringArray("res://addons/flowerwall_crt/plugin.cfg", "res://addons/godot_super-wakatime/plugin.cfg")
 
 [gui]
 
