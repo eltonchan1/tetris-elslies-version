@@ -13,6 +13,9 @@ bg_color = Color(0, 0, 0, 0.78431374)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_35kre"]
 bg_color = Color(0, 0, 0, 0.78431374)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_anah5"]
+bg_color = Color(0, 0, 0, 0.78431374)
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_35kre"]
 resource_name = "tetrisblock"
 texture = ExtResource("2_1n30v")
@@ -62,6 +65,12 @@ shader_parameter/frequency = 8.0
 shader_parameter/speed = 4.0
 shader_parameter/center = Vector2(0.5, 0.5)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qtlnl"]
+bg_color = Color(0, 0, 0, 0.78431374)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2cfip"]
+bg_color = Color(0, 0, 0, 0.78431374)
+
 [node name="Main" type="Node2D" unique_id=1271957725]
 script = ExtResource("2_35kre")
 
@@ -95,7 +104,8 @@ offset_bottom = -215.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 100
-text = "[name here]"
+text = "[quad.exe]"
+horizontal_alignment = 1
 
 [node name="ExitGameButton" type="Button" parent="MainMenu" unique_id=1727234832]
 layout_mode = 0
@@ -187,7 +197,7 @@ horizontal_alignment = 1
 [node name="Label" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=2105776399]
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
-text = "[name here] is a modern tetr*s (copyright) clone made to have a satisfying feel and look while being adjustable, meaning you can fine-tune how the pieces respond to your inputs, whether you like to play slowly or quickly."
+text = "[quad.exe] is a modern tunable tetris clone with a crt/terminal style. it also works offline, so you can play anywhere you like, whether you want to get a high score or train a skill. the controls are also customizable."
 autowrap_mode = 3
 
 [node name="Label3" type="Label" parent="MainMenu/PopUp/About/AboutPanel/VBoxContainer" unique_id=1932031628]
@@ -703,6 +713,7 @@ offset_right = 384.0
 offset_bottom = 416.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_anah5")
 
 [node name="BG" type="Panel" parent="MainMenu/PopUp/ExitConfirm" unique_id=634354952]
 layout_mode = 1
@@ -1001,7 +1012,6 @@ offset_right = 576.0
 offset_bottom = 768.0
 
 [node name="PauseMenu" type="Control" parent="Game" unique_id=1677891011]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -224.0
@@ -1022,6 +1032,7 @@ offset_right = 416.0
 offset_bottom = 448.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qtlnl")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Game/PauseMenu" unique_id=251509418]
 layout_mode = 1
@@ -1056,7 +1067,6 @@ theme_override_font_sizes/font_size = 50
 text = "[return to menu]"
 
 [node name="GameOverMenu" type="Control" parent="Game" unique_id=1103022473]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -224.0
@@ -1077,6 +1087,7 @@ offset_right = 416.0
 offset_bottom = 448.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_2cfip")
 
 [node name="GameOver" type="Label" parent="Game/GameOverMenu" unique_id=18013677]
 layout_mode = 1
