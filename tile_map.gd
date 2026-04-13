@@ -190,6 +190,7 @@ var combo_sounds : Array
 
 # INITIALIZATION
 func _ready():
+	add_child(sound)
 	load_settings()
 	main_menu(true)
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - (arr_sec * 60.0)
@@ -371,7 +372,7 @@ func new_game():
 	$Game/HUD.get_node("AllClearLabel").text = ""
 	$Game/HUD.get_node("TimerLabel").text = "[0:00.000]"
 	$Game/HUD.get_node("ScoreLabel").text = "[0]"
-	$Game/HUD.get_node("LevelLabel").text = "[LEVEL " + str(level) + "]"
+	$Game/HUD.get_node("LevelLabel").text = "[level " + str(level) + "]"
 	
 	# Reset bag randomizer
 	shapes = shapes_full.duplicate()
@@ -463,6 +464,7 @@ func handle_input(delta):
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
 		sound.stream = load("res://assets/hd.wav")
+		sound.play()
 		return
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
@@ -1047,11 +1049,11 @@ func check_rows():
 		if is_difficult and b2b_active:
 			points = int(points * 1.5)
 			b2b_count += 1
-			$Game/HUD.get_node("B2BLabel").text = "[B2B " + str(b2b_count) + "]"
+			$Game/HUD.get_node("B2BLabel").text = "[b2b " + str(b2b_count) + "]"
 		elif is_difficult:
 			b2b_active = true
 			b2b_count = 1
-			$Game/HUD.get_node("B2BLabel").text = "[B2B 1]"
+			$Game/HUD.get_node("B2BLabel").text = "[b2b 1]"
 		else:
 			if b2b_active:
 				$Game/HUD.get_node("B2BLabel").text = ""
@@ -1060,7 +1062,7 @@ func check_rows():
 		if last_clear_had_lines:
 			combo_count += 1
 			score += combo_count * 50
-			$Game/HUD.get_node("ComboLabel").text = "[COMBO " + str(combo_count) + "]"
+			$Game/HUD.get_node("ComboLabel").text = "[combo " + str(combo_count) + "]"
 		else:
 			combo_count = 1
 			$Game/HUD.get_node("ComboLabel").text = ""
@@ -1069,7 +1071,7 @@ func check_rows():
 		if is_board_empty():
 			points += 3500
 			is_difficult = true
-			$Game/HUD.get_node("AllClearLabel").text = "[ALL CLEAR]"
+			$Game/HUD.get_node("AllClearLabel").text = "[all clear]"
 		else:
 			$Game/HUD.get_node("AllClearLabel").text = ""
 		
@@ -1141,7 +1143,7 @@ func update_level(lines_just_cleared: int):
 		level += 1
 		lines_for_next_level = (level * 2) + 1
 		gravity = get_gravity_for_level(level)
-		$Game/HUD.get_node("LevelLabel").text = "[LEVEL " + str(level) + "]"
+		$Game/HUD.get_node("LevelLabel").text = "[level " + str(level) + "]"
 
 func get_gravity_for_level(lvl: int) -> float:
 	match lvl:
