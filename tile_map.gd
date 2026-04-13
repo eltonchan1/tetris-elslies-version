@@ -1,20 +1,11 @@
 extends Node2D
 
-# to do
-	# add like more satisfying scoring n stuff (numbers)
-	# art redesign & uis
-		# make it codey, like the og tetris with [ ]
-	# sound design & music
-		# satisfying
-
-
-# NODE REFERENCES
 @onready var board_layer : TileMapLayer = $Game/board
 @onready var active_layer : TileMapLayer = $Game/active
 @onready var wave_material : ShaderMaterial = $"Game/Particles/CanvasLayer/ColorRect".material
 @onready var hold_layer : TileMapLayer = $Game/hold
+@onready var sound : AudioStreamPlayer = AudioStreamPlayer.new()
 
-# CONSTANTS
 const COLS : int = 10
 const ROWS : int = 19
 const GRAVITY_INCREASE : float = 0.001
@@ -195,6 +186,7 @@ var ghost_atlas : Vector2i = Vector2i(7, 0)
 var camera_offset : Vector2 = Vector2.ZERO
 var trauma : float = 0.0
 var wave_intensity : float = 0.0
+var combo_sounds : Array
 
 # INITIALIZATION
 func _ready():
@@ -218,6 +210,11 @@ func _ready():
 		btn.pressed.connect(_on_remap_button_pressed.bind(action))
 	load_keybinds()
 	refresh_remap_buttons()
+	for i in range(1, 9):
+		var player = AudioStreamPlayer.new()
+		player.stream = load("res://assets/combo" + str(i) + ".mp3")
+		add_child(player)
+		combo_sounds.append(player)
 
 func get_remap_button(action: String) -> Button:
 	return remap_buttons.get(action, null)
@@ -465,6 +462,7 @@ func handle_input(delta):
 	# Priority actions
 	if Input.is_action_just_pressed("hard_drop"):
 		hard_drop()
+		sound.stream = load("res://assets/hd.wav")
 		return
 	if Input.is_action_just_pressed("hold"):
 		hold_piece()
@@ -1059,8 +1057,6 @@ func check_rows():
 				$Game/HUD.get_node("B2BLabel").text = ""
 			b2b_active = false
 			b2b_count = 0
-		
-		# Combo bonus (combo_count * 50, added separately)
 		if last_clear_had_lines:
 			combo_count += 1
 			score += combo_count * 50
@@ -1069,8 +1065,7 @@ func check_rows():
 			combo_count = 1
 			$Game/HUD.get_node("ComboLabel").text = ""
 		last_clear_had_lines = true
-		
-		# All Clear
+		play_combo_sound(combo_count)
 		if is_board_empty():
 			points += 3500
 			is_difficult = true
@@ -1236,3 +1231,7 @@ func _on_sdf_slider_value_changed(value: float) -> void:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "[" + str(int(value)) + "X]"
 		sdf = value
 	save_settings()
+
+func play_combo_sound(combo: int) -> void:
+	var index = clamp(combo - 1, 0, combo_sounds.size() - 1)
+	combo_sounds[index].play()
