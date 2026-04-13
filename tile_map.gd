@@ -231,6 +231,8 @@ func main_menu(on: bool):
 		$MainMenu/PopUp/Settings.visible = false
 		$MainMenu/PopUp/ExitConfirm.visible = false
 		$Game/PauseMenu.visible = false
+		$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		$Game/GameOverMenu.visible = false 
 		$Game/Particles/CanvasLayer/ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		$Game/GameOverMenu.visible = false
 		$Game/Particles/CanvasLayer.visible = false
@@ -329,8 +331,7 @@ func _on_gameover_settings_pressed() -> void:
 	$MainMenu/PopUp/Settings.visible = true
 
 func _on_gameover_pausequit_pressed() -> void:
-	$Game/GameOverMenu.visible = false
-	main_menu(true)
+	main_menu(true) 
 
 func _on_exit_confirm_yes_pressed() -> void:
 	get_tree().quit()
