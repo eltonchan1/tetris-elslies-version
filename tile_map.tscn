@@ -66,6 +66,7 @@ shader_parameter/center = Vector2(0.5, 0.5)
 script = ExtResource("2_35kre")
 
 [node name="MainMenu" type="Control" parent="." unique_id=1410716151]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_left = -192.0
@@ -135,7 +136,8 @@ theme_override_font_sizes/font_size = 50
 text = "[about]"
 
 [node name="PopUp" type="CanvasLayer" parent="MainMenu" unique_id=1795626839]
-layer = 999
+layer = 99
+visible = false
 
 [node name="About" type="Control" parent="MainMenu/PopUp" unique_id=949326442]
 layout_mode = 3
@@ -297,7 +299,6 @@ connected]"
 horizontal_alignment = 1
 
 [node name="Settings" type="Control" parent="MainMenu/PopUp" unique_id=309475448]
-z_index = 100
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -888,24 +889,6 @@ text = "[ALL CLEAR]"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="GameOverLabel" type="Label" parent="Game/HUD" unique_id=721796065]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -120.5
-offset_top = -29.0
-offset_right = 120.5
-offset_bottom = 29.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 40
-text = "[game over]"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="LevelLabel" type="Label" parent="Game/HUD" unique_id=1058383126]
 layout_mode = 0
 offset_left = 15.0
@@ -1072,6 +1055,94 @@ size_flags_vertical = 3
 theme_override_font_sizes/font_size = 50
 text = "[return to menu]"
 
+[node name="GameOverMenu" type="Control" parent="Game" unique_id=1103022473]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -224.0
+offset_top = -96.0
+offset_right = 608.0
+offset_bottom = 800.0
+
+[node name="Panel" type="Panel" parent="Game/GameOverMenu" unique_id=1740176643]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -416.0
+offset_top = -448.0
+offset_right = 416.0
+offset_bottom = 448.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameOver" type="Label" parent="Game/GameOverMenu" unique_id=18013677]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -247.5
+offset_top = -288.0
+offset_right = 247.5
+offset_bottom = -187.99982
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 75
+text = "[game over]"
+
+[node name="Score" type="Label" parent="Game/GameOverMenu" unique_id=957597620]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -225.0
+offset_top = -168.0
+offset_right = 225.0
+offset_bottom = -68.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 75
+text = "[12345678]"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Game/GameOverMenu" unique_id=2138708196]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -244.0
+offset_top = 32.0
+offset_right = 244.0
+offset_bottom = 294.0006
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Restart" type="Button" parent="Game/GameOverMenu/VBoxContainer" unique_id=1116791993]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 50
+text = "[restart]"
+
+[node name="Settings" type="Button" parent="Game/GameOverMenu/VBoxContainer" unique_id=1158309513]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 50
+text = "[settings]"
+
+[node name="PauseQuit" type="Button" parent="Game/GameOverMenu/VBoxContainer" unique_id=1886570732]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 50
+text = "[return to menu]"
+
 [connection signal="pressed" from="MainMenu/ExitGameButton" to="." method="_on_exit_game_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="MainMenu/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
@@ -1087,3 +1158,6 @@ text = "[return to menu]"
 [connection signal="pressed" from="Game/PauseMenu/VBoxContainer/Restart" to="." method="_on_pause_restart_pressed"]
 [connection signal="pressed" from="Game/PauseMenu/VBoxContainer/Settings" to="." method="_on_pause_settings_pressed"]
 [connection signal="pressed" from="Game/PauseMenu/VBoxContainer/PauseQuit" to="." method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Game/GameOverMenu/VBoxContainer/Restart" to="." method="_on_pause_restart_pressed"]
+[connection signal="pressed" from="Game/GameOverMenu/VBoxContainer/Settings" to="." method="_on_pause_settings_pressed"]
+[connection signal="pressed" from="Game/GameOverMenu/VBoxContainer/PauseQuit" to="." method="_on_pause_quit_pressed"]

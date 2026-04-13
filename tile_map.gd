@@ -204,6 +204,7 @@ var wave_intensity : float = 0.0
 
 # INITIALIZATION
 func _ready():
+	load_settings()
 	main_menu(true)
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/ARRSlider.value = 5.0 - (arr_sec * 60.0)
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.value = 20.0 - (das_delay_sec * 60.0) + 1.0
@@ -237,6 +238,7 @@ func main_menu(on: bool):
 		$MainMenu/PopUp/ExitConfirm.visible = false
 		$Game/PauseMenu.visible = false
 		$Game/Particles/CanvasLayer/ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		$Game/GameOverMenu.visible = false
 		game_running = false
 	if on == false:
 		$Game.visible = true
@@ -270,6 +272,8 @@ func _on_pause_exit_button_pressed() -> void:
 		_on_settings_exit_button_pressed()
 	elif $MainMenu/PopUp/About.visible:
 		_on_about_exit_button_pressed()
+	elif $Game/GameOverMenu.visible:
+		return
 	elif game_running:
 		open_pause_menu()
 	elif is_paused:
@@ -327,8 +331,6 @@ func _on_exit_confirm_no_pressed() -> void:
 func new_game():
 	game_running = false
 	active_piece = []
-	
-	# Reset game state
 	score = 0
 	gravity = 0.01667
 	gravity_counter = 0.0
@@ -358,7 +360,6 @@ func new_game():
 	$Game/HUD.get_node("B2BLabel").text = ""
 	$Game/HUD.get_node("AllClearLabel").text = ""
 	$Game/HUD.get_node("TimerLabel").text = "[0:00.000]"
-	$Game/HUD.get_node("GameOverLabel").hide()
 	$Game/HUD.get_node("ScoreLabel").text = "[0]"
 	$Game/HUD.get_node("LevelLabel").text = "[LEVEL " + str(level) + "]"
 	
@@ -460,7 +461,8 @@ func handle_input(delta):
 	if Input.is_action_just_pressed("ccw_rotation"):
 		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
-		rotate_piece_srs(2)
+		rotate_piece_srs(1)
+		rotate_piece_srs(1)
 	if Input.is_action_just_pressed("left_move"):
 		right_release_timer = 0.0
 		das_right = 0.0
@@ -570,6 +572,23 @@ func load_keybinds():
 			event.physical_keycode = keycode
 			InputMap.action_erase_events(action)
 			InputMap.action_add_event(action, event)
+
+func save_settings():
+	var config = ConfigFile.new()
+	config.set_value("settings", "arr", arr_sec)
+	config.set_value("settings", "das", das_delay_sec)
+	config.set_value("settings", "dcd", dcd_sec)
+	config.set_value("settings", "sdf", sdf)
+	config.save("user://settings.cfg")
+
+func load_settings():
+	var config = ConfigFile.new()
+	if config.load("user://settings.cfg") != OK:
+		return
+	arr_sec = config.get_value("settings", "arr", arr_sec)
+	das_delay_sec = config.get_value("settings", "das", das_delay_sec)
+	dcd_sec = config.get_value("settings", "dcd", dcd_sec)
+	sdf = config.get_value("settings", "sdf", sdf)
 
 # PIECE MANAGEMENT
 func pick_piece():
@@ -1061,7 +1080,7 @@ func check_game_over():
 	for i in active_piece:
 		if not is_free(i + cur_pos):
 			timer_running = false
-			$Game/HUD.get_node("GameOverLabel").show()
+			$Game/GameOverMenu.visible = true
 			game_running = false
 			return
 
@@ -1148,6 +1167,7 @@ func _on_arr_slider_value_changed(value: float) -> void:
 	var ms = snapped(arr_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/ARRContainer/SettingsValue.text = "[" + str(frames) + "F / " + ms_str + "ms]"
+	save_settings()
 
 func _on_das_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.max_value - value + $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/DASSlider.min_value
@@ -1155,6 +1175,7 @@ func _on_das_slider_value_changed(value: float) -> void:
 	var ms = snapped(das_delay_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DASContainer/SettingsValue.text = "[" + str(frames) + "F / " + ms_str + "ms]"
+	save_settings()
 
 func _on_dcd_slider_value_changed(value: float) -> void:
 	var frames = $MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/DCDSlider.max_value - value
@@ -1162,6 +1183,7 @@ func _on_dcd_slider_value_changed(value: float) -> void:
 	var ms = snapped(dcd_sec * 1000.0, 0.01)
 	var ms_str = "%.2f" % ms
 	$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/DCDContainer/SettingsValue.text = "[" + str(frames) + "F / " + ms_str + "ms]"
+	save_settings()
 
 func _on_sdf_slider_value_changed(value: float) -> void:
 	if value == 41:
@@ -1170,3 +1192,4 @@ func _on_sdf_slider_value_changed(value: float) -> void:
 	else:
 		$MainMenu/PopUp/Settings/SettingsPanel/VBoxContainer/SDFContainer/SettingsValue.text = "[" + str(int(value)) + "X]"
 		sdf = value
+	save_settings()
