@@ -95,34 +95,28 @@ var shapes := [z, l, o, s, i, j, t]
 var shapes_full := shapes.duplicate()
 
 # SRS WALL KICK DATA
+# SRS WALL KICK DATA
+# Y is negated vs. Tetris guideline because Godot Y increases downward
 var srs_offset_jlstz := {
 	"0->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
-	"1->2": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
-	"2->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, 2), Vector2i(1, 2)],
-	"3->0": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, -2), Vector2i(-1, -2)],
 	"1->0": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
+	"1->2": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, -2), Vector2i(1, -2)],
 	"2->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, -1), Vector2i(0, 2), Vector2i(-1, 2)],
+	"2->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, 2), Vector2i(1, 2)],
 	"3->2": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, -2), Vector2i(-1, -2)],
+	"3->0": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, -2), Vector2i(-1, -2)],
 	"0->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, 2), Vector2i(1, 2)],
-	"0->2": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, 0), Vector2i(-1, 0)],
-	"2->0": [Vector2i(0, 0), Vector2i(0, -1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 0), Vector2i(1, 0)],
-	"1->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 2), Vector2i(1, 1), Vector2i(0, 2), Vector2i(0, 1)],
-	"3->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 2), Vector2i(-1, 1), Vector2i(0, 2), Vector2i(0, 1)]
 }
 
 var srs_offset_i := {
 	"0->1": [Vector2i(0, 0), Vector2i(-2, 0), Vector2i(1, 0), Vector2i(-2, 1), Vector2i(1, -2)],
-	"1->2": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(2, 0), Vector2i(-1, -2), Vector2i(2, 1)],
-	"2->3": [Vector2i(0, 0), Vector2i(2, 0), Vector2i(-1, 0), Vector2i(2, -1), Vector2i(-1, 2)],
-	"3->0": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-2, 0), Vector2i(1, 2), Vector2i(-2, -1)],
 	"1->0": [Vector2i(0, 0), Vector2i(2, 0), Vector2i(-1, 0), Vector2i(2, -1), Vector2i(-1, 2)],
+	"1->2": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(2, 0), Vector2i(-1, -2), Vector2i(2, 1)],
 	"2->1": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-2, 0), Vector2i(1, 2), Vector2i(-2, -1)],
+	"2->3": [Vector2i(0, 0), Vector2i(2, 0), Vector2i(-1, 0), Vector2i(2, -1), Vector2i(-1, 2)],
 	"3->2": [Vector2i(0, 0), Vector2i(-2, 0), Vector2i(1, 0), Vector2i(-2, 1), Vector2i(1, -2)],
+	"3->0": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(-2, 0), Vector2i(1, 2), Vector2i(-2, -1)],
 	"0->3": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(2, 0), Vector2i(-1, -2), Vector2i(2, 1)],
-	"0->2": [Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(-1, 1), Vector2i(1, 0), Vector2i(-1, 0)],
-	"2->0": [Vector2i(0, 0), Vector2i(0, -1), Vector2i(-1, -1), Vector2i(1, -1), Vector2i(-1, 0), Vector2i(1, 0)],
-	"1->3": [Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 2), Vector2i(1, 1), Vector2i(0, 2), Vector2i(0, 1)],
-	"3->1": [Vector2i(0, 0), Vector2i(-1, 0), Vector2i(-1, 2), Vector2i(-1, 1), Vector2i(0, 2), Vector2i(0, 1)]
 }
 
 # GAME STATE VARIABLES
@@ -239,10 +233,12 @@ func main_menu(on: bool):
 		$Game/PauseMenu.visible = false
 		$Game/Particles/CanvasLayer/ColorRect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		$Game/GameOverMenu.visible = false
+		$Game/Particles/CanvasLayer.visible = false
 		game_running = false
 	if on == false:
 		$Game.visible = true
 		$MainMenu.visible = false
+		$Game/Particles/CanvasLayer.visible = true
 
 func _on_play_button_pressed() -> void:
 	main_menu(false)
@@ -265,6 +261,8 @@ func _on_settings_exit_button_pressed() -> void:
 	if settings_opened_from == "pause":
 		$Game/PauseMenu.visible = true
 		$Game/PauseMenu.mouse_filter = Control.MOUSE_FILTER_STOP
+	elif settings_opened_from == "gameover":
+		$Game/GameOverMenu.visible = true
 	settings_opened_from = ""
 
 func _on_pause_exit_button_pressed() -> void:
@@ -321,6 +319,19 @@ func _on_pause_quit_pressed() -> void:
 	close_pause_menu()
 	main_menu(true)
 
+func _on_gameover_restart_pressed() -> void:
+	$Game/GameOverMenu.visible = false
+	new_game()
+
+func _on_gameover_settings_pressed() -> void:
+	settings_opened_from = "gameover"
+	$Game/GameOverMenu.visible = false
+	$MainMenu/PopUp/Settings.visible = true
+
+func _on_gameover_pausequit_pressed() -> void:
+	$Game/GameOverMenu.visible = false
+	main_menu(true)
+
 func _on_exit_confirm_yes_pressed() -> void:
 	get_tree().quit()
 
@@ -330,6 +341,7 @@ func _on_exit_confirm_no_pressed() -> void:
 # GAME LOOP
 func new_game():
 	game_running = false
+	$Game/GameOverMenu.visible = false
 	active_piece = []
 	score = 0
 	gravity = 0.01667
@@ -461,8 +473,7 @@ func handle_input(delta):
 	if Input.is_action_just_pressed("ccw_rotation"):
 		rotate_piece_srs(-1)
 	if Input.is_action_just_pressed("180_rotation"):
-		rotate_piece_srs(1)
-		rotate_piece_srs(1)
+		rotate_piece_180()
 	if Input.is_action_just_pressed("left_move"):
 		right_release_timer = 0.0
 		das_right = 0.0
@@ -725,6 +736,35 @@ func rotate_piece_srs(direction: int):
 	var key = str(old_rotation) + "->" + str(new_rotation)
 	var offsets = offset_data.get(key, [Vector2i.ZERO])
 	
+	for offset in offsets:
+		if can_fit(new_piece, cur_pos + offset):
+			clear_piece()
+			cur_pos += offset
+			rotation_index = new_rotation
+			active_piece = new_piece
+			draw_ghost_piece()
+			draw_piece(active_piece, cur_pos, piece_atlas, active_layer)
+			reset_lock_delay()
+			last_action_was_rotation = true
+			return
+
+func rotate_piece_180():
+	var new_rotation = (rotation_index + 2) % 4
+	var new_piece = piece_type[new_rotation]
+	if piece_type == o:
+		return
+	# 180 kick offsets - try up first, then sideways, then up+sideways
+	var offsets = [
+		Vector2i(0, 0),
+		Vector2i(0, -1),
+		Vector2i(1, -1),
+		Vector2i(-1, -1),
+		Vector2i(1, 0),
+		Vector2i(-1, 0),
+		Vector2i(0, -2),
+		Vector2i(1, -2),
+		Vector2i(-1, -2),
+	]
 	for offset in offsets:
 		if can_fit(new_piece, cur_pos + offset):
 			clear_piece()
@@ -1080,6 +1120,8 @@ func check_game_over():
 	for i in active_piece:
 		if not is_free(i + cur_pos):
 			timer_running = false
+			$Game/GameOverMenu.get_node("Score").text = "[" + str(score) + "]"
+			$Game/GameOverMenu.get_node("Time").text = $Game/HUD.get_node("TimerLabel").text
 			$Game/GameOverMenu.visible = true
 			game_running = false
 			return
